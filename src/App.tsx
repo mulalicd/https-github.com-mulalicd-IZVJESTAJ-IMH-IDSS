@@ -16,6 +16,7 @@ import { SearchPanel } from './components/SearchPanel';
 import { UnifiedLogo } from './components/UnifiedLogo';
 import { RiskSimulator } from './components/RiskSimulator';
 import { RiskMatrixVisual } from './components/RiskMatrixVisual';
+import { CashFlowForecastVisual } from './components/CashFlowForecastVisual';
 import { PartnerCardForensics } from './components/PartnerCardForensics';
 import {
   Search,
@@ -1502,6 +1503,9 @@ export default function App() {
                 </div>
               </div>
             </div>
+
+            {/* INTERAKTIVNI FORENZIČKI CASH-FLOW FORECAST GRAFIKON (RECHARTS) */}
+            <CashFlowForecastVisual />
 
             {/* POGLAVLJE 14 - NOVO: SCENARIJI UPISA I OSJETLJIVOST */}
             <h2 id="sec-14-scenariji-upisa">14. SCENARIJI UPISA I OSJETLJIVOST (IDSS)</h2>
