@@ -15,6 +15,7 @@ import { HarmonizationDrawer } from './components/HarmonizationDrawer';
 import { SearchPanel } from './components/SearchPanel';
 import { UnifiedLogo } from './components/UnifiedLogo';
 import { RiskSimulator } from './components/RiskSimulator';
+import { RiskMatrixVisual } from './components/RiskMatrixVisual';
 import { PartnerCardForensics } from './components/PartnerCardForensics';
 import {
   Search,
@@ -1359,6 +1360,11 @@ export default function App() {
               likvidnost plus neuredan zakup plus stalan odliv leasinga i kredita (&gt;15.000 KM/mj.) plus eventualni novi
               pad upisa. Zato je jedinstveni mjesečni cash-flow list svih odliva prioritet broj jedan.
             </p>
+
+            {/* VIZUELNA MATRICA RIZIKA (RF-02 do RF-07) SA DVOSTRUKOM OSOM I PLANOVIMA MITIGACIJE */}
+            <div className="my-6">
+              <RiskMatrixVisual resolvedRiskIds={resolvedRiskIds} />
+            </div>
 
             {/* SIMULATOR RIZIKA (INTERAKTIVNI DIREKTORSKI MODEL) */}
             <RiskSimulator />

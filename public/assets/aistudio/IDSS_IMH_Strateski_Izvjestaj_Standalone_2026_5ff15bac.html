@@ -198,6 +198,167 @@
   <div class="table-wrap"><table class="data-table"><thead><tr><th>Rizik</th><th>Vjerovatnoća</th><th>Uticaj</th><th>Mitigacija</th></tr></thead><tbody><tr><td>Cirkularni tok 100k</td><td>Srednja</td><td>Visok</td><td>Interni memo u arhivi; tretiranje isključivo operativnog broja (75.864 KM).</td></tr><tr><td>Leasing Cayenne (1.028 EUR/mj.)</td><td>Srednja</td><td>Visok</td><td>Uključiti u mjesečni cash-flow; dokumentovati poslovnu namjenu.</td></tr><tr><td>Solidarni dužnici i mjenice</td><td>Srednja</td><td>Visok</td><td>Transparentnost i evidencija unutar arhive.</td></tr><tr><td>Potraživanja zaposlenih (184.692 KM)</td><td>Niska-srednja</td><td>Srednji</td><td>Pozajmica 93.484,84 KM + plan otplate za preostali dio.</td></tr><tr><td>Likvidnost i servis duga (&gt;15k/mj.)</td><td>Srednja</td><td>Visok</td><td>Jedinstveni mjesečni cash-flow list; disciplina.</td></tr><tr><td>Oscilacija upisa (pad 28%)</td><td>Srednja</td><td>Visok</td><td>Plan zadržavanja; jačanje domaće baze kroz vertikalu.</td></tr><tr><td>Dug za zakup Buka 11/13</td><td>Srednja</td><td>Visok</td><td>Pismeni dogovor s Općinom Centar o otplati i tekućem plaćanju.</td></tr><tr><td>UOD preklasifikacija (77.632 KM)</td><td>Srednja</td><td>Srednji</td><td>Pravni pregled ugovora; prevođenje u dopunski rad.</td></tr><tr><td>Poreski (TC, doprinosi)</td><td>Niska-srednja</td><td>Srednji</td><td>Dokumentacija TC; potvrde Porezne uprave o stanju.</td></tr></tbody></table></div>
   <p class="note"><b>Opservacija o rizicima:</b> Najveći rizik je kumulacija: napeta likvidnost plus neuredan zakup plus stalan odliv leasinga i kredita (&gt;15.000 KM/mj.) plus eventualni novi pad upisa. Zato je mjesečni cash-flow list svih odliva prioritet broj jedan.</p>
 
+  <!-- VIZUELNA MATRICA RIZIKA 5X5 (RF-02 DO RF-07) -->
+  <div class="visual-panel" id="riskMatrixContainer" style="border:2px solid #C0392B;background:#ffffff;margin:24px 0">
+    <div class="visual-head">
+      <div>
+        <span class="eyebrow" style="color:#C0392B">INTERAKTIVNO FORENZIČKO MAPIRANJE · 2D HEATMAP</span>
+        <h3 style="color:#101820">VIZUELNA MATRICA RIZIKA: CRVENE ZASTAVICE (RF-02 DO RF-07)</h3>
+        <p>Mapiranje preostalih ne-saniranih rizika prema vjerovatnoći (X-osa, 1–5) i uticaju na poslovanje (Y-osa, 1–5). <b>Kliknite na bilo koju tačku u matrici ili na karticu ispod</b> da otvorite detaljan akcioni plan mitigacije za direktora.</p>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <span class="visual-tag" style="background:#fee2e2;color:#991b1b;border:1px solid #fecaca;font-weight:800">KRITIČNA ZONA (4-5)</span>
+        <span class="visual-tag" style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;font-weight:800">VISOKA ZONA (3-4)</span>
+        <span class="visual-tag" style="background:#d1fae5;color:#065f46;border:1px solid #a7f3d0;font-weight:800">KONTROLISANO</span>
+      </div>
+    </div>
+
+    <!-- 2D Koordinatni sistem -->
+    <div style="display:flex;flex-direction:column;gap:10px;margin:20px 0;">
+      <div style="display:flex;gap:12px;align-items:stretch">
+        <!-- Y-osa labela -->
+        <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;font-weight:800;color:#617080;display:flex;align-items:center;justify-content:center;letter-spacing:1px;text-transform:uppercase;">
+          ← Manji &nbsp;&nbsp;&nbsp;&nbsp; UTICAJ NA POSLOVANJE (1 - 5) &nbsp;&nbsp;&nbsp;&nbsp; Katastrofalan →
+        </div>
+
+        <!-- Heatmap Grid -->
+        <div style="flex:1;display:grid;grid-template-rows:repeat(5,1fr);border:2px solid #dce3e9;border-radius:10px;overflow:hidden;background:#f8fafb;min-height:360px;position:relative;">
+          <!-- 5 rows: Row 5 (highest impact) to Row 1 (lowest impact) -->
+          <!-- Row 5: Impact 5 -->
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid #e2e8f0;">
+            <div style="background:#fef9c3;padding:4px;border-right:1px dashed #cbd5e1;position:relative;"></div>
+            <div style="background:#fef08a;padding:4px;border-right:1px dashed #cbd5e1;position:relative;"></div>
+            <div style="background:#fed7aa;padding:4px;border-right:1px dashed #cbd5e1;position:relative;"></div>
+            <div style="background:#fecaca;padding:4px;border-right:1px dashed #cbd5e1;position:relative;display:flex;align-items:center;justify-content:center;">
+              <!-- RF-04 -->
+              <button onclick="openStandaloneMitigation('RF-04')" style="background:#dc2626;color:#ffffff;border:2px solid #ffffff;border-radius:20px;padding:6px 12px;font-size:11px;font-weight:900;cursor:pointer;box-shadow:0 4px 10px rgba(220,38,38,0.4);transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+                RF-04 · 90.375 KM
+              </button>
+            </div>
+            <div style="background:#fca5a5;padding:4px;position:relative;"></div>
+          </div>
+          <!-- Row 4: Impact 4 -->
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid #e2e8f0;">
+            <div style="background:#dcfce7;padding:4px;border-right:1px dashed #cbd5e1;position:relative;"></div>
+            <div style="background:#fef9c3;padding:4px;border-right:1px dashed #cbd5e1;position:relative;"></div>
+            <div style="background:#fde68a;padding:4px;border-right:1px dashed #cbd5e1;position:relative;display:flex;align-items:center;justify-content:center;">
+              <!-- RF-05 -->
+              <button onclick="openStandaloneMitigation('RF-05')" style="background:#ea580c;color:#ffffff;border:2px solid #ffffff;border-radius:20px;padding:6px 12px;font-size:11px;font-weight:900;cursor:pointer;box-shadow:0 4px 10px rgba(234,88,12,0.4);transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+                RF-05 · 157.458 KM
+              </button>
+            </div>
+            <div style="background:#fecaca;padding:4px;border-right:1px dashed #cbd5e1;position:relative;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;">
+              <!-- RF-02 & RF-03 -->
+              <button onclick="openStandaloneMitigation('RF-02')" style="background:#dc2626;color:#ffffff;border:2px solid #ffffff;border-radius:20px;padding:5px 10px;font-size:10px;font-weight:900;cursor:pointer;box-shadow:0 4px 8px rgba(220,38,38,0.4);transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+                RF-02 · 184.692 KM
+              </button>
+              <button onclick="openStandaloneMitigation('RF-03')" style="background:#dc2626;color:#ffffff;border:2px solid #ffffff;border-radius:20px;padding:5px 10px;font-size:10px;font-weight:900;cursor:pointer;box-shadow:0 4px 8px rgba(220,38,38,0.4);transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+                RF-03 · 47.616 KM
+              </button>
+            </div>
+            <div style="background:#fca5a5;padding:4px;position:relative;"></div>
+          </div>
+          <!-- Row 3: Impact 3 -->
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid #e2e8f0;">
+            <div style="background:#dcfce7;padding:4px;border-right:1px dashed #cbd5e1;position:relative;"></div>
+            <div style="background:#dcfce7;padding:4px;border-right:1px dashed #cbd5e1;position:relative;"></div>
+            <div style="background:#fef9c3;padding:4px;border-right:1px dashed #cbd5e1;position:relative;"></div>
+            <div style="background:#fed7aa;padding:4px;border-right:1px dashed #cbd5e1;position:relative;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;">
+              <!-- RF-06 & RF-07 -->
+              <button onclick="openStandaloneMitigation('RF-06')" style="background:#d97706;color:#ffffff;border:2px solid #ffffff;border-radius:20px;padding:5px 10px;font-size:10px;font-weight:900;cursor:pointer;box-shadow:0 4px 8px rgba(217,119,6,0.4);transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+                RF-06 · 77.632 KM
+              </button>
+              <button onclick="openStandaloneMitigation('RF-07')" style="background:#d97706;color:#ffffff;border:2px solid #ffffff;border-radius:20px;padding:5px 10px;font-size:10px;font-weight:900;cursor:pointer;box-shadow:0 4px 8px rgba(217,119,6,0.4);transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+                RF-07 · 37.328 KM
+              </button>
+            </div>
+            <div style="background:#fecaca;padding:4px;position:relative;"></div>
+          </div>
+          <!-- Row 2: Impact 2 -->
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid #e2e8f0;">
+            <div style="background:#bbf7d0;padding:4px;border-right:1px dashed #cbd5e1;position:relative;"></div>
+            <div style="background:#dcfce7;padding:4px;border-right:1px dashed #cbd5e1;position:relative;"></div>
+            <div style="background:#fef9c3;padding:4px;border-right:1px dashed #cbd5e1;position:relative;"></div>
+            <div style="background:#fde68a;padding:4px;border-right:1px dashed #cbd5e1;position:relative;"></div>
+            <div style="background:#fed7aa;padding:4px;position:relative;"></div>
+          </div>
+          <!-- Row 1: Impact 1 -->
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);">
+            <div style="background:#bbf7d0;padding:4px;border-right:1px dashed #cbd5e1;position:relative;"></div>
+            <div style="background:#bbf7d0;padding:4px;border-right:1px dashed #cbd5e1;position:relative;"></div>
+            <div style="background:#dcfce7;padding:4px;border-right:1px dashed #cbd5e1;position:relative;"></div>
+            <div style="background:#fef9c3;padding:4px;border-right:1px dashed #cbd5e1;position:relative;"></div>
+            <div style="background:#fde68a;padding:4px;position:relative;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- X-osa labela -->
+      <div style="text-align:center;font-size:11px;font-weight:800;color:#617080;letter-spacing:1px;text-transform:uppercase;margin-left:30px;">
+        ← Rijetko &nbsp;&nbsp;&nbsp;&nbsp; VJEROVATNOĆA NASTANKA (1 - 5) &nbsp;&nbsp;&nbsp;&nbsp; Gotovo izvjesno →
+      </div>
+    </div>
+
+    <!-- Lista kartica za brzi klik -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:16px;">
+      <div onclick="openStandaloneMitigation('RF-04')" style="padding:12px;border:1px solid #fca5a5;border-left:4px solid #dc2626;background:#fef2f2;border-radius:8px;cursor:pointer;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <b style="font-size:12px;color:#991b1b">RF-04: Dug za zakup Buka 11/13</b>
+          <span style="font-size:10px;font-weight:900;background:#dc2626;color:#ffffff;padding:2px 6px;border-radius:10px">KRITIČNO</span>
+        </div>
+        <p style="font-size:11px;color:#4b5563;margin:4px 0 0">Općina Centar akumulirani dug 90.375 KM. Rizik otkaza ugovora i prekida nastave.</p>
+      </div>
+
+      <div onclick="openStandaloneMitigation('RF-02')" style="padding:12px;border:1px solid #fca5a5;border-left:4px solid #dc2626;background:#fef2f2;border-radius:8px;cursor:pointer;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <b style="font-size:12px;color:#991b1b">RF-02: Potraživanja od uprave & Pozajmica</b>
+          <span style="font-size:10px;font-weight:900;background:#dc2626;color:#ffffff;padding:2px 6px;border-radius:10px">KRITIČNO</span>
+        </div>
+        <p style="font-size:11px;color:#4b5563;margin:4px 0 0">184.692 KM na kontu 2110 + prva dospjela rata 7.790,40 KM po ugovoru od 14.07.2026.</p>
+      </div>
+
+      <div onclick="openStandaloneMitigation('RF-03')" style="padding:12px;border:1px solid #fca5a5;border-left:4px solid #dc2626;background:#fef2f2;border-radius:8px;cursor:pointer;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <b style="font-size:12px;color:#991b1b">RF-03: Deficit pokrića depozita roditelja</b>
+          <span style="font-size:10px;font-weight:900;background:#dc2626;color:#ffffff;padding:2px 6px;border-radius:10px">KRITIČNO</span>
+        </div>
+        <p style="font-size:11px;color:#4b5563;margin:4px 0 0">Gotovina 37.639 KM &lt; 47.616 KM primljenih depozita roditelja. Deficit -9.977 KM.</p>
+      </div>
+
+      <div onclick="openStandaloneMitigation('RF-05')" style="padding:12px;border:1px solid #fdba74;border-left:4px solid #ea580c;background:#fff7ed;border-radius:8px;cursor:pointer;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <b style="font-size:12px;color:#c2410c">RF-05: Strukturna zavisnost od subvencija KS</b>
+          <span style="font-size:10px;font-weight:900;background:#ea580c;color:#ffffff;padding:2px 6px;border-radius:10px">VISOK RIZIK</span>
+        </div>
+        <p style="font-size:11px;color:#4b5563;margin:4px 0 0">157.458 KM u IMH (22% prihoda). Svako kašnjenje ministarstva ugrožava isplatu plata.</p>
+      </div>
+
+      <div onclick="openStandaloneMitigation('RF-06')" style="padding:12px;border:1px solid #fde68a;border-left:4px solid #d97706;background:#fffbeb;border-radius:8px;cursor:pointer;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <b style="font-size:12px;color:#b45309">RF-06: Troškovi rada 90,4% i Ugovori o djelu</b>
+          <span style="font-size:10px;font-weight:900;background:#d97706;color:#ffffff;padding:2px 6px;border-radius:10px">SREDNJI / VISOK</span>
+        </div>
+        <p style="font-size:11px;color:#4b5563;margin:4px 0 0">77.632 KM isplaćeno po UOD. Rizik poreske reklasifikacije u radni odnos s doprinosima.</p>
+      </div>
+
+      <div onclick="openStandaloneMitigation('RF-07')" style="padding:12px;border:1px solid #fde68a;border-left:4px solid #d97706;background:#fffbeb;border-radius:8px;cursor:pointer;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <b style="font-size:12px;color:#b45309">RF-07: Kašnjenje doprinosa i negativan kapital</b>
+          <span style="font-size:10px;font-weight:900;background:#d97706;color:#ffffff;padding:2px 6px;border-radius:10px">SREDNJI</span>
+        </div>
+        <p style="font-size:11px;color:#4b5563;margin:4px 0 0">Zbirni kapital grupe -37.328 KM, kašnjenje doprinosa do 60 dana, rizik blokade.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ZA PLAN MITIGACIJE (STANDALONE HTML) -->
+  <div id="riskMitigationModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.65);z-index:99999;align-items:center;justify-content:center;padding:16px;">
+    <div style="background:#ffffff;border-radius:16px;max-width:760px;width:100%;max-height:90vh;overflow-y:auto;padding:24px;box-shadow:0 20px 40px rgba(0,0,0,0.3);position:relative;">
+      <button onclick="closeStandaloneMitigation()" style="position:absolute;top:16px;right:16px;background:#f3f4f6;border:none;border-radius:50%;width:32px;height:32px;font-weight:bold;cursor:pointer;font-size:16px;">✕</button>
+      <div id="riskMitigationContent"></div>
+    </div>
+  </div>
+
   <!-- INTERAKTIVNI SIMULATOR RIZIKA NA KRAJU POGLAVLJA 10 -->
   <div class="visual-panel" id="riskSimulatorPanel" style="border:2px solid #035EA1;background:#ffffff">
     <div class="visual-head">
@@ -902,8 +1063,210 @@
   function fallbackSyncAlert() {
     const timeNow = new Date().toLocaleTimeString('bs-BA', { hour: '2-digit', minute: '2-digit' });
     alert(`✅ Finansijski izvještaji uspješno verifikovani iz računovodstvene baze u ${timeNow}.\nSve tabele i indikatori usklađeni sa važećim ugovorima i bruto bilansima.`);
-    if(syncFinLabel) syncFinLabel.textContent = `Ažurirano (${timeNow})`;
   }
+
+  // Standalone Risk Mitigation Modal Logic
+  const MITIGATION_DATA = {
+    'RF-02': {
+      id: 'RF-02',
+      title: 'RF-02: Potraživanja od uprave (184.692 KM) i Ugovor o pozajmici',
+      zone: 'CRITICAL',
+      exposure: '184.692,00 KM',
+      basis: 'Konto 2110 + Ugovor o pozajmici od 14.07.2026. (93.484,84 KM)',
+      finding: 'Na kontu 2110 akumulirano je 184.692 KM potraživanja od Lamije Kacile. Dana 14.07.2026. formalizovana je beskamatna pozajmica od 93.484,84 KM za učešće u nabavci Cayennea, sa 12 mjesečnih rata po 7.790,40 KM. Prva rata dospijeva 01.11.2026. Preostali dio (91.207 KM) još uvijek nema pismeni aneks otplate.',
+      impact: 'Rizik poreske reklasifikacije u skrivenu isplatu dobiti (porez na dohodak 10% + doprinosi) ili aktiviranja Članka 6 Ugovora o pozajmici (trenutna naplata cjelokupnog duga).',
+      plan30: [
+        'Uvesti nalog za uplatu 1. rate pozajmice 7.790,40 KM na račun Sparkasse 1990496055893183 do 01.11.2026.',
+        'Sastaviti interni memo i usaglasiti analitičku karticu konta 2110 s računovođom.',
+        'Pripremiti nacrt Aneksa 2 za preostalih 91.207,16 KM potraživanja sa otplatom tokom 2027/2028.'
+      ],
+      plan90: [
+        'Redovno verifikovati uplate 2. i 3. rate pozajmice kako bi se eliminisao rizik automatskog dospijeća duga.',
+        'Predložiti osnivaču kompenzaciju dijela duga kroz odobrene dividende ako poslovanje ostvari operativni višak.'
+      ],
+      permanent: 'Zabrana novih pozajmica i plaćanja ličnih obaveza sa računa škole bez prethodne pismene odluke i formalnog ugovora.',
+      responsible: 'Direktor Davor Mulalić & Glavni računovođa',
+      deadline: '01.11.2026. (Rata 1) / 31.12.2026. (Aneks 2)'
+    },
+    'RF-03': {
+      id: 'RF-03',
+      title: 'RF-03: Deficit pokrića depozita roditelja (-9.977 KM)',
+      zone: 'CRITICAL',
+      exposure: '47.616,00 KM (Deficit: 9.977,00 KM)',
+      basis: 'Konto 4320 (Primljeni avansi/depoziti) vs. Konto 2000 (Žiro-račun)',
+      finding: 'Grupa je primila 47.616 KM depozita i upisnina od roditelja za školsku 2026/27. Međutim, raspoloživa gotovina na dan analize iznosi svega 37.639 KM, što znači da je 9.977 KM tuđeg fiducijarnog novca potrošeno na operativne troškove.',
+      impact: 'Nemogućnost trenutnog povrata depozita u slučaju prekida školovanja ili vanrednog ispisivanja učenika, uz tešku reputacionu štetu.',
+      plan30: [
+        'Otvoriti namjenski podračun ("Escrow/Depozitni račun") u banci za prijem roditeljskih depozita.',
+        'Iz tekućih priliva sukcesivno nadoknaditi deficit od 9.977 KM do nivoa 100% pokrivenosti.'
+      ],
+      plan90: [
+        'Uspostaviti sedmični automatizovani izvještaj: Stanje gotovine minus obaveze po depozitima.',
+        'Ažurirati pravilnik o upisninama s preciznim rokovima povrata i uslovima zadržavanja depozita.'
+      ],
+      permanent: 'Stroga zabrana korištenja namjenskih depozita roditelja za tekuće operativno finansiranje režija ili plata.',
+      responsible: 'Finansijski menadžer / Direktor',
+      deadline: '15.11.2026. (Izdvajanje računa)'
+    },
+    'RF-04': {
+      id: 'RF-04',
+      title: 'RF-04: Dug za zakup Buka 11/13 (Općina Centar 90.375 KM)',
+      zone: 'CRITICAL',
+      exposure: '90.375,00 KM (Akumulirani dug)',
+      basis: 'Ugovor 04-49-36-59/13, Aneks 04-49-13-12/14 i Novi Ugovor do 2033.',
+      finding: 'Ugovorom od 27.09.2023. osiguran je zakup do 2033. po cijeni od 5,00 KM/m² (7.531,29 KM/mj. s PDV). Međutim, akumulirani dug iz ranijih godina iznosi 90.375 KM. Član XIV predviđa raskid ako se zakasni sa dvije uzastopne zakupnine.',
+      impact: 'Rizik sudskog izvršenja, blokade računa ili otkaza ugovora koji bi ugasio rad škole i vrtića na adresi Buka 11/13.',
+      plan30: [
+        'Zvanično uputiti Općini Centar zahtjev za usaglašavanje stanja i prijedlog reprograma duga na 24–36 mjeseci.',
+        'Uspostaviti trajni nalog za redovnu mjesečnu zakupninu od 7.531,29 KM do 15. u mjesecu.'
+      ],
+      plan90: [
+        'Potpisati sudski ili vansudski sporazum o reprogramu duga uz definisanu ratu (cca 2.500–3.700 KM/mj.).',
+        'Dokumentovati sva priznata investiciona ulaganja u zgradu iz perioda 2013–2026. radi eventualnog prebijanja.'
+      ],
+      permanent: 'Nulta tolerancija na kašnjenje tekuće zakupnine prema Općini Centar.',
+      responsible: 'Direktor Davor Mulalić & Pravni savjetnik',
+      deadline: '30.11.2026. (Protokolisan sporazum)'
+    },
+    'RF-05': {
+      id: 'RF-05',
+      title: 'RF-05: Strukturna zavisnost od subvencija KS (157.458 KM)',
+      zone: 'HIGH',
+      exposure: '157.458,00 KM godišnje (IMH)',
+      basis: 'Javni poziv Ministarstva za odgoj i obrazovanje Kantona Sarajevo',
+      finding: 'Subvencije Kantona Sarajevo za predškolski odgoj čine čak 22% ukupnih poslovnih prihoda IMH. Administrativna kašnjenja isplate od 2 do 4 mjeseca direktno ugrožavaju redovnost isplate plata vaspitačima.',
+      impact: 'Nelagodan manjak likvidnosti u novembru/decembru i martu/aprilu, odliv stručnog kadra.',
+      plan30: [
+        'Izraditi stres-test model poslovanja u slučaju 3 mjeseca kašnjenja isplate kantonalnih subvencija.',
+        'Ažurirati sve dosijee upisane djece i predati refundacijske zahtjeve prvog dana u mjesecu.'
+      ],
+      plan90: [
+        'Uspostaviti likvidnosnu rezervu (buffer) u visini dvomjesečnog iznosa subvencija (cca 26.000 KM).',
+        'Pregovarati s roditeljima o modelu premošćavanja u slučaju zastoja na kantonalnom nivou.'
+      ],
+      permanent: 'Postepeno smanjenje učešća subvencija u prihodima kroz povećanje komercijalnog upisa i novih programa.',
+      responsible: 'Pedagoški rukovodilac & Administrator IMH',
+      deadline: 'Kontinuirano (Kvartalno praćenje)'
+    },
+    'RF-06': {
+      id: 'RF-06',
+      title: 'RF-06: Troškovi rada 90,4% školarine i Ugovori o djelu (77.632 KM)',
+      zone: 'HIGH',
+      exposure: '77.632,00 KM (UOD isplate) / 90,4% udio u školarini',
+      basis: 'Član 4. Zakona o radu FBiH & Zakon o doprinosima FBiH',
+      finding: 'Ugovori o djelu su korišteni za angažman nastavnog i pomoćnog osoblja koji po svojoj prirodi predstavlja poslove sa obilježjima radnog odnosa (redovno radno vrijeme, prostor poslodavca).',
+      impact: 'Rizik inspekcijskog naloga za retroaktivni obračun punih doprinosa (cca 31,5%) uz prekršajne kazne.',
+      plan30: [
+        'Izvršiti reviziju svih 14 aktivnih Ugovora o djelu i klasifikovati ih na stvarne jednokratne projekte i prikriveni rad.',
+        'Za poslove nastave pripremiti ugovore o dopunskom radu ili ugovore o radu na nepuno radno vrijeme.'
+      ],
+      plan90: [
+        'Standardizovati opise poslova u skladu sa Pravilnikom o radu i Zakonom o osnovnom odgoju i obrazovanju KS.',
+        'Optimizovati raspored nastavnih sati radi povećanja norme stalno zaposlenih nastavnika.'
+      ],
+      permanent: 'Stroga zabrana sklapanja Ugovora o djelu za poslove redovne nastave predviđene nastavnim planom.',
+      responsible: 'Pravna služba & Direktor',
+      deadline: '31.12.2026. (Puni prelazak)'
+    },
+    'RF-07': {
+      id: 'RF-07',
+      title: 'RF-07: Kašnjenje doprinosa (60 dana) i negativan kapital (-37.328 KM)',
+      zone: 'MEDIUM',
+      exposure: '37.328,00 KM (Negativan kapital) + 60 dana kašnjenja',
+      basis: 'Finansijski izvještaji FIA 2025 i evidencija Porezne uprave FBiH',
+      finding: 'IDSS i IMH imaju kumulativni negativan vlastiti kapital od -37.328 KM. Kašnjenje uplate obaveznih doprinosa na plate prelazi 60 dana, što grupu drži u statusu poreskog dužnika bez uvjerenja o izmirenim obavezama.',
+      impact: 'Nemogućnost apliciranja na javne pozive i grantove, rizik prinudne naplate Porezne uprave i gubitak bankarske kreditne sposobnosti.',
+      plan30: [
+        'Pribaviti zvaničnu analitičku karticu Porezne uprave FBiH i utvrditi tačan iznos dospjelih doprinosa.',
+        'Prioritetno zatvoriti najstarije dospjele obaveze kako bi se kašnjenje smanjilo ispod 30 dana.'
+      ],
+      plan90: [
+        'Podnijeti zahtjev za izdavanje uvjerenja o izmirenim poreskim obavezama.',
+        'Kroz planiranu operativnu dobit 2026/27. pokriti negativan kapital i vratiti vlastiti kapital u pozitivnu zonu.'
+      ],
+      permanent: 'Uplata doprinosa istog dana kada se vrši i isplata neto plata zaposlenicima.',
+      responsible: 'Glavni računovođa & Direktor Davor Mulalić',
+      deadline: '15.12.2026. (Usklađeno stanje)'
+    }
+  };
+
+  window.openStandaloneMitigation = function(riskId) {
+    const risk = MITIGATION_DATA[riskId];
+    if(!risk) return;
+    const modal = document.getElementById('riskMitigationModal');
+    const content = document.getElementById('riskMitigationContent');
+    if(!modal || !content) return;
+
+    const zoneBadge = risk.zone === 'CRITICAL' ? '<span style="background:#dc2626;color:#ffffff;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:900">KRITIČAN RIZIK</span>' : risk.zone === 'HIGH' ? '<span style="background:#ea580c;color:#ffffff;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:900">VISOK RIZIK</span>' : '<span style="background:#d97706;color:#ffffff;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:900">SREDNJI RIZIK</span>';
+
+    content.innerHTML = `
+      <div style="border-bottom:2px solid #e5e7eb;padding-bottom:12px;margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          ${zoneBadge}
+          <span style="font-size:12px;font-weight:bold;color:#4b5563">Izloženost: <b style="color:#111827">${risk.exposure}</b></span>
+        </div>
+        <h2 style="font-size:18px;font-weight:900;color:#111827;margin:0 0 6px">${risk.title}</h2>
+        <p style="font-size:12px;color:#6b7280;margin:0"><b>Pravni/finansijski osnov:</b> ${risk.basis}</p>
+      </div>
+
+      <div style="margin-bottom:16px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:12px;">
+        <b style="font-size:12px;color:#111827;display:block;margin-bottom:4px">Forenzički nalaz stanja:</b>
+        <p style="font-size:12px;color:#374151;margin:0;line-height:1.6">${risk.finding}</p>
+        <div style="margin-top:8px;padding-top:8px;border-top:1px dashed #d1d5db;font-size:11px;color:#991b1b">
+          <b>Sistemski rizik po ustanovu:</b> ${risk.impact}
+        </div>
+      </div>
+
+      <h3 style="font-size:14px;font-weight:900;color:#035EA1;margin:16px 0 8px">DIREKTORSKI PLAN MITIGACIJE</h3>
+      
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="border-left:4px solid #dc2626;background:#fef2f2;padding:10px 14px;border-radius:0 8px 8px 0">
+          <b style="font-size:12px;color:#991b1b;display:block;margin-bottom:4px">Faza 1: Neodložne mjere (0 do 30 dana)</b>
+          <ul style="margin:0;padding-left:18px;font-size:12px;color:#374151;line-height:1.6">
+            ${risk.plan30.map(item => `<li>${item}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div style="border-left:4px solid #ea580c;background:#fff7ed;padding:10px 14px;border-radius:0 8px 8px 0">
+          <b style="font-size:12px;color:#c2410c;display:block;margin-bottom:4px">Faza 2: Srednjoročne mjere (30 do 90 dana)</b>
+          <ul style="margin:0;padding-left:18px;font-size:12px;color:#374151;line-height:1.6">
+            ${risk.plan90.map(item => `<li>${item}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div style="border-left:4px solid #10b981;background:#ecfdf5;padding:10px 14px;border-radius:0 8px 8px 0">
+          <b style="font-size:12px;color:#065f46;display:block;margin-bottom:4px">Faza 3: Trajna prevencija i kontrola</b>
+          <p style="margin:0;font-size:12px;color:#374151;line-height:1.6">${risk.permanent}</p>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:1px solid #e5e7eb;font-size:11px;color:#6b7280">
+        <div><b>Odgovorno lice:</b> ${risk.responsible}</div>
+        <div><b>Krajnji rok:</b> <b style="color:#111827">${risk.deadline}</b></div>
+      </div>
+    `;
+
+    modal.style.display = 'flex';
+  };
+
+  window.closeStandaloneMitigation = function() {
+    const modal = document.getElementById('riskMitigationModal');
+    if(modal) modal.style.display = 'none';
+  };
+
+  window.addEventListener('click', function(e) {
+    const modal = document.getElementById('riskMitigationModal');
+    if(modal && e.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
+
+  window.addEventListener('keydown', function(e) {
+    if(e.key === 'Escape') {
+      const modal = document.getElementById('riskMitigationModal');
+      if(modal) modal.style.display = 'none';
+    }
+  });
 })();
 </script>
 </body>
