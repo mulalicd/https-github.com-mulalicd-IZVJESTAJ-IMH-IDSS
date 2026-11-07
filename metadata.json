@@ -1,0 +1,6 @@
+{
+  "name": "IDSS + IMH Forenzičko-Strateški Izvještaj",
+  "description": "Objektivna forenzička analiza poslovanja, konsolidacija bilansa, modularna harmonizacija dokumenata i strateški plan razvoja (2022-2032).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
