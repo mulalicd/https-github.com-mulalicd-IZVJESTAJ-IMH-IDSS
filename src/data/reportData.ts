@@ -380,15 +380,15 @@ export const BASE_RED_FLAGS: RedFlag[] = [
   },
   {
     id: 'RF-05',
-    title: 'Strukturna zavisnost IMH-a od kantonalnih subvencija (157.458 KM = 24% prihoda)',
+    title: 'Status kantonalnih subvencija KS (157.458 KM — Prolazna stavka za roditelje, nema zavisnosti IMH)',
     category: 'Operativni & Troškovi Rada',
-    severity: 'Visoko (HIGH)',
+    severity: 'Srednje (MEDIUM)',
     amountKM: 157458,
-    forensicFinding: 'Subvencije Ministarstva za odgoj i obrazovanje KS iznose 157.458 KM (24,05% prihoda IMH). Subvencije su ključne za održavanje pozitivnog poslovanja vrtića, ali su uslovljene urednim izmirenjem javnih obaveza.',
-    statutoryBasis: 'Uredba o sufinansiranju predškolskog odgoja i obrazovanja Kantona Sarajevo.',
-    systemicImpact: 'Bilo kakva blokada ili kašnjenje doznaka stvara trenutnu krizu likvidnosti i nemogućnost isplate plata odgajateljima.',
-    harmonizationCondition: 'Kontinuirano posjedovanje čistog poreznog uvjerenja i izrada internog finansijskog scenarija poslovanja bez subvencija.',
-    status: 'Otvoreno (Aktivan rizik)'
+    forensicFinding: 'PRAVNA I FINANSIJSKA ČINJENICA: Roditelj plaća puni iznos cjelokupne školarine koji određuje IMH. IMH po završetku mjeseca podnosi izvještaj Ministarstvu KS. Ministarstvo uplaćuje subvenciju na račun IMH, a IMH je u cjelosti prebacuje roditeljima na njihove račune. IMH nema nikakve koristi od subvencija niti zavisi od njih. Ako ministarstvo kasni, IMH nema šta proslijediti roditeljima, ali redovno poslovanje i plate IMH-a su 100% nezavisni i naplaćeni.',
+    statutoryBasis: 'Javni poziv Ministarstva za odgoj i obrazovanje Kantona Sarajevo o sufinansiranju boravka djece u predškolskim ustanovama.',
+    systemicImpact: 'Nema operativnog rizika za IMH. Rizik je isključivo administrativno kašnjenje preusmjeravanja sredstava roditeljima.',
+    harmonizationCondition: 'Mjesečno izvještavanje resornom ministarstvu i automatsko prosljeđivanje primljenih subvencija na tekuće račune roditelja.',
+    status: 'Djelimično sanirano'
   },
   {
     id: 'RF-06',

@@ -1246,7 +1246,7 @@ export default function App() {
                 <ul className="text-xs space-y-1 m-0 p-0 list-none">
                   <li>• Promjena uslova zakupa ili gubitak lokacije Buka 11/13.</li>
                   <li>• Poreski i inspekcijski rizici: Ugovori o djelu (77.632 KM), transferne cijene.</li>
-                  <li>• Kašnjenje kantonalnih subvencija (157.458 KM u IMH).</li>
+                  <li>• Kašnjenje kantonalnih subvencija prema roditeljima (prolazna stavka koju IMH preusmjerava).</li>
                   <li>• Povećanje Euribora na leasing ratu Cayennea.</li>
                   <li>• Ovisnost o ključnim osobama (direktor, računovođa, osnivač kao garant).</li>
                   <li>• Ponavljanje fluktuacije i odlaska stranih diplomatskih porodica.</li>
@@ -1447,11 +1447,14 @@ export default function App() {
                   IMH je stabilniji generator dobiti (+63.815 KM u 2025.). Prihodi 2025. od 900.571 KM izjednačeni su
                   sa školom. Udio plata od 64,4% je povoljniji, ali i dalje visok.
                   <br /><br />
-                  <b>Teški fiksni odlivi:</b> IMH nosi glavninu finansijskog duga grupe: kredit 100.000 KM (rata 4.661
+                  <b>Fiksni odlivi i servis duga:</b> IMH nosi glavninu finansijskog duga grupe: kredit 100.000 KM (rata 4.661
                   KM), leasing Cayenne (1.027,91 EUR / cca 2.010 KM), pozajmicu prema Lamiji (7.790,40 KM od 01.11.2026.)
                   i zakup Buka 11.
                   <br /><br />
-                  <b>Kantonalne subvencije:</b> 157.458 KM (24% prihoda) su važne, ali nose rizik zavisnosti.
+                  <b>Kantonalne subvencije (Prolazna stavka za roditelje):</b> 157.458 KM godišnje su <u>strogo prolazna sredstva</u>.
+                  Roditelji plaćaju punu školarinu IMH-u, IMH šalje mjesečni izvještaj Ministarstvu KS, a primljeni iznos subvencije
+                  IMH u cjelosti prosljeđuje roditeljima na njihove račune. IMH nema finansijske koristi od subvencija i <b>ne zavisi od njih</b>.
+                  Ako Ministarstvo kasni, IMH nema šta prebaciti roditeljima, ali redovni prihodi, likvidnost i plate IMH-a ostaju potpuno stabilni.
                   <br /><br />
                   <b>Poluga upravljanja:</b> IMH se spašava volumenom predškolaca i strogom disciplinom servisa fiksnog
                   duga.

@@ -143,36 +143,36 @@ export const MATRIX_RISKS: RiskMatrixItem[] = [
   },
   {
     id: 'RF-05',
-    title: 'Strukturna zavisnost IMH-a od kantonalnih subvencija (157.458 KM = 24% prihoda)',
-    shortTitle: 'Zavisnost od subvencija KS (24% prihoda)',
+    title: 'Status kantonalnih subvencija KS (157.458 KM — Prolazna stavka za roditelje)',
+    shortTitle: 'Subvencije KS (Prolazna stavka / Nema ovisnosti IMH)',
     category: 'Operativni & Troškovi Rada',
-    severity: 'Visoko (HIGH)',
+    severity: 'Srednje (MEDIUM)',
     amountKM: 157458,
-    probVal: 3.3,
-    impactVal: 4.1,
-    probLabel: 'Srednja (55%)',
-    impactLabel: 'Visok (Nelikvidnost plata odgajatelja)',
-    zone: 'HIGH',
-    forensicFinding: 'Subvencije Ministarstva za odgoj i obrazovanje KS iznose 157.458 KM godišnje i čine 24,05% ukupnih prihoda IMH-a. Subvencije osiguravaju pozitivno poslovanje vrtića, ali njihova isplata direktno zavisi od stanja budžeta KS i posjedovanja besprijekornog poreznog uvjerenja.',
-    statutoryBasis: 'Uredba o sufinansiranju boravka djece u predškolskim ustanovama u Kantonu Sarajevo.',
-    systemicImpact: 'Kašnjenje ili obustava kantonalne tranše od samo 60 dana dovodi vrtić u nemogućnost isplate plata odgajateljima i stvara val nezadovoljstva roditelja.',
+    probVal: 1.8,
+    impactVal: 1.5,
+    probLabel: 'Niska (Prolazni tok)',
+    impactLabel: 'Nizak (IMH naplaćuje puni iznos od roditelja)',
+    zone: 'MEDIUM',
+    forensicFinding: 'PRAVNA I FINANSIJSKA ČINJENICA: Roditelj plaća puni iznos školarine/boravka koji određuje IMH (redovni cjenovnik ili popust UO IMH). IMH svakog mjeseca sačinjava izvještaj za resorno ministarstvo. Ministarstvo po osnovu izvještaja uplaćuje subvenciju na račun IMH, a IMH cjelokupan iznos pojedinačno prosljeđuje roditeljima na njihove račune. IMH NEMA KORISTI od subvencija i NE ZAVISI od njih. Ako ministarstvo kasni s isplatom, IMH nema šta prebaciti roditeljima, ali redovno poslovanje i naplata IMH-a ostaju 100% netaknuti.',
+    statutoryBasis: 'Javni poziv Ministarstva za odgoj i obrazovanje KS o sufinansiranju boravka djece u predškolskim ustanovama.',
+    systemicImpact: 'Nema direktnog sistemskog rizika po likvidnost ili plate ustanove IMH, jer IMH svoj prihod naplaćuje direktno od roditelja. Rizik je isključivo administrativno-komunikacijski prema roditeljima u slučaju kašnjenja budžetskih doznaka kantona.',
     mitigationSteps: {
       urgent0to30: [
-        'Kontinuirano pratiti status poreznih uvjerenja i osigurati da IMH nema ni jedan dan blokade računa koji bi diskvalifikovao doznaku kantona.',
-        'Ažurirati spiskove upisane djece i pravovremeno slati mjesečne izvještaje resornom ministarstvu.'
+        'Uspostaviti jasan info-dopis roditeljima o mehanizmu refundacije: IMH prosljeđuje novac roditeljima onog trenutka kada ga ministarstvo uplati na račun ustanove.',
+        'Pravovremeno i uredno slati mjesečne zbirne izvještaje resornom ministarstvu prvog dana u mjesecu za prethodni mjesec.'
       ],
       medium30to90: [
-        'Izraditi interni finansijski krizni model: poslovanje IMH-a sa 50% subvencija i sa 0 KM subvencija.',
-        'Formirati rezervni likvidnosni fond od jedne prosječne mjesečne subvencije (~13.000 KM) za amortizaciju kašnjenja.'
+        'Kreirati automatizovanu evidenciju prolaznih doznaka kako bi roditelji u svakom trenutku imali uvid u status kantonalnih uplata.',
+        'Održavati besprijekorno porezno uvjerenje radi administrativne urednosti aplikacije.'
       ],
       permanentPolicy: [
-        'Postepeno podizanje komercijalnih vannastavnih programa i radionica kako bi se udio javnih subvencija u prihodima sveo ispod 18%.',
-        'Standardizovan protokol komunikacije sa resornim kantonalnim ministarstvom.'
+        'Zadržavanje principa pune samoodrživosti: ekonomska cijena vrtića formira se isključivo iz vlastitog cjenovnika, dok subvencije tretiraju strogo kao prolazna pomoć roditeljima.',
+        'Nulta tolerancija na finansijsko oslanjanje na javne transfere.'
       ],
-      responsiblePerson: 'Direktor Davor Mulalić & Voditeljica predškolske ustanove',
-      targetDeadline: 'Kontinuirano praćenje; krizni model u roku od 60 dana.'
+      responsiblePerson: 'Finansijska služba & Direktor Davor Mulalić',
+      targetDeadline: 'Uspostavljeno kao trajno operativno pravilo.'
     },
-    harmonizationCondition: 'Kontinuirano posjedovanje čistog poreznog uvjerenja i izrada internog finansijskog scenarija poslovanja bez subvencija.'
+    harmonizationCondition: 'Redovno slanje mjesečnih izvještaja ministarstvu i transparentna direktna isplata roditeljima po prijemu doznake.'
   },
   {
     id: 'RF-06',

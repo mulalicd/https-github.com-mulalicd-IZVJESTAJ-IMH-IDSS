@@ -20,6 +20,7 @@ import {
   CheckCircle2,
   FileDown
 } from 'lucide-react';
+import { CollectionStatusDashboard } from './CollectionStatusDashboard';
 
 interface PartnerCardForensicsProps {
   className?: string;
@@ -555,7 +556,20 @@ UKUPAN PROMET:                                                  1.950,00        
   };
 
   return (
-    <div id="sec-forenzika-partnera" className={`p-6 md:p-8 rounded-2xl border-2 border-[var(--idss-blue)] bg-[var(--surface)] shadow-xl my-10 ${className}`}>
+    <div id="sec-forenzika-partnera" className={`partner-card-forensics p-6 md:p-8 rounded-2xl border-2 border-[var(--idss-blue)] bg-[var(--surface)] shadow-xl my-10 ${className}`}>
+      {/* VIZUELNI STATUS NAPLATE DASHBOARD (D3 GRAFIKON STRUKTURE DUGA SA DROPDOWN FILTEROM ZA OBRAZOVNE NIVOE) */}
+      <CollectionStatusDashboard
+        onSelectPartner={(name, ent) => {
+          setPartnerName(name);
+          setEntity(ent);
+          if (name.includes('Hadžić')) {
+            loadSample('debt');
+          } else if (name.includes('Petrović')) {
+            loadSample('overpayment');
+          }
+        }}
+      />
+
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-[var(--line)]">
         <div className="flex items-center gap-3">
