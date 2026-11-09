@@ -61,7 +61,7 @@ OBAVEZNA STRUKTURA I SADRŽAJ FORENZIČKOG IZVJEŠTAJA:
 
 1. SLUŽBENO ZAGLAVLJE DOKUMENTA:
    - Logotip / puni naziv ustanove: ${entity === 'IDSS' ? 'INTERNATIONALE DEUTSCHE SCHULE SARAJEVO (IDSS)' : entity === 'IMH' ? 'PPU INTERNATIONAL MONTESSORI HOUSE (IMH)' : 'IDSS & PPU IMH OBRAZOVNI SISTEM'}
-   - Adresa: Buka broj 11/13, 71000 Sarajevo · ID broj: 4201731140006
+   - Adresa: Buka broj ${entity === 'IDSS' ? '13' : '11'}, 71000 Sarajevo · ID broj: ${entity === 'IDSS' ? '4202220420007' : '4201731140006'}
    - Naziv dokumenta: FORENZIČKI RAČUNOVODSTVENI NALAZ I FINANSIJSKO OBRAZLOŽENJE
    - Predmetni partner/učenik: ${partnerName || 'Partner iz kartice'}
    - Datum analize: ${new Date().toLocaleDateString('bs-BA')} · Referentni konto: 2110 (Kupci u zemlji)
@@ -238,7 +238,7 @@ ${rawCardText || '(Pogledaj priložene datoteke)'}
           cashIDSS: 13491,
           cashIMH: 24148,
           parentDepositsHeld: 47616,
-          negativeEquityGrupa: -37328,
+          negativeEquityGrupa: -37304,
           enrolledStudentsIDSS: 83,
           firstGradeFromIMHPercent: 63.64,
           pozajmicaKacilaRemaining: 85694.44,

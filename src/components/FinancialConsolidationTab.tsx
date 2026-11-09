@@ -70,12 +70,12 @@ export const FinancialConsolidationTab: React.FC<Props> = ({ auditMode }) => {
             <span>Konsolidirani Vlastiti Kapital</span>
             <AlertCircle className="w-4 h-4 text-red-400" />
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-red-400 mt-2">-37.328 KM</div>
+          <div className="text-2xl sm:text-3xl font-black text-red-400 mt-2">-37.304 KM</div>
           <div className="text-xs text-red-300/80 font-medium mt-1">
             Negativan kapital oba subjekta
           </div>
           <p className="text-[11px] text-slate-400 mt-2">
-            IDSS: -18.391 KM | IMH: -18.936 KM (stanje kraj 2025)
+            IDSS: -18.391 KM | IMH: -18.913 KM (stanje kraj 2025)
           </p>
         </div>
       </div>
@@ -263,7 +263,7 @@ export const FinancialConsolidationTab: React.FC<Props> = ({ auditMode }) => {
               </span>
             </div>
             <p className="text-slate-300 mt-2 leading-relaxed">
-              Tekst izvještaja navodi kapital: IDSS -18.389 KM i IMH -18.913 KM (zbir -37.302 KM). Tabela ključnih pokazatelja navodi: IDSS -18.391 KM i IMH -18.936 KM (zbir -37.328 KM).
+              Tekst izvještaja navodi kapital: IDSS -18.389 KM i IMH -18.913 KM (zbir -37.302 KM). Tabela ključnih pokazatelja navodi: IDSS -18.391 KM i IMH -18.913 KM (zbir -37.304 KM).
             </p>
           </div>
 

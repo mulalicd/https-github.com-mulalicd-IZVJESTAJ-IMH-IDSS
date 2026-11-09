@@ -1,5 +1,6 @@
 {
-  "name": "react-example",
+  "name": "idss-imh-strateski-izvjestaj",
+  "description": "IDSS & IMH: interaktivni strateški izvještaj o poslovanju i vizija razvoja 2027–2032",
   "private": true,
   "version": "0.0.0",
   "type": "module",

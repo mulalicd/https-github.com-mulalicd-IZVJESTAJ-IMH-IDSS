@@ -687,7 +687,7 @@ export default function App() {
                 <ul className="text-xs space-y-1.5 m-0 p-0 list-none text-[var(--ink)]">
                   <li>• <b>Napeta gotovina:</b> Ukupno 37.639 KM na 31.08.2026. (IDSS 13.491 KM, IMH 24.148 KM).</li>
                   <li>• <b>Cirkularni tok 100k:</b> Iskazani rezultat od 175.864 KM uključuje stavku 100k; operativni rezultat je 75.864 KM.</li>
-                  <li>• <b>Negativan vlastiti kapital:</b> Oko -18,4 hiljade KM po entitetu (zbir grupe -37.328 KM).</li>
+                  <li>• <b>Negativan vlastiti kapital:</b> Oko -18,4 hiljade KM po entitetu (zbir grupe -37.304 KM).</li>
                   <li>• <b>Značajan dug za zakup:</b> Tekući zakup se ne plaća redovno; Općina ima polugu raskida.</li>
                   <li>• <b>Fiksni odlivi &gt;15.000 KM/mj.:</b> Krediti MF, leasing Cayenne (1.028 EUR/mj.), rate pozajmice (7.790 KM/mj.).</li>
                   <li>• <b>Oscilacije upisa:</b> 79 ➔ 94 ➔ 68 ➔ 83 učenika; trenutno 12% ispod historijskog vrha.</li>
@@ -747,8 +747,8 @@ export default function App() {
                   </tr>
                   <tr>
                     <td>Vlastiti kapital (prije rezultata 2026.)</td>
-                    <td>-37.328 KM</td>
-                    <td>Zbirni negativni kapital grupe (-18.391 KM IDSS, -18.936 KM IMH)</td>
+                    <td>-37.304 KM</td>
+                    <td>Zbirni negativni kapital grupe (-18.391 KM IDSS, -18.913 KM IMH)</td>
                   </tr>
                   <tr>
                     <td>Pozajmica Lamia Kacila (IMH)</td>
@@ -986,8 +986,8 @@ export default function App() {
                   <tr>
                     <td>Vlastiti kapital (prije rezultata 2026.)</td>
                     <td>-18.391 KM</td>
-                    <td>-18.936 KM</td>
-                    <td>{(liveMetrics?.negativeEquityGrupa || -37328).toLocaleString('bs-BA')} KM</td>
+                    <td>-18.913 KM</td>
+                    <td>{(liveMetrics?.negativeEquityGrupa || -37304).toLocaleString('bs-BA')} KM</td>
                   </tr>
                 </tbody>
               </table>
@@ -1219,7 +1219,7 @@ export default function App() {
               <div className="p-4 rounded-xl border border-[var(--idss-red)] bg-[var(--surface)]">
                 <span className="eyebrow text-[var(--idss-red)] block mb-1">SLABOSTI</span>
                 <ul className="text-xs space-y-1 m-0 p-0 list-none">
-                  <li>• Negativan vlastiti kapital oba subjekta (-37.328 KM zbirno).</li>
+                  <li>• Negativan vlastiti kapital oba subjekta (-37.304 KM zbirno).</li>
                   <li>• Visok udio plata (64% do 76% rashoda, 90,4% školarine). Niska operativna poluga.</li>
                   <li>• Napeta gotovina (37.639 KM) naspram 47.616 KM depozita roditelja.</li>
                   <li>• Akumulirani dug za zakup i neredovno plaćanje tekućeg zakupa.</li>
@@ -1738,9 +1738,9 @@ export default function App() {
                   </tr>
                   <tr>
                     <td>Vlastiti kapital (31.12.2025.)</td>
-                    <td>-37.328 KM (tabela)</td>
+                    <td>-37.304 KM (tabela)</td>
                     <td>-18.389 KM (tekst IDSS) / -18.913 KM (tekst IMH) = -37.302 KM</td>
-                    <td>Razlika 26 KM između narativa i bilansa; verifikovati u bruto bilansu.</td>
+                    <td>Razlika 2 KM je zaokruživanje (IDSS: −8.890 − 9.501 = −18.391 KM); važeći iznos je −37.304 KM.</td>
                   </tr>
                   <tr>
                     <td>Cjenovnik školarina 2026/27.</td>

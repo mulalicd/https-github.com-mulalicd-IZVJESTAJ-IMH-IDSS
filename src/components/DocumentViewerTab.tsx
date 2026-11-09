@@ -188,8 +188,8 @@ export const DocumentViewerTab: React.FC<Props> = ({ onExportHTML }) => {
                   <tr>
                     <td className="p-2.5 font-sans font-medium text-slate-300">Vlastiti kapital (31.12.2025)</td>
                     <td className="p-2.5 text-red-400">-18.391 KM</td>
-                    <td className="p-2.5 text-red-400">-18.936 KM</td>
-                    <td className="p-2.5 font-bold text-red-400">-37.328 KM</td>
+                    <td className="p-2.5 text-red-400">-18.913 KM</td>
+                    <td className="p-2.5 font-bold text-red-400">-37.304 KM</td>
                   </tr>
                 </tbody>
               </table>
@@ -293,7 +293,7 @@ export const DocumentViewerTab: React.FC<Props> = ({ onExportHTML }) => {
               <div className="p-4 bg-red-950/20 border border-red-800/40 rounded-xl">
                 <h4 className="font-bold text-red-400 mb-2 uppercase">Slabosti (Weaknesses)</h4>
                 <ul className="list-disc pl-4 space-y-1 text-slate-300">
-                  <li>Negativan vlastiti kapital (-37.328 KM) na kraju 2025.</li>
+                  <li>Negativan vlastiti kapital (-37.304 KM) na kraju 2025.</li>
                   <li>Troškovi plata na 90.38% ugovorenih školarina IDSS-a.</li>
                   <li>Visoka nenaplaćena potraživanja od uprave (184.692 KM).</li>
                   <li>Neformalizovan zakup objekta nakon 31.08.2023.</li>
@@ -366,7 +366,7 @@ export const DocumentViewerTab: React.FC<Props> = ({ onExportHTML }) => {
             </h2>
             <p className="text-xs text-slate-400">
               U izvornom strateškom dokumentu evidentirane su razlike od 1 KM u zbiru rezultata (175.865 vs 175.864 KM), 
-              diskrepanca vlastitog kapitala na dan 31.12.2025. (-37.302 KM u tekstu naspram -37.328 KM u tabeli), 
+              diskrepanca vlastitog kapitala na dan 31.12.2025. (-37.302 KM naspram -37.304 KM; razlika je zaokruživanje, važeći iznos je -37.304 KM), 
               te neusklađenost cjenovnih raspona za strane porodice. U ovoj verziji svi podaci su usaglašeni prema primarnoj bruto bilansnoj evidenciji.
             </p>
           </section>

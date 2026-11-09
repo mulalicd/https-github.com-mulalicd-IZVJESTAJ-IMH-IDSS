@@ -25,7 +25,7 @@ export const ScenarioSimulatorTab: React.FC<Props> = ({
   const baseIMHStaffCost = 540000;
   const baseGroupOpexAndRent = 380000;
   const currentCash = 37639 + injectedCash;
-  const currentEquity = -37328;
+  const currentEquity = -37304;
 
   // Calculations
   const calculatedIDSSRev = studentsIDSS * tuitionPerStudent;

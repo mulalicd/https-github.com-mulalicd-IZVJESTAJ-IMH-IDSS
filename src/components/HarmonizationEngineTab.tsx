@@ -444,7 +444,7 @@ export const HarmonizationEngineTab: React.FC<Props> = ({
             <div className="flex justify-between items-center mb-2">
               <span className="font-bold text-white uppercase">5. Vlastiti Kapital</span>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-700 text-slate-300">
-                STANJE -37.328 KM
+                STANJE -37.304 KM
               </span>
             </div>
             <p className="text-slate-300 leading-relaxed">

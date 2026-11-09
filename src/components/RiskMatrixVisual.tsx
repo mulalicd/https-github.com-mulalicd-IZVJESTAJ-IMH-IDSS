@@ -209,17 +209,17 @@ export const MATRIX_RISKS: RiskMatrixItem[] = [
   },
   {
     id: 'RF-07',
-    title: 'Hronično kašnjenje doprinosa (60 dana) i negativan kapital grupacije (-37.328 KM)',
+    title: 'Hronično kašnjenje doprinosa (60 dana) i negativan kapital grupacije (-37.304 KM)',
     shortTitle: 'Kašnjenje doprinosa & Negativan kapital',
     category: 'Likvidnost & Trezor',
     severity: 'Srednje (MEDIUM)',
-    amountKM: 37328,
+    amountKM: 37304,
     probVal: 4.4,
     impactVal: 3.2,
     probLabel: 'Visoka (85% operativna realnost)',
     impactLabel: 'Značajan (Kamate / Blokada / Diskvalifikacija)',
     zone: 'MEDIUM',
-    forensicFinding: 'Doprinosi na plate redovno se servisiraju sa zakašnjenjem od cca 60 dana, što stvara nepotreban trošak zakonskih zateznih kamata. Na dan 31.12.2025. vlastiti kapital oba entiteta je negativan (IDSS: -18.391 KM, IMH: -18.936 KM, zbirno -37.328 KM).',
+    forensicFinding: 'Doprinosi na plate redovno se servisiraju sa zakašnjenjem od cca 60 dana, što stvara nepotreban trošak zakonskih zateznih kamata. Na dan 31.12.2025. vlastiti kapital oba entiteta je negativan (IDSS: -18.391 KM, IMH: -18.913 KM, zbirno -37.304 KM).',
     statutoryBasis: 'Zakon o poreznoj upravi FBiH, Zakon o doprinosima FBiH, Zakon o privrednim društvima FBiH (adekvatnost kapitala).',
     systemicImpact: 'Negativan vlastiti kapital formalno diskvalifikuje ustanove pri apliciranju za međunarodne grantove i komercijalne bankarske kredite, dok kašnjenje doprinosa stvara rizik porezne blokade.',
     mitigationSteps: {
@@ -324,7 +324,7 @@ export const RiskMatrixVisual: React.FC<RiskMatrixVisualProps> = ({
         </div>
         <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900">
           <span className="text-[11px] font-bold text-blue-700 dark:text-blue-300 block">Srednja zona (RF-07):</span>
-          <span className="text-lg font-black text-blue-800 dark:text-blue-200">37.328 KM</span>
+          <span className="text-lg font-black text-blue-800 dark:text-blue-200">37.304 KM</span>
         </div>
       </div>
 
