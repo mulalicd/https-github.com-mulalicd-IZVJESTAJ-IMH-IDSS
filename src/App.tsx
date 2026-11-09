@@ -1006,9 +1006,9 @@ export default function App() {
               <b>Potraživanja i pozajmica Lamie Kacile:</b> IMH bilježi 167.290 KM potraživanja od zaposlenih i uprave
               (127.725 KM nenovčane koristi i plaćeni troškovi + 39.565 KM krediti fizičkim licima), a IDSS 17.402 KM.
               Osnivač (Lamia Kacila) je pristupila otplati duga: Ugovorom o pozajmici od 14.07.2026. definisano je da
-              IMH duguje Lamiji 93.484,84 KM (vrijednost njenog Porschea šasije WP1ZZZ9YZLDA02893 datog firmi AUTO MT
+              IMH duguje Lamiji 93.484,84 KM (vrijednost njenog Porschea datog firmi AUTO MT
               Mostar kao učešće u leasingu novog vozila). Pozajmica je beskamatna na 12 rata po 7.790,40 KM
-              (01.11.2026.–01.10.2027.) na račun Sparkasse 1990496055893183. Preostali dio potraživanja (iznad 93.484,84
+              (01.11.2026.–01.10.2027.) na lični račun zajmodavca kod Sparkasse. Preostali dio potraživanja (iznad 93.484,84
               KM, odnosno cca 91.207 KM) mora se formalizovati pisanim priznanjem duga i planom otplate u roku od 12 mjeseci.
             </p>
 
@@ -1067,7 +1067,7 @@ export default function App() {
               <div className="p-3.5 rounded-xl border border-[var(--line)] bg-[var(--surface)]">
                 <b>Finansijski leasing Sparkasse — Porsche Cayenne:</b>
                 <br />• Ugovor broj 12546/26 od 14.07.2026. sa Sparkasse Leasing d.o.o. Sarajevo.
-                <br />• Vozilo: Porsche Cayenne 2025 (šasija WP1ZZZ9YXSDA48559).
+                <br />• Vozilo: Porsche Cayenne 2025.
                 <br />• Neto vrijednost: 100.980,15 EUR. Učešće: 47.798,04 EUR (47,33%). Finansirano: 53.182,11 EUR.
                 <br />• Rok: 60 mjeseci. Mjesečna rata: 1.027,91 EUR (6M Euribor + 3,44% marža; EKS s PDV 8,02%).
                 <br />• Mjenični dužnik: Lamia Kacila. Vozilo se vodi na IMH, a koristi ga osnivač lično. Neoperativna imovina.
@@ -1075,11 +1075,11 @@ export default function App() {
 
               <div className="p-3.5 rounded-xl border border-[var(--line)] bg-[var(--surface)]">
                 <b>Ugovor o pozajmici Lamia Kacila ➔ IMH (14.07.2026.):</b>
-                <br />• <b>Zajmodavac:</b> KACILA LAMIA (JMBG: 0907975177845, Novo Sarajevo, Nevesinjska 14A)
+                <br />• <b>Zajmodavac:</b> KACILA LAMIA (osnivač; lični podaci izostavljeni)
                 <br />• <b>Zajmoprimac:</b> PPU INTERNATIONAL MONTESSORI HOUSE (ID: 4201731140006, Buka 11, zastupa direktor Davor Mulalić)
                 <br />• <b>Iznos pozajmice:</b> 93.484,84 KM (beskamatna, 0% kamate).
-                <br />• <b>Predmet:</b> Predaja vozila PORSCHE 9YA CAYENNE (reg. J01-O-261, VIN: WP1ZZZ9YZLDA02893) dobavljaču AUTO MT d.o.o. Mostar (Buna 154 A) kao učešće za novi Cayenne 2025.
-                <br />• <b>Povrat:</b> 12 mjesečnih rata po 7.790,40 KM (zadnja 7.790,44 KM) na račun 1990496055893183 kod SPARKASSE BANK D.D. BIH.
+                <br />• <b>Predmet:</b> Predaja vozila PORSCHE 9YA CAYENNE (reg. oznaka i VIN izostavljeni) dobavljaču AUTO MT d.o.o. Mostar (Buna 154 A) kao učešće za novi Cayenne 2025.
+                <br />• <b>Povrat:</b> 12 mjesečnih rata po 7.790,40 KM (zadnja 7.790,44 KM) na lični račun zajmodavca kod SPARKASSE BANK D.D. BIH.
                 <br />• <b>Ugovorna sankcija (Čl. 6):</b> Kašnjenje dvije uzastopne rate daje pravo Zajmodavcu da pisanim putem zahtijeva vraćanje <u>cijelog preostalog iznosa odjednom</u> sa zakonskim zateznim kamatama!
               </div>
             </div>
@@ -1118,7 +1118,7 @@ export default function App() {
                         </td>
                         <td>{s.remainingDebtKM.toLocaleString('bs-BA', { minimumFractionDigits: 2 })} KM</td>
                         <td className="text-[11px] text-[var(--muted)]">
-                          Sparkasse 1990496055893183 {s.installmentNo === 1 ? '(Prva dospjela rata)' : s.installmentNo === 12 ? '(Konačno poravnanje duga)' : ''}
+                          Sparkasse (lični račun zajmodavca) {s.installmentNo === 1 ? '(Prva dospjela rata)' : s.installmentNo === 12 ? '(Konačno poravnanje duga)' : ''}
                         </td>
                       </tr>
                     ))}

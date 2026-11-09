@@ -141,7 +141,7 @@ export const DEBT_OBLIGATIONS: DebtObligation[] = [
     maturity: 'avgust 2028. (24 rate)',
     interestRate: '10,99% fiksna (EKS 12,63%)',
     collateral: 'Mjenice, namjena operativna likvidnost',
-    purpose: 'Finansiranje tekuće likvidnosti i obaveza. Partija kredita: 5724574555355002. Ukupni trošak kredita 13.489 KM.',
+    purpose: 'Finansiranje tekuće likvidnosti i obaveza. Partija kredita: [izostavljeno]. Ukupni trošak kredita 13.489 KM.',
     status: 'Aktivan'
   },
   {
@@ -180,7 +180,7 @@ export const DEBT_OBLIGATIONS: DebtObligation[] = [
     maturity: 'juli 2031. (60 mjeseci, ugovor 14.07.2026.)',
     interestRate: '5,99% (6M Euribor + 3,44%), EKS 8,02%',
     collateral: 'Vozilo, učešće 47.798 EUR (47,33%), mjenični dužnik Lamia Kacila',
-    purpose: 'Porsche Cayenne 2025 (šasija WP1ZZZ9YXSDA48559). Ugovor br. 12546/26. Neoperativna imovina koja tereti cash-flow.',
+    purpose: 'Porsche Cayenne 2025. Ugovor br. 12546/26. Neoperativna imovina koja tereti cash-flow.',
     status: 'Aktivan'
   },
   {
@@ -192,8 +192,8 @@ export const DEBT_OBLIGATIONS: DebtObligation[] = [
     monthlyBurden: '7.790,40 KM / mj. (zadnja 7.790,44 KM)',
     maturity: '01.11.2026. – 01.10.2027. (12 rata)',
     interestRate: '0% (beskamatna pozajmica)',
-    collateral: 'Sporazum od 14.07.2026. (prethodni Porsche J01-O-261)',
-    purpose: 'Učešće za nabavku novog Cayennea dato preko AUTO MT d.o.o. Mostar. Račun Sparkasse: 1990496055893183. Kašnjenje 2 rate povlači cijeli iznos.',
+    collateral: 'Sporazum od 14.07.2026. (prethodno vozilo dato kao učešće)',
+    purpose: 'Učešće za nabavku novog Cayennea dato preko AUTO MT d.o.o. Mostar. Uplata na lični račun zajmodavca kod Sparkasse. Kašnjenje 2 rate povlači cijeli iznos.',
     status: 'Počinje 01.11.2026.'
   },
   {
@@ -232,10 +232,10 @@ export const LOAN_CONTRACT_FULL = {
   place: 'Sarajevo',
   lender: {
     name: 'KACILA LAMIA',
-    residence: 'Sarajevo, Novo Sarajevo, ul. Nevesinjska broj 14A',
-    jmbg: '0907975177845',
+    residence: 'Sarajevo',
+    jmbg: '[izostavljeno – lični podatak]',
     role: 'Zajmodavac',
-    account: '1990496055893183 kod SPARKASSE BANK D.D. BIH'
+    account: 'lični račun zajmodavca kod SPARKASSE BANK D.D. BIH (broj izostavljen)'
   },
   borrower: {
     name: 'PPU INTERNATIONAL MONTESSORI HOUSE',
@@ -248,24 +248,24 @@ export const LOAN_CONTRACT_FULL = {
     brand: 'PORSCHE',
     commercialModel: 'CAYENNE',
     type: '9YA',
-    licensePlate: 'J01-O-261',
-    vin: 'WP1ZZZ9YZLDA02893',
+    licensePlate: '[izostavljeno]',
+    vin: '[izostavljeno]',
     deliveredTo: 'AUTO MT d.o.o. Mostar, Buna 154 A, 88000 Mostar',
     valuationKM: 93484.84,
   },
   newVehicleLeasing: {
     brand: 'PORSCHE CAYENNE (2025)',
-    vin: 'WP1ZZZ9YXSDA48559',
+    vin: '[izostavljeno]',
     leasingContractNumber: '12546/26 od 14.07.2026.',
     lessor: 'Sparkasse Leasing d.o.o. Sarajevo',
     downPaymentEUR: 47798.04
   },
   keyClauses: [
-    { article: 'Član 1.', title: 'Predmet ugovora', text: 'Pozajmica radi plaćanja učešća od 47.798,04 EUR po Ugovoru o leasingu br. 12546/26 za Porsche Cayenne 2025 (WP1ZZZ9YXSDA48559).' },
-    { article: 'Član 2.', title: 'Vozilo dato kao učešće', text: 'Pozajmica u stvari predajom vozila Porsche 9YA Cayenne (J01-O-261, WP1ZZZ9YZLDA02893) dobavljaču AUTO MT d.o.o. Mostar, Buna 154 A.' },
+    { article: 'Član 1.', title: 'Predmet ugovora', text: 'Pozajmica radi plaćanja učešća od 47.798,04 EUR po Ugovoru o leasingu br. 12546/26 za Porsche Cayenne 2025.' },
+    { article: 'Član 2.', title: 'Vozilo dato kao učešće', text: 'Pozajmica u stvari predajom vozila Porsche 9YA Cayenne (reg. oznaka i VIN izostavljeni) dobavljaču AUTO MT d.o.o. Mostar, Buna 154 A.' },
     { article: 'Član 3.', title: 'Iznos pozajmice', text: 'Saglasno utvrđena vrijednost od 93.484,84 KM predstavlja iznos pozajmice koja se vraća u novcu.' },
     { article: 'Član 4.', title: 'Kamata', text: 'Pozajmica je beskamatna (0% kamate).' },
-    { article: 'Član 5.', title: 'Vraćanje pozajmice', text: '12 mjesečnih rata prema Prilogu 1 uplatom na račun 1990496055893183 kod Sparkasse. Pravo prijevremenog povrata bez naknade.' },
+    { article: 'Član 5.', title: 'Vraćanje pozajmice', text: '12 mjesečnih rata prema Prilogu 1 uplatom na lični račun zajmodavca kod Sparkasse. Pravo prijevremenog povrata bez naknade.' },
     { article: 'Član 6.', title: 'Kašnjenje u plaćanju', text: 'Zakonska zatezna kamata; kašnjenje dvije uzastopne rate daje pravo Zajmodavcu da traži vraćanje cijelog preostalog iznosa odjednom.' },
     { article: 'Član 7.-10.', title: 'Zakon i nadležnost', text: 'Zakon o obligacionim odnosima, izmjene isključivo pisanim aneksom, nadležnost suda u Sarajevu, 4 primjerka.' }
   ]
@@ -336,7 +336,7 @@ export const BASE_RED_FLAGS: RedFlag[] = [
     category: 'Porezni & Krivični Rizici',
     severity: 'Kritično (CRITICAL)',
     amountKM: 100000,
-    forensicFinding: 'MF Banka je odobrila kredit IMH-u za operativna sredstva (30.07.2026., 100.000 KM, partija 5724574555355002). Sredstva nisu prebačena direktno na IMH već preko prefakturisanja IDSS prema IMH. Banka je uplatila IDSS-u, a novac je preraspodijeljen za doprinose i tekuće obaveze oba subjekta. Riječ je o cirkularnom toku radi likvidnosti, a ne operativnoj prodaji usluga. Uključivanjem u prihod IDSS-a fiktivno je iskazan 8-mjesečni rezultat od 115.145 KM (bez toga 15.145 KM).',
+    forensicFinding: 'MF Banka je odobrila kredit IMH-u za operativna sredstva (30.07.2026., 100.000 KM, partija [izostavljeno]). Sredstva nisu prebačena direktno na IMH već preko prefakturisanja IDSS prema IMH. Banka je uplatila IDSS-u, a novac je preraspodijeljen za doprinose i tekuće obaveze oba subjekta. Riječ je o cirkularnom toku radi likvidnosti, a ne operativnoj prodaji usluga. Uključivanjem u prihod IDSS-a fiktivno je iskazan 8-mjesečni rezultat od 115.145 KM (bez toga 15.145 KM).',
     statutoryBasis: 'Zakon o porezu na dobit FBiH (čl. 45-48, Transferne cijene), Međunarodni računovodstveni standardi (MSFI za MSP, sekcija 33, Objavljivanje povezanih lica).',
     systemicImpact: 'Nevažeći operativni EBITDA u pregovorima s bankama; rizik poreznog osporavanja troškova u IMH i pitanje namjenskog utroška kredita prema MF Banci.',
     harmonizationCondition: 'Sačiniti interni memo u arhivi o toku odobrenja, isporuke i preraspodjele; u operativnom P&L-u i cash-flowu isključiti 100k kao neoperativnu stavku.',
@@ -348,7 +348,7 @@ export const BASE_RED_FLAGS: RedFlag[] = [
     category: 'Porezni & Krivični Rizici',
     severity: 'Kritično (CRITICAL)',
     amountKM: 184692,
-    forensicFinding: 'IMH potražuje 167.290 KM (127.725 KM nenovčane koristi i plaćeni troškovi uprave + 39.565 KM krediti fizičkim licima), a IDSS 17.402 KM. Ugovorom od 14.07.2026. regulisan je dio: IMH duguje Lamiji Kacili 93.484,84 KM (vrijednost prethodnog Porschea WP1ZZZ9YZLDA02893 datog firmi AUTO MT d.o.o. Mostar kao učešće za novi leasing). Pozajmica se vraća u 12 rata po 7.790,40 KM od 01.11.2026. do 01.10.2027. na račun Sparkasse 1990496055893183. Međutim, ostatak potraživanja iznad 93.484,84 KM (cca 91.207 KM) ostaje formalno neriješen.',
+    forensicFinding: 'IMH potražuje 167.290 KM (127.725 KM nenovčane koristi i plaćeni troškovi uprave + 39.565 KM krediti fizičkim licima), a IDSS 17.402 KM. Ugovorom od 14.07.2026. regulisan je dio: IMH duguje Lamiji Kacili 93.484,84 KM (vrijednost prethodnog Porschea datog firmi AUTO MT d.o.o. Mostar kao učešće za novi leasing). Pozajmica se vraća u 12 rata po 7.790,40 KM od 01.11.2026. do 01.10.2027. na lični račun zajmodavca kod Sparkasse. Međutim, ostatak potraživanja iznad 93.484,84 KM (cca 91.207 KM) ostaje formalno neriješen.',
     statutoryBasis: 'Zakon o porezu na dohodak FBiH (čl. 10 i 14, Prikrivena isplata dohotka), Zakon o doprinosima FBiH, Ugovor o pozajmici od 14.07.2026.',
     systemicImpact: 'Rizik da Porezna uprava neregulisani dio potraživanja tretira kao prikriveni lični dohodak uz obračun 60.000+ KM retroaktivnih poreza, doprinosa i kamata.',
     harmonizationCondition: 'Striktno plaćanje 12 rata po 7.790,40 KM prema planu i pisano priznanje duga sa otplatnim planom za preostali iznos potraživanja.',
@@ -446,7 +446,7 @@ export const INITIAL_INGESTED_DOCS: IngestedDocument[] = [
     source: 'Arhiva osnivača i IMH',
     date: '14.07.2026.',
     impactAreas: ['Pozajmice', 'Leasing', 'Cash-flow'],
-    summary: 'Beskamatna pozajmica od 93.484,84 KM u 12 mjesečnih rata po 7.790,40 KM (01.11.2026.–01.10.2027.) na račun Sparkasse 1990496055893183. Prethodni Porsche J01-O-261 predat dobavljaču AUTO MT.',
+    summary: 'Beskamatna pozajmica od 93.484,84 KM u 12 mjesečnih rata po 7.790,40 KM (01.11.2026.–01.10.2027.) na lični račun zajmodavca kod Sparkasse. Prethodno vozilo predato dobavljaču AUTO MT.',
     effects: {},
     isActive: true,
   },
@@ -457,7 +457,7 @@ export const INITIAL_INGESTED_DOCS: IngestedDocument[] = [
     source: 'Sparkasse Leasing d.o.o. Sarajevo',
     date: '14.07.2026.',
     impactAreas: ['Leasing', 'Odlivi', 'Cash-flow'],
-    summary: 'Vozilo Porsche Cayenne 2025 (WP1ZZZ9YXSDA48559). Neto 100.980 EUR, učešće 47.798 EUR (47,33%), finansirano 53.182 EUR. Rata 1.027,91 EUR/mj. tokom 60 mj. Mjenični dužnik Lamia Kacila.',
+    summary: 'Vozilo Porsche Cayenne 2025. Neto 100.980 EUR, učešće 47.798 EUR (47,33%), finansirano 53.182 EUR. Rata 1.027,91 EUR/mj. tokom 60 mj. Mjenični dužnik Lamia Kacila.',
     effects: {},
     isActive: true,
   },
@@ -468,7 +468,7 @@ export const INITIAL_INGESTED_DOCS: IngestedDocument[] = [
     source: 'MF Banka a.d. Banja Luka / Filijala Sarajevo',
     date: '30.07.2026.',
     impactAreas: ['Krediti', 'Solidarni dužnici', 'Overdraft'],
-    summary: 'IMH kredit 100.000 KM (partija 5724574555355002, rata cca 4.661 KM do 08.2028.). IDSS kredit 20.000 KM i overdraft 15.000 KM (dospijeva 12.06.2026.). Solidarni dužnici IMH i Lamia Kacila.',
+    summary: 'IMH kredit 100.000 KM (rata cca 4.661 KM do 08.2028.). IDSS kredit 20.000 KM i overdraft 15.000 KM (dospijeva 12.06.2026.). Solidarni dužnici IMH i Lamia Kacila.',
     effects: {},
     isActive: true,
   },

@@ -250,7 +250,7 @@ ${rawCardText || '(Pogledaj priložene datoteke)'}
         syncLog: [
           'Konto 2110 (Kupci u zemlji): Usklađeno stanje otvorenih stavki roditelja',
           'Konto 4320 (Dobavljači): Verifikovane ugovorne obaveze',
-          'Sparkasse Bank d.d. BiH: Preuzet izvod transakcijskog računa 1990496055893183',
+          'Sparkasse Bank d.d. BiH: Preuzet izvod transakcijskog računa',
           'Sparkasse Leasing: Evidentirano uredno servisiranje Ugovora br. 12546/26 za Porsche Cayenne',
           'Pozajmica osnivača: Usklađen otplatni plan 12 rata za učešće u vozilu (93.484,84 KM)',
           'Općina Centar Sarajevo: Verifikovan status ugovora o zakupu Buka 11/13 do 2033. godine'

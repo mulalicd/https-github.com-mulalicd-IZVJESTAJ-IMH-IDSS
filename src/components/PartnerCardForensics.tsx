@@ -47,10 +47,10 @@ export const PartnerCardForensics: React.FC<PartnerCardForensicsProps> = ({ clas
   const loadSample = (sampleType: 'debt' | 'overpayment') => {
     if (sampleType === 'debt') {
       setEntity('IDSS');
-      setPartnerName('Porodica Hadžić (Učenik: Tarik Hadžić, IV razred)');
+      setPartnerName('Porodica P-201 (Učenik: Učenik P-201, IV razred)');
       setContextNotes('Roditelj tvrdi da je platio sve rate, a računovodstvo iskazuje dug od 1.880,00 KM za školsku 2025/26. godinu.');
       setRawCardText(`KONTO: 2110 - Kupci u zemlji (IDSS)
-PARTNER: 100428 - Hadžić Mirza / Tarik Hadžić
+PARTNER: 100428 - Roditelj P-201 / Učenik P-201
 PERIOD: 01.09.2025. - 31.08.2026.
 
 Datum      Dokument        Opis knjiženja                     Duguje (KM)    Potražuje (KM)    Saldo (KM)
@@ -67,10 +67,10 @@ Datum      Dokument        Opis knjiženja                     Duguje (KM)    Po
 UKUPAN PROMET:                                                 10.080,00          8.200,00      1.880,00`);
     } else {
       setEntity('IMH');
-      setPartnerName('Porodica Petrović (Dijete: Una Petrović, Vrtićka grupa)');
+      setPartnerName('Porodica P-103 (Dijete: Dijete P-103, Vrtićka grupa)');
       setContextNotes('Majka pita zašto je uplatila puni iznos ako je kanton odobrio subvenciju od 200 KM mjesečno.');
       setRawCardText(`KONTO: 2110 - Kupci u zemlji (PPU IMH)
-PARTNER: 200155 - Petrović Ana / Una Petrović
+PARTNER: 200155 - Roditelj P-103 / Dijete P-103
 PERIOD: 01.09.2025. - 31.05.2026.
 
 Datum      Dokument        Opis knjiženja                     Duguje (KM)    Potražuje (KM)    Saldo (KM)
@@ -129,7 +129,7 @@ UKUPAN PROMET:                                                  1.950,00        
         : 'IDSS & PPU IMH OBRAZOVNI SISTEM';
     const primaryColor = entity === 'IMH' ? '#2C5E3B' : '#035EA1';
     const isDebt = !rawCardText.includes('-600') && !rawCardText.toLowerCase().includes('pretplata');
-    const partnerDisplay = partnerName || (isDebt ? 'Porodica Hadžić (Učenik: Tarik Hadžić)' : 'Porodica Petrović (Dijete: Una Petrović)');
+    const partnerDisplay = partnerName || (isDebt ? 'Porodica P-201 (Učenik: Učenik P-201)' : 'Porodica P-103 (Dijete: Dijete P-103)');
     const totalDuguje = isDebt ? '10.080,00 KM' : '1.950,00 KM';
     const totalPotrazuje = isDebt ? '8.200,00 KM' : '2.550,00 KM';
     const finalSaldo = isDebt ? '1.880,00 KM' : '-600,00 KM (Pretplata)';
@@ -195,8 +195,8 @@ UKUPAN PROMET:                                                  1.950,00        
     </h4>
     <p style="font-size: 13px; line-height: 1.7; margin: 0 0 12px 0;">
       ${isDebt 
-        ? `Pregledom cjelokupnog prometa utvrđeno je da je za učenika Tarika Hadžića u školskoj 2025/26. godini ukupno ispostavljeno faktura u iznosu od <strong>10.080,00 KM</strong> (redovna školarina za I i II polugodište u iznosu od po 4.700,00 KM, te ishrana i produženi boravak u iznosu od 680,00 KM). Roditelj je kroz 4 pojedinačne uplate izmirio ukupno 7.730,00 KM, a odobren je i porodični popust od 10% na školarinu (470,00 KM), što čini ukupna priznata potraživanja od <strong>8.200,00 KM</strong>. Razlika između ispostavljenih faktura i izvršenih uplata daje preostali stvarni dug od tačno <strong>1.880,00 KM</strong>. Nesporazum je nastao jer uplata od 14.10.2025. nije bila u punom iznosu rate (plaćeno 1.500,00 KM umjesto 2.350,00 KM, manjak od 850,00 KM), a posljednja rata školarine i ishrana nisu u cjelosti pokrivene uplatom od 12.04.2026.`
-        : `Pregledom prometa za dijete Unu Petrović utvrđeno je da je roditelj redovno uplaćivao punu mjesečnu cijenu cjelodnevnog boravka u iznosu od po <strong>650,00 KM</strong> za septembar, oktobar i novembar 2025. godine (ukupno uplaćeno 1.950,00 KM). Međutim, Ministarstvo za odgoj i obrazovanje Kantona Sarajevo je naknadno doznačilo kantonalne subvencije od po 200,00 KM mjesečno (dana 25.10.2025. doznaka od 400,00 KM za septembar i oktobar, te dana 28.11.2025. doznaka od 200,00 KM za novembar, ukupno 600,00 KM subvencija). Pošto je roditelj već ranije uplatio puni iznos bez umanjenja za subvenciju, na kartici je nastala pretplata u iznosu od tačno <strong>600,00 KM</strong> u korist roditelja.`
+        ? `Pregledom cjelokupnog prometa utvrđeno je da je za učenika P-201 u školskoj 2025/26. godini ukupno ispostavljeno faktura u iznosu od <strong>10.080,00 KM</strong> (redovna školarina za I i II polugodište u iznosu od po 4.700,00 KM, te ishrana i produženi boravak u iznosu od 680,00 KM). Roditelj je kroz 4 pojedinačne uplate izmirio ukupno 7.730,00 KM, a odobren je i porodični popust od 10% na školarinu (470,00 KM), što čini ukupna priznata potraživanja od <strong>8.200,00 KM</strong>. Razlika između ispostavljenih faktura i izvršenih uplata daje preostali stvarni dug od tačno <strong>1.880,00 KM</strong>. Nesporazum je nastao jer uplata od 14.10.2025. nije bila u punom iznosu rate (plaćeno 1.500,00 KM umjesto 2.350,00 KM, manjak od 850,00 KM), a posljednja rata školarine i ishrana nisu u cjelosti pokrivene uplatom od 12.04.2026.`
+        : `Pregledom prometa za dijete P-103 utvrđeno je da je roditelj redovno uplaćivao punu mjesečnu cijenu cjelodnevnog boravka u iznosu od po <strong>650,00 KM</strong> za septembar, oktobar i novembar 2025. godine (ukupno uplaćeno 1.950,00 KM). Međutim, Ministarstvo za odgoj i obrazovanje Kantona Sarajevo je naknadno doznačilo kantonalne subvencije od po 200,00 KM mjesečno (dana 25.10.2025. doznaka od 400,00 KM za septembar i oktobar, te dana 28.11.2025. doznaka od 200,00 KM za novembar, ukupno 600,00 KM subvencija). Pošto je roditelj već ranije uplatio puni iznos bez umanjenja za subvenciju, na kartici je nastala pretplata u iznosu od tačno <strong>600,00 KM</strong> u korist roditelja.`
       }
     </p>
   </div>
@@ -260,8 +260,8 @@ UKUPAN PROMET:                                                  1.950,00        
         <strong>Instrukcija za izmirenje obaveze:</strong><br>
         Molimo roditelja da preostali iznos duga od <strong>1.880,00 KM</strong> uplati najkasnije u roku od 8 dana na transakcijski račun ustanove:<br>
         • Banka: <strong>SPARKASSE BANK D.D. BIH</strong><br>
-        • Broj računa: <strong>1990496055893183</strong><br>
-        • Svrha doznake: <strong>Izmirenje duga po ugovoru o obrazovanju - Tarik Hadžić</strong><br>
+        • Broj računa: <strong>transakcijski račun ustanove (naveden na fakturi)</strong><br>
+        • Svrha doznake: <strong>Izmirenje duga po ugovoru o obrazovanju - Učenik P-201</strong><br>
         • Poziv na broj: <strong>100428-2025</strong>
       ` : `
         <strong>Instrukcija za tretman pretplate:</strong><br>
@@ -562,9 +562,9 @@ UKUPAN PROMET:                                                  1.950,00        
         onSelectPartner={(name, ent) => {
           setPartnerName(name);
           setEntity(ent);
-          if (name.includes('Hadžić')) {
+          if (name.includes('P-201')) {
             loadSample('debt');
-          } else if (name.includes('Petrović')) {
+          } else if (name.includes('P-103')) {
             loadSample('overpayment');
           }
         }}
@@ -653,7 +653,7 @@ UKUPAN PROMET:                                                  1.950,00        
             type="text"
             value={partnerName}
             onChange={(e) => setPartnerName(e.target.value)}
-            placeholder="Npr. Porodica Hadžić / Tarik Hadžić"
+            placeholder="Npr. Porodica P-201 / Učenik P-201"
             className="w-full p-2.5 text-xs rounded-xl border border-[var(--line)] bg-[var(--surface)] text-[var(--ink)] focus:outline-none focus:border-[var(--idss-blue)]"
           />
         </div>

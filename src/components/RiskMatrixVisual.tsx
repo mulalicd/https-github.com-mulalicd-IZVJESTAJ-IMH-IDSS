@@ -59,7 +59,7 @@ export const MATRIX_RISKS: RiskMatrixItem[] = [
     systemicImpact: 'U slučaju porezne inspekcije, nepokriveni dio potraživanja se prekvalifikuje u prikriveni lični dohodak uz nalog za retroaktivno plaćanje 60.000+ KM poreza, doprinosa i zateznih kamata.',
     mitigationSteps: {
       urgent0to30: [
-        'Uredno i bez kašnjenja servisirati 12 mjesečnih rata po 7.790,40 KM po Ugovoru o pozajmici od 14.07.2026. na račun Sparkasse 1990496055893183 (Član 6: kašnjenje 2 rate povlači cijeli iznos odjednom).',
+        'Uredno i bez kašnjenja servisirati 12 mjesečnih rata po 7.790,40 KM po Ugovoru o pozajmici od 14.07.2026. na lični račun zajmodavca kod Sparkasse (Član 6: kašnjenje 2 rate povlači cijeli iznos odjednom).',
         'Zabraniti dalja plaćanja ličnih ili privatnih računa osnivača i uprave sa transakcijskih računa IMH i IDSS.'
       ],
       medium30to90: [

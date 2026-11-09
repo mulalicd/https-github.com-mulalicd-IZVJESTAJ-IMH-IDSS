@@ -3,6 +3,7 @@
 Interaktivni prikaz forenzičke dijagnoze poslovanja, programa stabilizacije i strategije održivog rasta za **Internationale Deutsche Schule Sarajevo (IDSS)** i **International Montessori House (IMH)**, obrazovnu grupu na lokaciji Buka 11 i 13 u Sarajevu. Grupa nudi neprekinut obrazovni put od jaslica do završetka osnovne škole.
 
 > Stanje podataka: 31.08.2026. · Datum izvještaja: novembar 2026. · Svi iznosi su u KM.
+> Lični identifikacioni brojevi, adrese, brojevi računa i podaci o vozilima uklonjeni su iz koda. Primjeri kartica partnera i portfelj naplate koriste pseudonime (P-101, P-201 …).
 
 ## Glavni zaključak
 

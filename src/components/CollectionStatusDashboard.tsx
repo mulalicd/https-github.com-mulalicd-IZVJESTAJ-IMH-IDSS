@@ -42,8 +42,8 @@ export const PARTNER_DEBT_PORTFOLIO: PartnerDebtItem[] = [
   // Toddler Group (IMH)
   {
     id: 'P-101',
-    partnerName: 'Porodica Hadžimehmedović',
-    childName: 'Amina Hadžimehmedović',
+    partnerName: 'Porodica P-101',
+    childName: 'Dijete P-101',
     eduLevel: 'Toddler Group',
     entity: 'IMH',
     totalDebt: 1950,
@@ -56,8 +56,8 @@ export const PARTNER_DEBT_PORTFOLIO: PartnerDebtItem[] = [
   },
   {
     id: 'P-102',
-    partnerName: 'Porodica Karić',
-    childName: 'Daris Karić',
+    partnerName: 'Porodica P-102',
+    childName: 'Dijete P-102',
     eduLevel: 'Toddler Group',
     entity: 'IMH',
     totalDebt: 1300,
@@ -70,8 +70,8 @@ export const PARTNER_DEBT_PORTFOLIO: PartnerDebtItem[] = [
   },
   {
     id: 'P-103',
-    partnerName: 'Porodica Petrović',
-    childName: 'Una Petrović',
+    partnerName: 'Porodica P-103',
+    childName: 'Dijete P-103',
     eduLevel: 'Toddler Group',
     entity: 'IMH',
     totalDebt: -600, // Pretplata
@@ -84,8 +84,8 @@ export const PARTNER_DEBT_PORTFOLIO: PartnerDebtItem[] = [
   },
   {
     id: 'P-104',
-    partnerName: 'Porodica Berbić',
-    childName: 'Luka Berbić',
+    partnerName: 'Porodica P-104',
+    childName: 'Dijete P-104',
     eduLevel: 'Toddler Group',
     entity: 'IMH',
     totalDebt: 650,
@@ -98,8 +98,8 @@ export const PARTNER_DEBT_PORTFOLIO: PartnerDebtItem[] = [
   },
   {
     id: 'P-105',
-    partnerName: 'Porodica Sullivan',
-    childName: 'Mia Sullivan',
+    partnerName: 'Porodica P-105',
+    childName: 'Dijete P-105',
     eduLevel: 'Toddler Group',
     entity: 'IMH',
     totalDebt: -400,
@@ -114,8 +114,8 @@ export const PARTNER_DEBT_PORTFOLIO: PartnerDebtItem[] = [
   // Primary Grade 1-4 (IDSS)
   {
     id: 'P-201',
-    partnerName: 'Porodica Hadžić',
-    childName: 'Tarik Hadžić (IV razred)',
+    partnerName: 'Porodica P-201',
+    childName: 'Dijete P-201 (IV razred)',
     eduLevel: 'Primary Grade 1-4',
     entity: 'IDSS',
     totalDebt: 1880,
@@ -128,8 +128,8 @@ export const PARTNER_DEBT_PORTFOLIO: PartnerDebtItem[] = [
   },
   {
     id: 'P-202',
-    partnerName: 'Porodica Dizdarević',
-    childName: 'Kenan Dizdarević (II razred)',
+    partnerName: 'Porodica P-202',
+    childName: 'Dijete P-202 (II razred)',
     eduLevel: 'Primary Grade 1-4',
     entity: 'IDSS',
     totalDebt: 4700,
@@ -142,8 +142,8 @@ export const PARTNER_DEBT_PORTFOLIO: PartnerDebtItem[] = [
   },
   {
     id: 'P-203',
-    partnerName: 'Porodica Čengić',
-    childName: 'Lejla Čengić (III razred)',
+    partnerName: 'Porodica P-203',
+    childName: 'Dijete P-203 (III razred)',
     eduLevel: 'Primary Grade 1-4',
     entity: 'IDSS',
     totalDebt: 2350,
@@ -156,8 +156,8 @@ export const PARTNER_DEBT_PORTFOLIO: PartnerDebtItem[] = [
   },
   {
     id: 'P-204',
-    partnerName: 'Porodica Schmidt',
-    childName: 'Leon Schmidt (I razred)',
+    partnerName: 'Porodica P-204',
+    childName: 'Dijete P-204 (I razred)',
     eduLevel: 'Primary Grade 1-4',
     entity: 'IDSS',
     totalDebt: 1200,
@@ -170,8 +170,8 @@ export const PARTNER_DEBT_PORTFOLIO: PartnerDebtItem[] = [
   },
   {
     id: 'P-205',
-    partnerName: 'Porodica Zaimović',
-    childName: 'Faris Zaimović (IV razred)',
+    partnerName: 'Porodica P-205',
+    childName: 'Dijete P-205 (IV razred)',
     eduLevel: 'Primary Grade 1-4',
     entity: 'IDSS',
     totalDebt: -1500,
@@ -184,8 +184,8 @@ export const PARTNER_DEBT_PORTFOLIO: PartnerDebtItem[] = [
   },
   {
     id: 'P-206',
-    partnerName: 'Porodica Al-Mansoor',
-    childName: 'Zayd Al-Mansoor (II razred)',
+    partnerName: 'Porodica P-206',
+    childName: 'Dijete P-206 (II razred)',
     eduLevel: 'Primary Grade 1-4',
     entity: 'IDSS',
     totalDebt: 950,
@@ -200,8 +200,8 @@ export const PARTNER_DEBT_PORTFOLIO: PartnerDebtItem[] = [
   // Primary Grade 5-9 (IDSS)
   {
     id: 'P-301',
-    partnerName: 'Porodica Kovačević',
-    childName: 'Ema Kovačević (VIII razred)',
+    partnerName: 'Porodica P-301',
+    childName: 'Dijete P-301 (VIII razred)',
     eduLevel: 'Primary Grade 5-9',
     entity: 'IDSS',
     totalDebt: 3800,
@@ -214,8 +214,8 @@ export const PARTNER_DEBT_PORTFOLIO: PartnerDebtItem[] = [
   },
   {
     id: 'P-302',
-    partnerName: 'Porodica Mujić',
-    childName: 'Adian Mujić (VI razred)',
+    partnerName: 'Porodica P-302',
+    childName: 'Dijete P-302 (VI razred)',
     eduLevel: 'Primary Grade 5-9',
     entity: 'IDSS',
     totalDebt: 2350,
@@ -228,8 +228,8 @@ export const PARTNER_DEBT_PORTFOLIO: PartnerDebtItem[] = [
   },
   {
     id: 'P-303',
-    partnerName: 'Porodica Velić',
-    childName: 'Sara Velić (VII razred)',
+    partnerName: 'Porodica P-303',
+    childName: 'Dijete P-303 (VII razred)',
     eduLevel: 'Primary Grade 5-9',
     entity: 'IDSS',
     totalDebt: 1100,
@@ -242,8 +242,8 @@ export const PARTNER_DEBT_PORTFOLIO: PartnerDebtItem[] = [
   },
   {
     id: 'P-304',
-    partnerName: 'Porodica Bašić',
-    childName: 'Arman Bašić (IX razred)',
+    partnerName: 'Porodica P-304',
+    childName: 'Dijete P-304 (IX razred)',
     eduLevel: 'Primary Grade 5-9',
     entity: 'IDSS',
     totalDebt: -750,
@@ -256,8 +256,8 @@ export const PARTNER_DEBT_PORTFOLIO: PartnerDebtItem[] = [
   },
   {
     id: 'P-305',
-    partnerName: 'Porodica Spahić',
-    childName: 'Dina Spahić (V razred)',
+    partnerName: 'Porodica P-305',
+    childName: 'Dijete P-305 (V razred)',
     eduLevel: 'Primary Grade 5-9',
     entity: 'IDSS',
     totalDebt: 2800,
