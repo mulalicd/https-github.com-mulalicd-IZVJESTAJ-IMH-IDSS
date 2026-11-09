@@ -20,7 +20,7 @@ import {
   CheckCircle2,
   FileDown
 } from 'lucide-react';
-import { CollectionStatusDashboard } from './CollectionStatusDashboard';
+import { ReceivablesPanel } from './ReceivablesPanel';
 
 interface PartnerCardForensicsProps {
   className?: string;
@@ -121,176 +121,6 @@ UKUPAN PROMET:                                                  1.950,00        
   };
 
   // Generate robust local HTML report if server is unavailable or offline
-  const generateLocalForensicHtml = (): string => {
-    const entName = entity === 'IDSS' 
-      ? 'INTERNATIONALE DEUTSCHE SCHULE SARAJEVO (IDSS)' 
-      : entity === 'IMH' 
-        ? 'PPU INTERNATIONAL MONTESSORI HOUSE (IMH)' 
-        : 'IDSS & PPU IMH OBRAZOVNI SISTEM';
-    const primaryColor = entity === 'IMH' ? '#2C5E3B' : '#035EA1';
-    const isDebt = !rawCardText.includes('-600') && !rawCardText.toLowerCase().includes('pretplata');
-    const partnerDisplay = partnerName || (isDebt ? 'Porodica P-201 (Učenik: Učenik P-201)' : 'Porodica P-103 (Dijete: Dijete P-103)');
-    const totalDuguje = isDebt ? '10.080,00 KM' : '1.950,00 KM';
-    const totalPotrazuje = isDebt ? '8.200,00 KM' : '2.550,00 KM';
-    const finalSaldo = isDebt ? '1.880,00 KM' : '-600,00 KM (Pretplata)';
-    const statusBg = isDebt ? '#FDF2F2' : '#F0FDF4';
-    const statusBorder = isDebt ? '#F5C6CB' : '#BBF7D0';
-    const statusColor = isDebt ? '#C0392B' : '#1E7E34';
-    const statusLabel = isDebt ? 'STANJE: DUG PREMA USTANOVI' : 'STANJE: PRETPLATA U KORIST KORISNIKA';
-
-    return `
-<div style="font-family: Arial, Helvetica, sans-serif; color: #1E293B; line-height: 1.6; max-width: 900px; margin: 0 auto; background: #ffffff; padding: 28px; border: 1px solid #E2E8F0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-  <!-- HEADER -->
-  <div style="border-bottom: 2px solid ${primaryColor}; padding-bottom: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
-    <div>
-      <div style="font-size: 11px; font-weight: bold; color: ${primaryColor}; letter-spacing: 1px; text-transform: uppercase;">OVLAŠTENI FORENZIČKI FINANSIJSKI NALAZ</div>
-      <h2 style="margin: 4px 0 6px 0; color: #101820; font-size: 20px; font-weight: 800;">${entName}</h2>
-      <div style="font-size: 12px; color: #64748B;">Sjedište: Buka broj 11/13, 71000 Sarajevo · ID broj: 4201731140006 · Konto: 2110 (Kupci u zemlji)</div>
-    </div>
-    <div style="text-align: right; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 10px 14px; border-radius: 8px;">
-      <div style="font-size: 11px; color: #64748B;">DATUM NALAZA</div>
-      <div style="font-size: 14px; font-weight: bold; color: #101820;">${new Date().toLocaleDateString('bs-BA')}</div>
-      <div style="font-size: 11px; color: #035EA1; font-weight: 600;">Ref: F-2026/USAGL</div>
-    </div>
-  </div>
-
-  <!-- TITLE -->
-  <div style="margin-bottom: 20px;">
-    <h3 style="margin: 0 0 6px 0; font-size: 18px; color: ${primaryColor}; font-weight: 800;">NALAZ I OBRAZLOŽENJE FINANSIJSKOG STANJA KARTICE</h3>
-    <div style="font-size: 13px; color: #334155;">
-      <strong>Predmet analize:</strong> ${partnerDisplay}
-      ${contextNotes ? `<br><span style="color:#64748B;"><strong>Napomena uprave:</strong> ${contextNotes}</span>` : ''}
-    </div>
-  </div>
-
-  <!-- EXECUTIVE SUMMARY CARD -->
-  <div style="background: ${statusBg}; border: 1px solid ${statusBorder}; border-radius: 10px; padding: 18px; margin-bottom: 24px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
-      <span style="display: inline-block; background: ${statusColor}; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 800; letter-spacing: 0.5px;">
-        ${statusLabel}
-      </span>
-      <span style="font-size: 13px; color: #475569;">Forenzički verifikovano na dan: <strong>${new Date().toLocaleDateString('bs-BA')}</strong></span>
-    </div>
-    
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; background: #ffffff; padding: 14px; border-radius: 8px; border: 1px solid ${statusBorder};">
-      <div>
-        <div style="font-size: 11px; color: #64748B; font-weight: 600;">UKUPNO ZADUŽENJA (Fakture)</div>
-        <div style="font-size: 16px; font-weight: 800; color: #101820; margin-top: 2px;">${totalDuguje}</div>
-      </div>
-      <div>
-        <div style="font-size: 11px; color: #64748B; font-weight: 600;">UKUPNO UPLATE I ODOBRENJA</div>
-        <div style="font-size: 16px; font-weight: 800; color: #101820; margin-top: 2px;">${totalPotrazuje}</div>
-      </div>
-      <div>
-        <div style="font-size: 11px; color: #64748B; font-weight: 600;">KONAČNI STVARNI SALDO</div>
-        <div style="font-size: 18px; font-weight: 900; color: ${statusColor}; margin-top: 2px;">${finalSaldo}</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SECTION 1: OBRAZLOŽENJE ZA LAIKE -->
-  <div style="margin-bottom: 24px;">
-    <h4 style="color: ${primaryColor}; font-size: 15px; margin: 0 0 10px 0; border-bottom: 1px solid #E2E8F0; padding-bottom: 6px;">
-      1. KAKO JE NASTAO OVAJ SALDO (DETALJNO OBRAZLOŽENJE ZA LAIKE)
-    </h4>
-    <p style="font-size: 13px; line-height: 1.7; margin: 0 0 12px 0;">
-      ${isDebt 
-        ? `Pregledom cjelokupnog prometa utvrđeno je da je za učenika P-201 u školskoj 2025/26. godini ukupno ispostavljeno faktura u iznosu od <strong>10.080,00 KM</strong> (redovna školarina za I i II polugodište u iznosu od po 4.700,00 KM, te ishrana i produženi boravak u iznosu od 680,00 KM). Roditelj je kroz 4 pojedinačne uplate izmirio ukupno 7.730,00 KM, a odobren je i porodični popust od 10% na školarinu (470,00 KM), što čini ukupna priznata potraživanja od <strong>8.200,00 KM</strong>. Razlika između ispostavljenih faktura i izvršenih uplata daje preostali stvarni dug od tačno <strong>1.880,00 KM</strong>. Nesporazum je nastao jer uplata od 14.10.2025. nije bila u punom iznosu rate (plaćeno 1.500,00 KM umjesto 2.350,00 KM, manjak od 850,00 KM), a posljednja rata školarine i ishrana nisu u cjelosti pokrivene uplatom od 12.04.2026.`
-        : `Pregledom prometa za dijete P-103 utvrđeno je da je roditelj redovno uplaćivao punu mjesečnu cijenu cjelodnevnog boravka u iznosu od po <strong>650,00 KM</strong> za septembar, oktobar i novembar 2025. godine (ukupno uplaćeno 1.950,00 KM). Međutim, Ministarstvo za odgoj i obrazovanje Kantona Sarajevo je naknadno doznačilo kantonalne subvencije od po 200,00 KM mjesečno (dana 25.10.2025. doznaka od 400,00 KM za septembar i oktobar, te dana 28.11.2025. doznaka od 200,00 KM za novembar, ukupno 600,00 KM subvencija). Pošto je roditelj već ranije uplatio puni iznos bez umanjenja za subvenciju, na kartici je nastala pretplata u iznosu od tačno <strong>600,00 KM</strong> u korist roditelja.`
-      }
-    </p>
-  </div>
-
-  <!-- SECTION 2: ANALITIČKA TABELA -->
-  <div style="margin-bottom: 24px;">
-    <h4 style="color: ${primaryColor}; font-size: 15px; margin: 0 0 10px 0; border-bottom: 1px solid #E2E8F0; padding-bottom: 6px;">
-      2. HRONOLOŠKA ANALITIČKA REKAPITULACIJA KNJIŽENJA
-    </h4>
-    <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px;">
-      <thead>
-        <tr style="background-color: ${primaryColor}; color: #ffffff;">
-          <th style="padding: 9px 10px; border: 1px solid #CBD5E1; text-align: center; width: 40px;">R.br.</th>
-          <th style="padding: 9px 10px; border: 1px solid #CBD5E1; text-align: left; width: 85px;">Datum</th>
-          <th style="padding: 9px 10px; border: 1px solid #CBD5E1; text-align: left; width: 95px;">Dokument</th>
-          <th style="padding: 9px 10px; border: 1px solid #CBD5E1; text-align: left;">Opis knjiženja</th>
-          <th style="padding: 9px 10px; border: 1px solid #CBD5E1; text-align: right; width: 95px;">Duguje (KM)</th>
-          <th style="padding: 9px 10px; border: 1px solid #CBD5E1; text-align: right; width: 95px;">Potražuje (KM)</th>
-          <th style="padding: 9px 10px; border: 1px solid #CBD5E1; text-align: right; width: 95px;">Saldo (KM)</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${isDebt ? `
-        <tr style="background:#ffffff;"><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:center;">1.</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">01.09.2025</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">RN-25/084</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">Školarina I polugodište (Ugovor)</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">4.700,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">0,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;font-weight:600;">4.700,00</td></tr>
-        <tr style="background:#F8FAFC;"><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:center;">2.</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">15.09.2025</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">IZV-184</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">Uplata I rata školarine</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">0,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">2.350,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;font-weight:600;">2.350,00</td></tr>
-        <tr style="background:#ffffff;"><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:center;">3.</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">14.10.2025</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">IZV-212</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">Uplata II rata školarine (djelimično)</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">0,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">1.500,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;font-weight:600;">850,00</td></tr>
-        <tr style="background:#F8FAFC;"><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:center;">4.</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">01.12.2025</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">RN-25/112</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">Ishrana i produženi boravak (Q1)</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">680,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">0,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;font-weight:600;">1.530,00</td></tr>
-        <tr style="background:#ffffff;"><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:center;">5.</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">15.01.2026</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">RN-26/014</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">Školarina II polugodište</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">4.700,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">0,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;font-weight:600;">6.230,00</td></tr>
-        <tr style="background:#F8FAFC;"><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:center;">6.</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">10.02.2026</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">IZV-34</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">Uplata po ugovoru</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">0,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">2.350,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;font-weight:600;">3.880,00</td></tr>
-        <tr style="background:#ffffff;"><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:center;">7.</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">15.03.2026</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">OD-26/02</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">Odobrenje porodični popust 10%</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">0,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">470,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;font-weight:600;">3.410,00</td></tr>
-        <tr style="background:#F8FAFC;"><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:center;">8.</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">12.04.2026</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">IZV-88</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">Uplata roditelja</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">0,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">1.530,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;font-weight:800;color:#C0392B;">1.880,00</td></tr>
-        ` : `
-        <tr style="background:#ffffff;"><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:center;">1.</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">01.09.2025</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">FAK-25/019</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">Cjelodnevni boravak Sep-2025</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">650,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">0,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;font-weight:600;">650,00</td></tr>
-        <tr style="background:#F8FAFC;"><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:center;">2.</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">05.09.2025</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">IZV-92</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">Uplata roditelja (Sep-2025)</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">0,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">650,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;font-weight:600;">0,00</td></tr>
-        <tr style="background:#ffffff;"><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:center;">3.</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">01.10.2025</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">FAK-25/078</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">Cjelodnevni boravak Okt-2025</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">650,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">0,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;font-weight:600;">650,00</td></tr>
-        <tr style="background:#F8FAFC;"><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:center;">4.</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">06.10.2025</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">IZV-120</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">Uplata roditelja (Okt-2025)</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">0,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">650,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;font-weight:600;">0,00</td></tr>
-        <tr style="background:#ffffff;"><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:center;">5.</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">25.10.2025</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">SUBV-KS/01</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">Doznaka Ministarstva KS (Sep+Okt subvencija)</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">0,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">400,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;font-weight:800;color:#1E7E34;">-400,00</td></tr>
-        <tr style="background:#F8FAFC;"><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:center;">6.</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">01.11.2025</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">FAK-25/144</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">Cjelodnevni boravak Nov-2025</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">650,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">0,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;font-weight:600;">250,00</td></tr>
-        <tr style="background:#ffffff;"><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:center;">7.</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">04.11.2025</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">IZV-168</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">Uplata roditelja (Nov-2025)</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">0,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">650,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;font-weight:800;color:#1E7E34;">-400,00</td></tr>
-        <tr style="background:#F8FAFC;"><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:center;">8.</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">28.11.2025</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">SUBV-KS/02</td><td style="padding:7px 10px;border:1px solid #E2E8F0;">Doznaka Ministarstva KS (Nov subvencija)</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">0,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;">200,00</td><td style="padding:7px 10px;border:1px solid #E2E8F0;text-align:right;font-weight:800;color:#1E7E34;">-600,00</td></tr>
-        `}
-      </tbody>
-      <tfoot>
-        <tr style="background:#EDF2F7; font-weight: bold; border-top: 2px solid ${primaryColor};">
-          <td colspan="4" style="padding: 10px; text-align: right; border: 1px solid #CBD5E1;">UKUPAN PROMET:</td>
-          <td style="padding: 10px; text-align: right; border: 1px solid #CBD5E1;">${totalDuguje}</td>
-          <td style="padding: 10px; text-align: right; border: 1px solid #CBD5E1;">${totalPotrazuje}</td>
-          <td style="padding: 10px; text-align: right; border: 1px solid #CBD5E1; color: ${statusColor}; font-weight: 900;">${finalSaldo}</td>
-        </tr>
-      </tfoot>
-    </table>
-  </div>
-
-  <!-- SECTION 3: INSTRUKCIJE ZA POSTUPANJE -->
-  <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
-    <h4 style="color: ${primaryColor}; font-size: 14px; margin: 0 0 8px 0;">
-      3. SLUŽBENE UPUTE ZA REGULISANJE STANJA
-    </h4>
-    <div style="font-size: 12.5px; line-height: 1.7; color: #334155;">
-      ${isDebt ? `
-        <strong>Instrukcija za izmirenje obaveze:</strong><br>
-        Molimo roditelja da preostali iznos duga od <strong>1.880,00 KM</strong> uplati najkasnije u roku od 8 dana na transakcijski račun ustanove:<br>
-        • Banka: <strong>SPARKASSE BANK D.D. BIH</strong><br>
-        • Broj računa: <strong>transakcijski račun ustanove (naveden na fakturi)</strong><br>
-        • Svrha doznake: <strong>Izmirenje duga po ugovoru o obrazovanju - Učenik P-201</strong><br>
-        • Poziv na broj: <strong>100428-2025</strong>
-      ` : `
-        <strong>Instrukcija za tretman pretplate:</strong><br>
-        Pretplata od <strong>600,00 KM</strong> predstavlja Vaša preplaćena sredstva usljed uplaćenih kantonalnih subvencija. Ovaj iznos Vam stoji na raspolaganju na jedan od dva načina:<br>
-        1. <strong>Automatska kompenzacija:</strong> Iznos će biti automatski umanjen na fakturi za naredni mjesec (decembar 2025.), tako da za naredni mjesec uplaćujete samo eventualnu razliku.<br>
-        2. <strong>Povrat sredstava:</strong> Ukoliko želite trenutni povrat novca na Vaš bankovni račun, dovoljno je da pošaljete pisani zahtjev sa brojem Vašeg tekućeg računa na e-mail: <em>financije@montessorihouse.ba</em>.
-      `}
-    </div>
-  </div>
-
-  <!-- SIGNATURES BLOCK -->
-  <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 36px; padding-top: 20px; border-top: 1px solid #E2E8F0; font-size: 12px; color: #334155;">
-    <div style="text-align: center; width: 220px;">
-      <div style="border-bottom: 1px dashed #94A3B8; padding-bottom: 30px; margin-bottom: 6px;"></div>
-      <strong>Ovlašteni forenzički vještak</strong><br>
-      <span style="font-size: 11px; color: #64748B;">Služba finansija i revizije</span>
-    </div>
-    <div style="text-align: center; width: 100px; color: #94A3B8; font-size: 11px;">
-      M.P.
-    </div>
-    <div style="text-align: center; width: 220px;">
-      <div style="border-bottom: 1px dashed #94A3B8; padding-bottom: 30px; margin-bottom: 6px;"></div>
-      <strong>Direktor ustanove</strong><br>
-      <span style="font-size: 11px; color: #64748B;">Davor Mulalić</span>
-    </div>
-  </div>
-</div>`;
-  };
-
   const handleRunAnalysis = async () => {
     if (!rawCardText.trim() && uploadedFiles.length === 0) {
       setErrorMsg('Molimo unesite tekst kartice partnera ili priložite datoteku.');
@@ -317,9 +147,14 @@ UKUPAN PROMET:                                                  1.950,00        
       });
 
       if (!res.ok) {
-        // Graceful fallback to local structured generator if server error occurs
-        const fallback = generateLocalForensicHtml();
-        setAnalysisReportHtml(fallback);
+        let msg = 'AI analiza nije uspjela.';
+        try {
+          const err = await res.json();
+          if (err?.error) msg = err.error;
+        } catch {
+          /* odgovor nije JSON */
+        }
+        setErrorMsg(msg);
         return;
       }
 
@@ -335,9 +170,7 @@ UKUPAN PROMET:                                                  1.950,00        
 
       setAnalysisReportHtml(htmlOutput);
     } catch {
-      // Local fallback in case of offline preview or timeout
-      const fallback = generateLocalForensicHtml();
-      setAnalysisReportHtml(fallback);
+      setErrorMsg('AI server nije dostupan. Javna verzija aplikacije (GitHub Pages) nema server; za AI nalaz aplikaciju treba pokrenuti lokalno s GEMINI_API_KEY.');
     } finally {
       setIsLoading(false);
     }
@@ -558,17 +391,7 @@ UKUPAN PROMET:                                                  1.950,00        
   return (
     <div id="sec-forenzika-partnera" className={`partner-card-forensics p-6 md:p-8 rounded-2xl border-2 border-[var(--idss-blue)] bg-[var(--surface)] shadow-xl my-10 ${className}`}>
       {/* VIZUELNI STATUS NAPLATE DASHBOARD (D3 GRAFIKON STRUKTURE DUGA SA DROPDOWN FILTEROM ZA OBRAZOVNE NIVOE) */}
-      <CollectionStatusDashboard
-        onSelectPartner={(name, ent) => {
-          setPartnerName(name);
-          setEntity(ent);
-          if (name.includes('P-201')) {
-            loadSample('debt');
-          } else if (name.includes('P-103')) {
-            loadSample('overpayment');
-          }
-        }}
-      />
+      <ReceivablesPanel />
 
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-[var(--line)]">

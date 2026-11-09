@@ -2,14 +2,16 @@
 
 Interaktivni prikaz forenzičke dijagnoze poslovanja, programa stabilizacije i strategije održivog rasta za **Internationale Deutsche Schule Sarajevo (IDSS)** i **International Montessori House (IMH)**, obrazovnu grupu na lokaciji Buka 11 i 13 u Sarajevu. Grupa nudi neprekinut obrazovni put od jaslica do završetka osnovne škole.
 
-> Stanje podataka: 31.08.2026. · Datum izvještaja: novembar 2026. · Svi iznosi su u KM.
+> Stanje podataka: bruto bilansi 31.10.2026., kartica kupaca IDSS 02.11.2026. · Datum izvještaja: novembar 2026. · Svi iznosi su u KM.
 > Lični identifikacioni brojevi, adrese, brojevi računa i podaci o vozilima uklonjeni su iz koda. Primjeri kartica partnera i portfelj naplate koriste pseudonime (P-101, P-201 …).
 
 ## Web aplikacija
 
 **https://mulalicd.github.io/https-github.com-mulalicd-IZVJESTAJ-IMH-IDSS/**
 
-Objavljuje se automatski (GitHub Pages) pri svakoj izmjeni grane `main`. Na objavljenoj verziji AI analiza kartica partnera radi u lokalnom režimu, bez Gemini servera.
+Objavljuje se automatski (GitHub Pages) pri svakoj izmjeni grane `main`.
+
+**Modularni harmonizacijski sistem** (dugme „Učitaj bilans”) čita PDF izvoz „Bilanca analitike” (bruto bilans ili kartica konta) za IDSS ili IMH direktno u pregledniku i preračunava cijeli izvještaj. Pored toga provjerava ravnotežu bilansa i zbirove analitike, pronalazi nezatvorene prelazne konte i usaglašava međusobna salda IDSS ↔ IMH. Dokumenti se ne šalju nikamo, a učitani podaci ostaju samo u pregledniku korisnika. AI nalaz za pojedinačnu karticu partnera radi samo uz server s Gemini ključem.
 
 ## Glavni zaključak
 
@@ -36,8 +38,8 @@ Objavljuje se automatski (GitHub Pages) pri svakoj izmjeni grane `main`. Na obja
 5. **Upis u IDSS oscilira:** 79 → 94 → 68 → 83 učenika; popunjenost je 61,5% od 135 mjesta.
 6. **Vertikala IMH → IDSS je dokazana snaga:** 7 od 11 prvačića dolazi iz predškolske grupe. IMH radi s 90 od 95 mjesta.
 7. **Pojedinačni rezultati ustanova nisu uporedivi** zbog promjenjivih međukompanijskih aranžmana. Pouzdan je samo konsolidovani pogled.
-8. **Bilans zahtijeva čišćenje:** potraživanja od zaposlenih, uprave i fizičkih lica iznose 184.692 KM, a kapital grupe prije rezultata 2026. iznosi oko −37.300 KM.
-9. **Likvidnost je tanka:** gotovina grupe iznosi 37.639 KM, što pokriva oko 8 dana troškova. Eksterni dug iznosi 188.063 KM, a uz leasing vozila (≈104.015 KM) i obavezu IMH-a prema osnivaču (93.485 KM) oko 385.600 KM.
+8. **Bilans zahtijeva čišćenje:** potraživanja od osnivača iznose 184.692 KM, a kapital grupe prije rezultata 2026. −37.328 KM. Bruto bilans IDSS-a na 31.10.2026. nije u ravnoteži (−812,54 KM).
+9. **Likvidnost je tanka:** na 31.10.2026. je na računima oko 31.800 KM (57.912 KM stoji na nezatvorenim prelaznim kontima). Eksterni dug bez leasinga iznosi 218.575 KM, a s proknjiženim leasingom vozila 433.458 KM.
 10. **Prostor je strateška imovina i rizik:** 1.287,40 m² po zakupu od 5 KM/m² (Općina Centar). Ugovorni okvir mora jasno pokriti i IDSS.
 
 ## Strategija u tri faze
@@ -59,10 +61,10 @@ Objavljuje se automatski (GitHub Pages) pri svakoj izmjeni grane `main`. Na obja
 
 ## Puni izvještaj
 
-- [Strateški izvještaj 2027–2032 (Word)](docs/IDSS_IMH_Strateski_izvjestaj_2027-2032_v2.docx)
-- [Strateški izvještaj 2027–2032 (PDF)](docs/IDSS_IMH_Strateski_izvjestaj_2027-2032_v2.pdf)
+- [Strateški izvještaj 2027–2032 (Word)](docs/IDSS_IMH_Strateski_izvjestaj_2027-2032_v3.docx)
+- [Strateški izvještaj 2027–2032 (PDF)](docs/IDSS_IMH_Strateski_izvjestaj_2027-2032_v3.pdf)
 
-Verzija 2 (09.11.2026.) sadrži ispravke forenzičke provjere i nova poglavlja o kreditu MF Banke (5.2) te vozilu u leasingu i obavezi prema osnivaču (6.5).
+Verzija 3 (09.11.2026.) je usklađena s bruto bilansima na 31.10.2026. Sadrži rezultat januar–oktobar (5.3), stanje duga i likvidnosti, nalaze o integritetu knjiga, kupce bez uplata, knjiženje leasinga i rizik R15.
 
 ## Šta aplikacija sadrži
 

@@ -1,289 +1,293 @@
-import React, { useState } from 'react';
-import { IngestedDocument } from '../data/reportData';
-import { X, CheckCircle2, AlertTriangle, FileText, Plus, ShieldCheck, ArrowRight, RotateCcw } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { X, Upload, FileText, AlertTriangle, CheckCircle2, RotateCcw, Trash2, ShieldAlert, Info, Loader2 } from 'lucide-react';
+import { useFinancials, km } from '../lib/bilans/store';
+import type { Ledger, LedgerMetrics, IntegrityIssue } from '../lib/bilans/parser';
 
 interface HarmonizationDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  documents: IngestedDocument[];
-  onToggleDoc: (id: string) => void;
-  onAddCustomDoc: (doc: IngestedDocument) => void;
-  onResetDocs: () => void;
-  resolvedRisksCount: number;
-  injectedCash: number;
-  injectedEbitda: number;
 }
 
-export const HarmonizationDrawer: React.FC<HarmonizationDrawerProps> = ({
-  isOpen,
-  onClose,
-  documents,
-  onToggleDoc,
-  onAddCustomDoc,
-  onResetDocs,
-  resolvedRisksCount,
-  injectedCash,
-  injectedEbitda,
-}) => {
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
-  const [newCode, setNewCode] = useState('');
-  const [newSource, setNewSource] = useState('');
-  const [newSummary, setNewSummary] = useState('');
-  const [cashImpact, setCashImpact] = useState<string>('0');
-  const [ebitdaImpact, setEbitdaImpact] = useState<string>('0');
+type FileStatus = { name: string; state: 'obrada' | 'ok' | 'greška'; message: string };
+
+const ROWS: { label: string; key: keyof LedgerMetrics; group?: string; hint?: string }[] = [
+  { label: 'Gotovina (klasa 20)', key: 'cash', group: 'cash' },
+  { label: '– od toga na prelaznim kontima', key: 'cashInTransit', group: 'cashInTransit' },
+  { label: 'Potraživanja od kupaca (211)', key: 'receivablesCustomers' },
+  { label: 'Potraživanja od zaposlenih / uprave (232)', key: 'receivablesEmployees' },
+  { label: 'Krediti dati fizičkim licima', key: 'loansToIndividuals' },
+  { label: 'Kapital (klasa 3)', key: 'equity', group: 'equity' },
+  { label: 'Bankarski krediti (413)', key: 'bankLoans' },
+  { label: 'Prekoračenja (424)', key: 'overdraft' },
+  { label: 'Ostali krediti i zajmovi (422)', key: 'otherLoans' },
+  { label: 'Eksterni dug bez leasinga', key: 'externalDebt', group: 'externalDebt' },
+  { label: 'Finansijski leasing (415)', key: 'leasing', group: 'leasing' },
+  { label: 'Depoziti roditelja (430)', key: 'deposits', group: 'deposits' },
+  { label: 'Neisplaćene neto plate (4500)', key: 'netSalariesPayable', group: 'netSalariesPayable' },
+  { label: 'Javne obaveze po sporazumima', key: 'publicAgreements', group: 'publicAgreements' },
+  { label: 'Ostale javne obaveze (porezi, doprinosi)', key: 'publicCurrent', group: 'publicCurrent' },
+  { label: 'Prihodi (klasa 6)', key: 'revenue' },
+  { label: '– od toga od povezanog lica', key: 'revenueRelated' },
+  { label: 'Rashodi (klasa 5)', key: 'expenses' },
+  { label: 'Rezultat po knjigama', key: 'result', group: 'resultBooks' },
+  { label: 'Troškovi rada (52)', key: 'labor', group: 'labor' },
+  { label: '– ugovori o djelu (5291)', key: 'contractsWork' },
+  { label: 'Zakup poslovnog prostora (5330)', key: 'rent' },
+  { label: 'Amortizacija (54)', key: 'amortization' },
+  { label: 'Subvencije Ministarstva KS (prolazna stavka)', key: 'ministrySubsidies' },
+];
+
+const sevOrder: Record<IntegrityIssue['severity'], number> = { kritično: 0, upozorenje: 1, info: 2 };
+
+export const HarmonizationDrawer: React.FC<HarmonizationDrawerProps> = ({ isOpen, onClose }) => {
+  const fin = useFinancials();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [statuses, setStatuses] = useState<FileStatus[]>([]);
+  const [dragOver, setDragOver] = useState(false);
 
   if (!isOpen) return null;
 
-  const baselineDocs = documents.filter((d) => !d.id.startsWith('DOC-EXT') && !d.id.startsWith('DOC-CUSTOM'));
-  const modularDocs = documents.filter((d) => d.id.startsWith('DOC-EXT') || d.id.startsWith('DOC-CUSTOM'));
-
-  const handleCreateDoc = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTitle.trim()) return;
-
-    const doc: IngestedDocument = {
-      id: `DOC-CUSTOM-${Date.now()}`,
-      code: newCode.trim() || `DOC-${Math.floor(100 + Math.random() * 900)}`,
-      title: newTitle.trim(),
-      source: newSource.trim() || 'Interni verifikovani akt',
-      date: new Date().toLocaleDateString('bs-BA'),
-      impactAreas: ['Harmonizacija', 'Finansije'],
-      summary: newSummary.trim() || 'Priložen verifikovani dokument koji mijenja pretpostavke izvještaja.',
-      effects: {
-        cashDeltaKM: parseFloat(cashImpact) || 0,
-        ebitdaDeltaKM: parseFloat(ebitdaImpact) || 0,
-      },
-      isActive: true,
-    };
-
-    onAddCustomDoc(doc);
-    setNewTitle('');
-    setNewCode('');
-    setNewSource('');
-    setNewSummary('');
-    setCashImpact('0');
-    setEbitdaImpact('0');
-    setShowAddForm(false);
+  const handleFiles = async (files: FileList | File[]) => {
+    const list = Array.from(files);
+    if (!list.length) return;
+    setStatuses(list.map((f) => ({ name: f.name, state: 'obrada', message: 'Čitam dokument…' })));
+    const { readLedgerPdf } = await import('../lib/bilans/pdf');
+    const parsed: Ledger[] = [];
+    const next: FileStatus[] = [];
+    for (const f of list) {
+      if (!/\.pdf$/i.test(f.name)) {
+        next.push({ name: f.name, state: 'greška', message: 'Podržan je PDF izvoz „Bilanca analitike” (bruto bilans ili kartica konta).' });
+        continue;
+      }
+      try {
+        const l = await readLedgerPdf(f);
+        if (!l.entity) {
+          next.push({ name: f.name, state: 'greška', message: 'Ustanova nije prepoznata: u zaglavlju nema JIB-a IDSS-a ni IMH-a.' });
+          continue;
+        }
+        if (!l.accounts.length) {
+          next.push({ name: f.name, state: 'greška', message: 'U dokumentu nije pronađen nijedan konto. Da li je PDF skeniran (slika)?' });
+          continue;
+        }
+        parsed.push(l);
+        next.push({
+          name: f.name,
+          state: 'ok',
+          message: `${l.entity} · ${l.kind === 'bruto-bilans' ? 'bruto bilans' : 'kartica'} · ${l.periodFrom ?? '?'} – ${l.periodTo ?? '?'} · ${l.accounts.length} konta`,
+        });
+      } catch (e: any) {
+        next.push({ name: f.name, state: 'greška', message: `Dokument nije moguće pročitati: ${e?.message ?? e}` });
+      }
+    }
+    if (parsed.length) fin.addLedgers(parsed);
+    setStatuses(next);
   };
+
+  const g = fin.group;
+  const activeDocs = [fin.idssDoc, fin.imhDoc, fin.idssCustomersDoc].filter(Boolean) as NonNullable<typeof fin.idssDoc>[];
+  const issues = activeDocs
+    .flatMap((d) => d.issues.map((i) => ({ ...i, entity: d.entity, kind: d.kind })))
+    .sort((a, b) => sevOrder[a.severity] - sevOrder[b.severity]);
+  const reconRows = fin.recon.length ? fin.recon : [];
+
+  const cell = (v: number | null | undefined) => (v === null || v === undefined ? '–' : km(v, 2));
 
   return (
     <>
-      {/* Backdrop */}
       <div className="drawer-backdrop" onClick={onClose} />
-
-      {/* Drawer Container */}
-      <div className="harmonization-drawer p-6 text-sm">
-        {/* Header */}
+      <div className="harmonization-drawer p-5 text-sm" role="dialog" aria-label="Modularni harmonizacijski sistem">
         <div className="flex items-center justify-between pb-4 border-b border-[var(--line)]">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-[var(--idss-cyan)] animate-pulse" />
-            <h3 className="font-bold text-base m-0 text-[var(--ink)]">
-              Modularni harmonizacijski sistem
-            </h3>
+            <span className="w-3 h-3 rounded-full bg-[var(--idss-cyan)]" />
+            <h3 className="font-bold text-base m-0 text-[var(--ink)]">Modularni harmonizacijski sistem</h3>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition"
-            aria-label="Zatvori"
-          >
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition" aria-label="Zatvori">
             <X className="w-5 h-5 text-[var(--muted)]" />
           </button>
         </div>
 
-        {/* Dynamic Impact Summary */}
-        <div className="my-5 p-4 rounded-xl bg-[var(--surface-alt)] border border-[var(--line)]">
-          <span className="eyebrow block mb-1">Harmonizacijski efekat</span>
-          <div className="grid grid-cols-3 gap-2 mt-2 text-center">
-            <div className="p-2 rounded-lg bg-[var(--surface)] border border-[var(--line)]">
-              <span className="text-[10px] uppercase font-bold text-[var(--muted)] block">Riješeno rizika</span>
-              <b className="text-base font-extrabold text-[var(--imh-green)]">
-                {resolvedRisksCount} / 7
-              </b>
-            </div>
-            <div className="p-2 rounded-lg bg-[var(--surface)] border border-[var(--line)]">
-              <span className="text-[10px] uppercase font-bold text-[var(--muted)] block">Keš injekcija</span>
-              <b className="text-sm font-extrabold text-[var(--idss-blue)] dark:text-[var(--idss-cyan)]">
-                +{injectedCash.toLocaleString('bs-BA')} KM
-              </b>
-            </div>
-            <div className="p-2 rounded-lg bg-[var(--surface)] border border-[var(--line)]">
-              <span className="text-[10px] uppercase font-bold text-[var(--muted)] block">EBITDA delta</span>
-              <b className="text-sm font-extrabold text-[var(--imh-green)]">
-                +{injectedEbitda.toLocaleString('bs-BA')} KM
-              </b>
-            </div>
-          </div>
-          <p className="text-[11px] text-[var(--muted)] mt-2 mb-0 leading-normal">
-            Aktiviranjem verifikovanih pravnih i finansijskih isprava, sistem u realnom vremenu
-            re-kalkuliše operativne marže, likvidnost i de-eskalira crvene zastavice u izvještaju.
+        {/* Upload */}
+        <div
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragOver(true);
+          }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragOver(false);
+            handleFiles(e.dataTransfer.files);
+          }}
+          onClick={() => inputRef.current?.click()}
+          className={`my-4 p-5 rounded-xl border-2 border-dashed cursor-pointer text-center transition ${
+            dragOver ? 'border-[var(--idss-blue)] bg-[var(--surface-alt)]' : 'border-[var(--line)] hover:border-[var(--idss-blue)]'
+          }`}
+        >
+          <Upload className="w-6 h-6 mx-auto text-[var(--idss-blue)] dark:text-[var(--idss-cyan)]" />
+          <p className="font-bold text-[var(--ink)] mt-2 mb-1">Učitajte bruto bilans ili karticu konta (PDF)</p>
+          <p className="text-[11px] text-[var(--muted)] m-0">
+            IDSS ili IMH, izvoz „Bilanca analitike”. Može više fajlova odjednom. Dokumenti se obrađuju samo u ovom pregledniku i ne šalju se nikamo.
           </p>
+          <input
+            ref={inputRef}
+            type="file"
+            accept="application/pdf,.pdf"
+            multiple
+            className="hidden"
+            onChange={(e) => {
+              if (e.target.files) handleFiles(e.target.files);
+              e.target.value = '';
+            }}
+          />
         </div>
 
-        {/* Action buttons */}
-        <div className="flex items-center justify-between gap-2 mb-4">
-          <button
-            type="button"
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="tool-btn text-xs"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>{showAddForm ? 'Odustani' : 'Ubaci novi dokument'}</span>
-          </button>
-          <button
-            type="button"
-            onClick={onResetDocs}
-            className="tool-btn text-xs text-[var(--muted)] hover:text-[var(--idss-red)]"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reset na audit</span>
-          </button>
-        </div>
-
-        {/* Custom Document Form */}
-        {showAddForm && (
-          <form onSubmit={handleCreateDoc} className="mb-6 p-4 rounded-xl border border-[var(--idss-blue)] bg-[var(--surface-alt)]">
-            <span className="eyebrow block mb-2">Novi dokument za ingestiju</span>
-            <div className="space-y-3">
-              <div>
-                <label className="block text-[11px] font-bold text-[var(--muted)] mb-1">Naziv dokumenta</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="npr. Potpisani Aneks ugovora o zakupu..."
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  className="w-full p-2 text-xs rounded border border-[var(--line)] bg-[var(--surface)] text-[var(--ink)] outline-none"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-[11px] font-bold text-[var(--muted)] mb-1">Šifra akta</label>
-                  <input
-                    type="text"
-                    placeholder="npr. ANX-2033"
-                    value={newCode}
-                    onChange={(e) => setNewCode(e.target.value)}
-                    className="w-full p-2 text-xs rounded border border-[var(--line)] bg-[var(--surface)] text-[var(--ink)] outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-[var(--muted)] mb-1">Izdavač / Izvor</label>
-                  <input
-                    type="text"
-                    placeholder="npr. Općina Centar Sarajevo"
-                    value={newSource}
-                    onChange={(e) => setNewSource(e.target.value)}
-                    className="w-full p-2 text-xs rounded border border-[var(--line)] bg-[var(--surface)] text-[var(--ink)] outline-none"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-[11px] font-bold text-[var(--muted)] mb-1">Kratki opis i pravna svrha</label>
-                <textarea
-                  rows={2}
-                  placeholder="Svrha dokumenta i dokazni materijal..."
-                  value={newSummary}
-                  onChange={(e) => setNewSummary(e.target.value)}
-                  className="w-full p-2 text-xs rounded border border-[var(--line)] bg-[var(--surface)] text-[var(--ink)] outline-none"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-[11px] font-bold text-[var(--muted)] mb-1">Finansijska injekcija (KM)</label>
-                  <input
-                    type="number"
-                    value={cashImpact}
-                    onChange={(e) => setCashImpact(e.target.value)}
-                    className="w-full p-2 text-xs rounded border border-[var(--line)] bg-[var(--surface)] text-[var(--ink)] outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-[var(--muted)] mb-1">EBITDA delta (KM)</label>
-                  <input
-                    type="number"
-                    value={ebitdaImpact}
-                    onChange={(e) => setEbitdaImpact(e.target.value)}
-                    className="w-full p-2 text-xs rounded border border-[var(--line)] bg-[var(--surface)] text-[var(--ink)] outline-none"
-                  />
-                </div>
-              </div>
-              <button
-                type="submit"
-                className="w-full py-2 bg-[var(--idss-blue)] hover:bg-[var(--idss-blue)]/90 text-white font-bold rounded text-xs transition"
+        {statuses.length > 0 && (
+          <div className="mb-4 space-y-1.5">
+            {statuses.map((s) => (
+              <div
+                key={s.name}
+                className={`p-2 rounded-lg border text-[11px] flex items-start gap-2 ${
+                  s.state === 'ok' ? 'border-emerald-400 bg-emerald-50 dark:bg-emerald-950/30' : s.state === 'greška' ? 'border-red-400 bg-red-50 dark:bg-red-950/30' : 'border-[var(--line)]'
+                }`}
               >
-                Harmonizuj i poveži u izvještaj
-              </button>
-            </div>
-          </form>
+                {s.state === 'obrada' ? <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" /> : s.state === 'ok' ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> : <AlertTriangle className="w-3.5 h-3.5 text-red-600 shrink-0" />}
+                <div>
+                  <b className="text-[var(--ink)]">{s.name}</b>
+                  <div className="text-[var(--muted)]">{s.message}</div>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
 
-        {/* Modular Documents List */}
-        <div className="space-y-4">
-          <div>
-            <span className="side-label block mb-2">Modularni verifikovani dokumenti</span>
-            <div className="space-y-2">
-              {modularDocs.map((doc) => (
-                <div
-                  key={doc.id}
-                  onClick={() => onToggleDoc(doc.id)}
-                  className={`p-3 rounded-xl border transition cursor-pointer ${
-                    doc.isActive
-                      ? 'border-[var(--imh-green)] bg-[var(--surface)] shadow-sm'
-                      : 'border-[var(--line)] bg-[var(--surface-alt)] opacity-70 hover:opacity-100'
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${doc.isActive ? 'bg-[var(--imh-green)]' : 'bg-slate-400'}`} />
-                      <span className="font-extrabold text-xs text-[var(--idss-blue)] dark:text-[var(--idss-cyan)]">
-                        [{doc.code}]
-                      </span>
+        {/* Active sources */}
+        <div className="mb-4">
+          <span className="side-label block mb-2">Aktivni izvori podataka u izvještaju</span>
+          <div className="space-y-1.5">
+            {fin.documents.map((d) => {
+              const active = activeDocs.some((a) => a.id === d.id);
+              return (
+                <div key={d.id} className={`p-2.5 rounded-lg border text-xs flex items-center justify-between gap-2 ${active ? 'border-[var(--imh-green)] bg-[var(--surface)]' : 'border-[var(--line)] opacity-70'}`}>
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <FileText className="w-3.5 h-3.5 text-[var(--idss-blue)] shrink-0" />
+                    <div className="overflow-hidden">
+                      <div className="font-bold truncate text-[var(--ink)]">
+                        {d.entity} · {d.kind === 'bruto-bilans' ? 'Bruto bilans' : 'Kartica'} · do {d.periodTo}
+                      </div>
+                      <div className="text-[10px] text-[var(--muted)] truncate">{d.fileName}</div>
                     </div>
-                    <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                        doc.isActive
-                          ? 'bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300'
-                          : 'bg-slate-200 dark:bg-slate-800 text-slate-500'
-                      }`}
-                    >
-                      {doc.isActive ? 'AKTIVAN' : 'NEAKTIVAN'}
-                    </span>
                   </div>
-                  <h4 className="font-bold text-xs mt-1 mb-1 text-[var(--ink)]">{doc.title}</h4>
-                  <p className="text-[11px] text-[var(--muted)] mb-2 line-clamp-2">{doc.summary}</p>
-                  <div className="flex items-center justify-between text-[10px] text-[var(--muted)] border-t border-[var(--line)] pt-2">
-                    <span>Izvor: {doc.source}</span>
-                    {doc.effects.riskResolved && (
-                      <span className="font-bold text-[var(--imh-green)] flex items-center gap-1">
-                        <ShieldCheck className="w-3 h-3" />
-                        Rješava: {doc.effects.riskResolved.join(', ')}
-                      </span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${d.source === 'učitano' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300' : 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300'}`}>
+                      {d.source === 'učitano' ? 'UČITANO' : 'VERIFIKOVANO'}
+                    </span>
+                    {active && <span className="text-[10px] font-bold text-[var(--imh-green)]">AKTIVNO</span>}
+                    {d.source === 'učitano' && (
+                      <button onClick={() => fin.removeLedger(d.id)} className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-950" aria-label="Ukloni dokument" title="Ukloni dokument">
+                        <Trash2 className="w-3.5 h-3.5 text-red-600" />
+                      </button>
                     )}
                   </div>
                 </div>
-              ))}
-            </div>
+              );
+            })}
           </div>
+          {fin.usingUploads && (
+            <button type="button" onClick={fin.resetToVerified} className="tool-btn text-xs mt-2 text-[var(--muted)] hover:text-[var(--idss-red)]">
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Vrati na verifikovano stanje (31.10.2026.)</span>
+            </button>
+          )}
+        </div>
 
-          {/* Baseline Reference Documents */}
-          <div className="pt-2">
-            <span className="side-label block mb-2">Bazna forenzička dokumentacija (31.08.2026.)</span>
+        {/* Integrity */}
+        <div className="mb-4">
+          <span className="side-label block mb-2">Forenzičke kontrole dokumenata</span>
+          {issues.length === 0 ? (
+            <div className="p-2.5 rounded-lg border border-emerald-400 text-xs flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Nema nalaza.
+            </div>
+          ) : (
             <div className="space-y-1.5">
-              {baselineDocs.map((doc) => (
-                <div
-                  key={doc.id}
-                  className="p-2.5 rounded-lg border border-[var(--line)] bg-[var(--surface)] text-xs flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-2 overflow-hidden">
-                    <FileText className="w-3.5 h-3.5 text-[var(--idss-blue)] shrink-0" />
-                    <span className="font-bold truncate text-[var(--ink)]">{doc.title}</span>
-                  </div>
-                  <span className="text-[10px] text-[var(--muted)] shrink-0">Verifikovano</span>
+              {issues.map((i, k) => (
+                <div key={k} className={`p-2 rounded-lg border text-[11px] flex items-start gap-2 ${i.severity === 'kritično' ? 'border-red-400 bg-red-50 dark:bg-red-950/30' : 'border-amber-400 bg-amber-50 dark:bg-amber-950/30'}`}>
+                  {i.severity === 'kritično' ? <ShieldAlert className="w-3.5 h-3.5 text-red-600 shrink-0 mt-0.5" /> : <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />}
+                  <span>
+                    <b>{i.entity}</b> {i.kind === 'kartica' ? '(kartica)' : ''}: {i.text}
+                  </span>
                 </div>
               ))}
             </div>
-          </div>
+          )}
+        </div>
+
+        {/* Metrics */}
+        <div className="mb-4 overflow-x-auto">
+          <span className="side-label block mb-2">Ključne pozicije iz knjiga</span>
+          <table className="w-full text-[11px] border-collapse">
+            <thead>
+              <tr className="text-left border-b border-[var(--line)]">
+                <th className="py-1 pr-2">Pozicija</th>
+                <th className="py-1 px-1 text-right">IDSS<br /><span className="font-normal text-[var(--muted)]">{fin.idss?.periodTo}</span></th>
+                <th className="py-1 px-1 text-right">IMH<br /><span className="font-normal text-[var(--muted)]">{fin.imh?.periodTo}</span></th>
+                <th className="py-1 pl-1 text-right">Grupa</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ROWS.map((r) => (
+                <tr key={r.key} className="border-b border-[var(--line)]/50">
+                  <td className="py-1 pr-2 text-[var(--ink)]">{r.label}</td>
+                  <td className="py-1 px-1 text-right font-mono">{cell(fin.idss?.[r.key] as number | null)}</td>
+                  <td className="py-1 px-1 text-right font-mono">{cell(fin.imh?.[r.key] as number | null)}</td>
+                  <td className="py-1 pl-1 text-right font-mono font-bold">{r.group && g ? cell((g as any)[r.group]) : ''}</td>
+                </tr>
+              ))}
+              {g && (
+                <tr className="border-t-2 border-[var(--ink)]">
+                  <td className="py-1 pr-2 font-bold">Normalizovani rezultat grupe (bez 100.000 KM i IC razlike)</td>
+                  <td />
+                  <td />
+                  <td className="py-1 pl-1 text-right font-mono font-bold">{cell(g.resultNormalized)}</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+          <p className="text-[10px] text-[var(--muted)] mt-1">
+            Grupa: eksterni dug bez međusobnih zajmova; rezultat umanjen za prihod od povezanog lica (100.000 KM) i neusaglašene međusobne fakture. Amortizacija i nedostajuće fakture zakupa nisu uračunate.
+          </p>
+        </div>
+
+        {/* Reconciliation */}
+        <div className="mb-2 overflow-x-auto">
+          <span className="side-label block mb-2">Usaglašavanje IDSS ↔ IMH</span>
+          {reconRows.length === 0 ? (
+            <div className="p-2.5 rounded-lg border border-[var(--line)] text-[11px] flex items-start gap-2">
+              <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" /> Za usaglašavanje učitajte bruto bilanse obje ustanove za isti period.
+            </div>
+          ) : (
+            <table className="w-full text-[11px] border-collapse">
+              <thead>
+                <tr className="text-left border-b border-[var(--line)]">
+                  <th className="py-1 pr-2">Stavka</th>
+                  <th className="py-1 px-1 text-right">IDSS</th>
+                  <th className="py-1 px-1 text-right">IMH</th>
+                  <th className="py-1 pl-1 text-right">Razlika</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reconRows.map((r) => (
+                  <tr key={r.label} className="border-b border-[var(--line)]/50">
+                    <td className="py-1 pr-2">{r.label}</td>
+                    <td className="py-1 px-1 text-right font-mono">{cell(r.idss)}</td>
+                    <td className="py-1 px-1 text-right font-mono">{cell(r.imh)}</td>
+                    <td className={`py-1 pl-1 text-right font-mono font-bold ${r.diff && Math.abs(r.diff) >= 0.01 ? 'text-red-600' : 'text-emerald-600'}`}>
+                      {r.diff === null ? '–' : Math.abs(r.diff) < 0.01 ? 'usaglašeno' : km(r.diff, 2)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </>

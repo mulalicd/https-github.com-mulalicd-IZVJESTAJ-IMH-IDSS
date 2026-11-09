@@ -7,15 +7,15 @@ import {
   LOAN_REPAYMENT_SCHEDULE,
   LOAN_CONTRACT_FULL,
   LEASE_CONTRACT_FULL,
-  BASE_RED_FLAGS,
-  INITIAL_INGESTED_DOCS,
-  IngestedDocument,
 } from './data/reportData';
+import { useFinancials, km } from './lib/bilans/store';
+import { formatBs } from './lib/bilans/parser';
+import { LedgerSnapshot } from './components/LedgerSnapshot';
 import { HarmonizationDrawer } from './components/HarmonizationDrawer';
 import { SearchPanel } from './components/SearchPanel';
 import { UnifiedLogo } from './components/UnifiedLogo';
 import { RiskSimulator } from './components/RiskSimulator';
-import { RiskMatrixVisual } from './components/RiskMatrixVisual';
+import { RiskMatrixVisual, buildMatrixRisks } from './components/RiskMatrixVisual';
 import { CashFlowForecastVisual } from './components/CashFlowForecastVisual';
 import { PartnerCardForensics } from './components/PartnerCardForensics';
 import {
@@ -55,43 +55,11 @@ export default function App() {
   const [scrollProgress, setScrollProgress] = useState<number>(0);
   const [activeSection, setActiveSection] = useState<string>('sec-1-svrha');
 
-  // Ingested documents
-  const [documents, setDocuments] = useState<IngestedDocument[]>(INITIAL_INGESTED_DOCS);
-
-  // Live financial reports synchronized from accounting system
-  const [financials, setFinancials] = useState<FinancialYear[]>(HISTORICAL_FINANCIALS);
-  const [isSyncingFinancials, setIsSyncingFinancials] = useState<boolean>(false);
-  const [lastSyncTime, setLastSyncTime] = useState<string>('07.11.2026. 14:00 (Inicijalno usklađeno)');
-  const [liveMetrics, setLiveMetrics] = useState<any>(null);
-  const [syncToast, setSyncToast] = useState<string | null>(null);
-
-  const handleRefreshFinancials = async () => {
-    setIsSyncingFinancials(true);
-    setSyncToast(null);
-    try {
-      const res = await fetch(`${import.meta.env.BASE_URL}api/financials/sync-latest`);
-      if (!res.ok) throw new Error('Greška servera pri povlačenju podataka.');
-      const data = await res.json();
-      if (data.historicalFinancials && Array.isArray(data.historicalFinancials)) {
-        setFinancials(data.historicalFinancials);
-      }
-      if (data.liveMetrics) {
-        setLiveMetrics(data.liveMetrics);
-      }
-      if (data.timestamp) {
-        setLastSyncTime(data.timestamp);
-      }
-      setSyncToast(`Podaci učitani sa servera aplikacije (statički podaci iz izvještaja, stanje 31.08.2026.) na dan ${data.timestamp}.`);
-      setTimeout(() => setSyncToast(null), 6000);
-    } catch {
-      const nowStr = new Date().toLocaleDateString('bs-BA') + ' ' + new Date().toLocaleTimeString('bs-BA', { hour: '2-digit', minute: '2-digit' });
-      setLastSyncTime(nowStr);
-      setSyncToast(`Server aplikacije nije dostupan; prikazani su podaci iz izvještaja (stanje 31.08.2026.). Provjereno ${nowStr}.`);
-      setTimeout(() => setSyncToast(null), 5000);
-    } finally {
-      setIsSyncingFinancials(false);
-    }
-  };
+  // Finansijski podaci: verifikovani bilansi (31.10.2026.) ili bilansi učitani u harmonizacijskom sistemu
+  const fin = useFinancials();
+  const g = fin.group;
+  const financials: FinancialYear[] = HISTORICAL_FINANCIALS;
+  const periodLabel = g?.periodTo ?? '31.10.2026.';
 
   // Toggle theme
   const toggleTheme = () => {
@@ -150,60 +118,21 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Harmonization logic
-  const handleToggleDoc = (id: string) => {
-    setDocuments((prev) =>
-      prev.map((d) => (d.id === id ? { ...d, isActive: !d.isActive } : d))
-    );
-  };
-
-  const handleAddCustomDoc = (newDoc: IngestedDocument) => {
-    setDocuments((prev) => [newDoc, ...prev]);
-  };
-
-  const handleResetDocs = () => {
-    setDocuments(INITIAL_INGESTED_DOCS);
-  };
-
-  const activeDocs = documents.filter((d) => d.isActive);
-  const modularActiveDocs = activeDocs.filter(
-    (d) => d.id.startsWith('DOC-EXT') || d.id.startsWith('DOC-CUSTOM')
-  );
-
-  const resolvedRiskIds = Array.from(
-    new Set(modularActiveDocs.flatMap((d) => d.effects.riskResolved || []))
-  );
-
-  const injectedCash = modularActiveDocs.reduce(
-    (acc, d) => acc + (d.effects.cashDeltaKM || 0),
-    0
-  );
-  const injectedEbitda = modularActiveDocs.reduce(
-    (acc, d) => acc + (d.effects.ebitdaDeltaKM || 0),
-    0
-  );
-  const extraStudents = modularActiveDocs.reduce(
-    (acc, d) => acc + (d.effects.studentsChange || 0),
-    0
-  );
-
-  // Derived financials
-  const baseCash = 37639;
-  const harmonizedCash = baseCash + injectedCash;
-
-  const baseReportedResult = 175864;
-  const baseNormalizedResult = 75864;
-  const is100kReclassified = resolvedRiskIds.includes('RF-01');
-  const harmonizedNetResult =
-    (is100kReclassified ? baseNormalizedResult : baseReportedResult) + injectedEbitda;
-
-  const currentStudents = 83 + extraStudents;
+  // Izvedeni pokazatelji iz knjiga
+  const harmonizedCash = g?.cash ?? 0;
+  const harmonizedNetResult = g?.resultNormalized ?? 0;
+  const currentStudents = 83;
+  // Mjesečni dug servis po ugovorima: anuitet MF kredita IMH + leasing + rata osnivaču po ugovoru
+  const monthlyDebtService = 4661 + 2010 + 7790;
+  const resolvedRiskIds: string[] = [];
+  if (g && g.publicAgreements < 1) resolvedRiskIds.push('RF-07');
+  if (fin.imh && fin.imh.cash - fin.imh.cashInTransit >= fin.imh.deposits) resolvedRiskIds.push('RF-03');
 
   // Standalone HTML Download
   const handleDownloadStandaloneHTML = () => {
     const link = document.createElement('a');
-    link.href = `${import.meta.env.BASE_URL}assets/aistudio/IDSS_IMH_Strateski_Izvjestaj_Standalone_2026_5ff15bac.html`;
-    link.download = 'IDSS_IMH_Strateski_Izvjestaj_Standalone_2026.html';
+    link.href = `${import.meta.env.BASE_URL}assets/izvjestaj/IDSS_IMH_Strateski_izvjestaj_2027-2032_v3.pdf`;
+    link.download = 'IDSS_IMH_Strateski_izvjestaj_2027-2032_v3.pdf';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -249,22 +178,20 @@ export default function App() {
           <span className="font-semibold text-[var(--muted)]">
             Status modela:{' '}
             <b className="text-[var(--ink)]">
-              {modularActiveDocs.length > 0
-                ? `Harmonizovano (${modularActiveDocs.length} akta)`
-                : 'Forenzički audit (31.08.2026.)'}
+              {fin.usingUploads ? `Učitani bilansi (${periodLabel})` : `Verifikovani bilansi (${periodLabel})`}
             </b>
           </span>
           <span className="text-slate-300 dark:text-slate-700">|</span>
           <span className="text-[var(--muted)]">
             Gotovina:{' '}
             <b className="text-[var(--idss-blue)] dark:text-[var(--idss-cyan)]">
-              {harmonizedCash.toLocaleString('bs-BA')} KM
+              {formatBs(harmonizedCash)} KM
             </b>
           </span>
           <span className="text-slate-300 dark:text-slate-700">|</span>
           <span className="text-[var(--muted)]">
-            Fiksni mjesečni odlivi:{' '}
-            <b className="text-[var(--idss-red)] font-bold">&gt;15.000 KM/mj.</b>
+            Dug servis po ugovorima:{' '}
+            <b className="text-[var(--idss-red)] font-bold">≈{formatBs(monthlyDebtService)} KM/mj.</b>
           </span>
         </div>
 
@@ -280,30 +207,29 @@ export default function App() {
           </button>
 
           <button
-            className={`tool-btn ${modularActiveDocs.length > 0 ? 'active' : ''}`}
+            className={`tool-btn ${fin.usingUploads ? 'active' : ''}`}
             onClick={() => setDrawerOpen(true)}
             aria-label="Modularna harmonizacija"
           >
             <Sliders className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Harmonizacija</span>
-            {modularActiveDocs.length > 0 && (
+            {fin.usingUploads && (
               <span className="w-4 h-4 rounded-full bg-[var(--idss-red)] text-white text-[10px] flex items-center justify-center font-bold">
-                {modularActiveDocs.length}
+                {fin.uploadedLedgers.length}
               </span>
             )}
           </button>
 
-          {/* Dugme za osvježavanje finansijskih izvještaja iz računovodstvenog sistema */}
+          {/* Učitavanje bruto bilansa / kartica u harmonizacijski sistem */}
           <button
             className="tool-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 font-extrabold shadow-xs transition"
-            onClick={handleRefreshFinancials}
-            disabled={isSyncingFinancials}
-            aria-label="Osvježi najnovije finansijske izvještaje iz računovodstvenog sistema"
-            title="Povuci najnovije finansijske izvještaje iz računovodstvenog sistema u realnom vremenu (Konto 2110, 4320, 5000, 6000)"
+            onClick={() => setDrawerOpen(true)}
+            aria-label="Učitaj bruto bilans ili karticu konta"
+            title="Učitajte PDF bruto bilansa ili kartice (Bilanca analitike) za IDSS ili IMH: cijeli izvještaj se ažurira"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isSyncingFinancials ? 'animate-spin text-emerald-600' : 'text-emerald-600 dark:text-emerald-400'}`} />
-            <span className="hidden md:inline">{isSyncingFinancials ? 'Osvježavanje...' : 'Osvježi iz računovodstva'}</span>
-            <span className="inline md:hidden">Osvježi</span>
+            <RefreshCw className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span className="hidden md:inline">Učitaj bilans</span>
+            <span className="inline md:hidden">Učitaj</span>
           </button>
 
           <button
@@ -338,7 +264,7 @@ export default function App() {
             aria-label="Preuzmi samostalni HTML"
           >
             <FileText className="w-3.5 h-3.5 text-[var(--idss-blue)] dark:text-[var(--idss-cyan)]" />
-            <span>Standalone HTML</span>
+            <span>Izvještaj v3 (PDF)</span>
           </button>
         </div>
       </header>
@@ -347,17 +273,7 @@ export default function App() {
       <SearchPanel isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
 
       {/* Harmonization Drawer */}
-      <HarmonizationDrawer
-        isOpen={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        documents={documents}
-        onToggleDoc={handleToggleDoc}
-        onAddCustomDoc={handleAddCustomDoc}
-        onResetDocs={handleResetDocs}
-        resolvedRisksCount={resolvedRiskIds.length}
-        injectedCash={injectedCash}
-        injectedEbitda={injectedEbitda}
-      />
+      <HarmonizationDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       {/* Master Edge-to-Edge Layout */}
       <div className="master-layout">
@@ -399,7 +315,7 @@ export default function App() {
                 className={activeSection === 'sec-5-forenzika' ? 'active' : ''}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <span>5. FORENZIČKI PRESJEK (31.08.)</span>
+                <span>5. FORENZIČKI PRESJEK ({periodLabel})</span>
               </a>
               <a
                 href="#sec-6-krediti-leasing-pozajmica"
@@ -408,7 +324,7 @@ export default function App() {
               >
                 <span>6. KREDITI, LEASING, POZAJMICA</span>
                 <span className="text-[10px] bg-red-100 text-red-700 font-bold px-1.5 py-0.2 rounded-full">
-                  &gt;15k/mj.
+                  ≈14,5k/mj.
                 </span>
               </a>
               <a
@@ -465,7 +381,7 @@ export default function App() {
                 className={activeSection === 'sec-14-scenariji-upisa' ? 'active' : ''}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <span>14. SCENARIJI UPISA (80/90/95)</span>
+                <span>14. SCENARIJI UPISA (PRELOMNA TAČKA)</span>
               </a>
               <a
                 href="#sec-15-otplatni-kalendar"
@@ -525,23 +441,23 @@ export default function App() {
               <div className="flex justify-between items-center">
                 <span className="text-[var(--muted)]">Gotovina grupe:</span>
                 <b className="font-bold text-[var(--idss-blue)] dark:text-[var(--idss-cyan)]">
-                  {harmonizedCash.toLocaleString('bs-BA')} KM
+                  {formatBs(harmonizedCash)} KM
                 </b>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[var(--muted)]">Operativni rezultat:</span>
+                <span className="text-[var(--muted)]">Rezultat grupe (normalizovan):</span>
                 <b className="font-bold text-[var(--imh-green)]">
-                  {harmonizedNetResult.toLocaleString('bs-BA')} KM
+                  {formatBs(harmonizedNetResult)} KM
                 </b>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[var(--muted)]">Fiksni teret odliva:</span>
-                <b className="font-bold text-[var(--idss-red)]">&gt;15.000 KM/mj.</b>
+                <span className="text-[var(--muted)]">Dug servis (ugovori):</span>
+                <b className="font-bold text-[var(--idss-red)]">≈{formatBs(monthlyDebtService)} KM/mj.</b>
               </div>
               <div className="flex justify-between items-center pt-1 border-t border-[var(--line)]">
                 <span className="text-[var(--muted)]">Rizici (Zastavice):</span>
                 <span className="font-bold text-xs">
-                  <span className="text-[var(--idss-red)]">{7 - resolvedRiskIds.length} akt.</span>{' '}
+                  <span className="text-[var(--idss-red)]">{buildMatrixRisks(fin).length - resolvedRiskIds.length} akt.</span>{' '}
                   / <span className="text-[var(--imh-green)]">{resolvedRiskIds.length} san.</span>
                 </span>
               </div>
@@ -569,7 +485,7 @@ export default function App() {
               <div className="hero-rule" style={{ marginTop: '26px' }} />
               <h1>Sveobuhvatna forenzička i strateška analiza poslovanja</h1>
               <div className="hero-sub">
-                Razdoblje: 2022. – 31.08.2026. <span style={{ opacity: 0.6 }}>|</span> Horizont
+                Razdoblje: 2022. – {periodLabel} <span style={{ opacity: 0.6 }}>|</span> Horizont
                 plana: 2027. – 2032. <br />
                 <span className="text-xs text-[#9edcf5]">
                   Objektivni radni sistem za direktora i menadžment · Analiza bez ukrasnih fraza
@@ -586,10 +502,10 @@ export default function App() {
                 bruto bilansi
               </div>
               <div className="flex items-center gap-2">
-                {modularActiveDocs.length > 0 && (
+                {fin.usingUploads && (
                   <div className="border border-green-400 bg-green-500/20 text-green-200 px-3 py-1.5 rounded-full text-[10px] font-extrabold tracking-wider uppercase flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    Harmonizovan sistem ({modularActiveDocs.length} akta)
+                    Harmonizovano iz učitanih bilansa ({fin.uploadedLedgers.length})
                   </div>
                 )}
                 <div className="conf-tag">STROGO POVJERLJIVO</div>
@@ -597,8 +513,8 @@ export default function App() {
             </div>
           </section>
 
-          {/* Dynamic Harmonization Banner */}
-          {modularActiveDocs.length > 0 && (
+          {/* Banner: izvještaj prikazuje podatke iz učitanih bilansa */}
+          {fin.usingUploads && (
             <div className="mb-8 p-4 rounded-2xl bg-gradient-to-r from-emerald-950/80 to-slate-900 border border-emerald-500/50 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-lg">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400 flex items-center justify-center text-emerald-300 shrink-0">
@@ -606,27 +522,19 @@ export default function App() {
                 </div>
                 <div>
                   <h4 className="font-extrabold text-sm m-0 text-emerald-300">
-                    Sistem je dinamički harmonizovan ({modularActiveDocs.length} verifikovana dokumenta)
+                    Izvještaj je harmonizovan s učitanim bilansima (stanje {periodLabel})
                   </h4>
                   <p className="text-xs text-slate-300 m-0">
-                    Riješeno rizika: {resolvedRiskIds.join(', ')} · Injektovano likvidnosti: +
-                    {injectedCash.toLocaleString('bs-BA')} KM · EBITDA prilagođenje: +
-                    {injectedEbitda.toLocaleString('bs-BA')} KM
+                    Gotovina grupe {km(g?.cash)} · Eksterni dug {km(g?.externalDebt)} · Kapital {km(g?.equity)} · Normalizovani rezultat {km(g?.resultNormalized)}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setDrawerOpen(true)}
-                  className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition"
-                >
+                <button onClick={() => setDrawerOpen(true)} className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition">
                   Uredi dokumente
                 </button>
-                <button
-                  onClick={handleResetDocs}
-                  className="px-3 py-1.5 rounded-lg border border-slate-600 hover:bg-slate-800 text-slate-300 text-xs transition"
-                >
-                  Reset na bazni audit
+                <button onClick={fin.resetToVerified} className="px-3 py-1.5 rounded-lg border border-slate-600 hover:bg-slate-800 text-slate-300 text-xs transition">
+                  Vrati na verifikovano stanje
                 </button>
               </div>
             </div>
@@ -645,7 +553,7 @@ export default function App() {
             </p>
             <p>
               Metodologija se oslanja isključivo na primarne izvore: godišnje finansijske izvještaje IDSS i
-              IMH za 2023., 2024. i 2025. godinu, bruto bilanse i interpretacije stanja na 31.08.2026.,
+              IMH za 2023., 2024. i 2025. godinu, bruto bilanse na 31.08.2026. i 31.10.2026., karticu kupaca IDSS-a na 02.11.2026.,
               ugovore o kreditu MF Banke (20.000 KM i overdraft 15.000 KM za IDSS od 12.06.2025., dugoročni
               kredit 100.000 KM za IMH od 30.07.2026.), ugovor o finansijskom leasingu Sparkasse za Porsche
               Cayenne od 14.07.2026., ugovor o pozajmici između Lamie Kacile i IMH-a od 14.07.2026. o učešću u
@@ -674,23 +582,24 @@ export default function App() {
                 <span className="eyebrow text-[var(--imh-green)] block mb-1">Šta radi (Prednosti)</span>
                 <ul className="text-xs space-y-1.5 m-0 p-0 list-none text-[var(--ink)]">
                   <li>• <b>Vertikala funkcioniše:</b> 64% prvačića (7 od 11) u 2026/27. dolazi iz predškolske grupe IMH.</li>
-                  <li>• <b>Stabilan rast prihoda:</b> Rast s 1.357.925 KM (2022.) na 1.701.240 KM (2025.), rast 25,3%.</li>
+                  <li>• <b>Rast prihoda:</b> Konsolidovani prihod s 1.516.304 KM (2023.) na 1.701.240 KM (2025.), rast 12,2%.</li>
                   <li>• <b>Profitabilnost IMH:</b> U 2025. ostvarena neto dobit od 63.815 KM i smanjen negativni kapital.</li>
-                  <li>• <b>Konkurentan cjenovnik:</b> Realizovana cijena kreće se oko 83 do 90% kataloške cijene.</li>
-                  <li>• <b>Ugovor o zakupu:</b> Traje do 2033., što daje vremenski horizont lokacije Buka 11/13.</li>
-                  <li>• <b>Formalizovana pozajmica:</b> Pozajmica prema Lamiji Kacili (93.484,84 KM) uređena je ugovorom na 12 rata.</li>
+                  <li>• <b>Cjenovnik:</b> Realizovana školarina IDSS-a iznosi 87,4% cjenovnika (odstupanje 108.324 KM, 12,6%).</li>
+                  <li>• <b>Ugovor o zakupu:</b> Prema upravi produžen do 2033. pod istim uslovima [U]; dokument treba uvrstiti u data room.</li>
+                  <li>• <b>Vozilo osnivača kao učešće:</b> Obaveza IMH-a prema osnivaču (93.484,84 KM) ima osnov, jer je ranije vozilo bilo osnivačevo; može se prebiti s potraživanjima od osnivača.</li>
                 </ul>
               </div>
 
               <div className="p-4 rounded-xl border border-[var(--line)] bg-[var(--surface)]">
                 <span className="eyebrow text-[var(--idss-red)] block mb-1">Šta pritišće (Izazovi)</span>
                 <ul className="text-xs space-y-1.5 m-0 p-0 list-none text-[var(--ink)]">
-                  <li>• <b>Napeta gotovina:</b> Ukupno 37.639 KM na 31.08.2026. (IDSS 13.491 KM, IMH 24.148 KM).</li>
-                  <li>• <b>Cirkularni tok 100k:</b> Iskazani rezultat od 175.864 KM uključuje stavku 100k; operativni rezultat je 75.864 KM.</li>
-                  <li>• <b>Negativan vlastiti kapital:</b> Oko -18,4 hiljade KM po entitetu (zbir grupe -37.304 KM).</li>
-                  <li>• <b>Značajan dug za zakup:</b> Tekući zakup se ne plaća redovno; Općina ima polugu raskida.</li>
-                  <li>• <b>Fiksni odlivi &gt;15.000 KM/mj.:</b> Krediti MF, leasing Cayenne (1.028 EUR/mj.), rate pozajmice (7.790 KM/mj.).</li>
+                  <li>• <b>Napeta gotovina:</b> Grupa {km(g?.cash)} na {periodLabel}, od čega {km(g?.cashInTransit)} na prelaznim kontima; stvarno na računima oko {km(g?.bankCash)}.</li>
+                  <li>• <b>Fakture IDSS → IMH od 100.000 KM:</b> Iz namjenskog kredita MF Banke; kod IDSS-a prihod, kod IMH-a kapitalizovano kao ulaganje. Rezultat grupe po knjigama {km(g?.resultBooks)}, normalizovano {km(g?.resultNormalized)}.</li>
+                  <li>• <b>Negativan vlastiti kapital:</b> IDSS {km(fin.idss?.equity)}, IMH {km(fin.imh?.equity)}, grupa {km(g?.equity)}.</li>
+                  <li>• <b>Neusaglašen zakup:</b> U 2026. proknjiženo je 8 od 10 faktura Općine (60.250 KM), a kartica Općine u IMH-u pokazuje pretplatu od 22.469 KM.</li>
+                  <li>• <b>Dug servis ≈{formatBs(monthlyDebtService)} KM/mj.:</b> Kredit MF IMH (≈4.661 KM), leasing (1.027,91 EUR ≈ 2.010 KM), rata osnivaču po ugovoru (7.790,40 KM). Uz to: prekoračenja {km((fin.imh?.overdraft ?? 0) + (fin.idss?.overdraft ?? 0))}.</li>
                   <li>• <b>Oscilacije upisa:</b> 79 ➔ 94 ➔ 68 ➔ 83 učenika; trenutno 12% ispod historijskog vrha.</li>
+                  <li>• <b>Javne obaveze po sporazumima nisu izmirene:</b> {km(g?.publicAgreements)} na {periodLabel}; neisplaćene neto plate {km(g?.netSalariesPayable)}.</li>
                 </ul>
               </div>
             </div>
@@ -731,29 +640,34 @@ export default function App() {
                     <td>7 od 11 prvačića dolazi iz IMH predškolske grupe</td>
                   </tr>
                   <tr>
-                    <td>Gotovina na dan 31.08.2026.</td>
-                    <td>37.639 KM</td>
-                    <td>Napeto (IDSS 13.491 KM, IMH 24.148 KM spram 47.616 KM depozita roditelja)</td>
+                    <td>Gotovina na dan {periodLabel}</td>
+                    <td>{km(g?.cash)}</td>
+                    <td>IDSS {km(fin.idss?.cash)}, IMH {km(fin.imh?.cash)}; na prelaznim kontima {km(g?.cashInTransit)}; depoziti roditelja {km(g?.deposits)}</td>
                   </tr>
                   <tr>
-                    <td>Iskazani rezultat (8 mjeseci 2026.)</td>
-                    <td>+175.864 KM</td>
-                    <td>Uključuje 100.000 KM cirkularnog toka MF Banke</td>
+                    <td>Rezultat po knjigama (2026., {fin.idss?.months ?? '–'} mj.)</td>
+                    <td>{km(g?.resultBooks)}</td>
+                    <td>Uključuje 100.000 KM prihoda IDSS-a po fakturama IMH-u (kredit MF Banke)</td>
                   </tr>
                   <tr>
-                    <td>Operativni rezultat (bez 100k)</td>
-                    <td>+75.864 KM</td>
-                    <td>Jedini stvarni referentni broj za strateško odlučivanje</td>
+                    <td>Normalizovani rezultat grupe</td>
+                    <td><b>{km(g?.resultNormalized)}</b></td>
+                    <td>Bez 100.000 KM i neusaglašenih međusobnih faktura; prije amortizacije i 2 nedostajuće fakture zakupa (≈15.063 KM)</td>
+                  </tr>
+                  <tr>
+                    <td>Eksterni dug (bez leasinga)</td>
+                    <td>{km(g?.externalDebt)}</td>
+                    <td>Uz leasing vozila {km(g?.externalDebtWithLeasing)}; obaveza prema osnivaču (93.485 KM) nije proknjižena</td>
                   </tr>
                   <tr>
                     <td>Vlastiti kapital (prije rezultata 2026.)</td>
-                    <td>-37.304 KM</td>
-                    <td>Zbirni negativni kapital grupe (-18.391 KM IDSS, -18.913 KM IMH)</td>
+                    <td>{km(g?.equity)}</td>
+                    <td>IDSS {km(fin.idss?.equity)}, IMH {km(fin.imh?.equity)} (iz knjiga)</td>
                   </tr>
                   <tr>
-                    <td>Pozajmica Lamia Kacila (IMH)</td>
+                    <td>Obaveza IMH-a prema osnivaču</td>
                     <td>93.484,84 KM</td>
-                    <td>12 mjesečnih rata po cca 7.790 KM (od 01.11.2026. do 01.10.2027.), 0% kamate</td>
+                    <td>Ugovor potpisan 07.11.2026., na njemu datum 14.07.2026.; prva uplata ≈4.400 KM 09.11.2026. Preporuka: prebijanje s potraživanjima od osnivača ({km(g?.receivablesFounder)})</td>
                   </tr>
                 </tbody>
               </table>
@@ -808,13 +722,13 @@ export default function App() {
                 <b>IMH (Montessori vrtić):</b>
                 <br />• Godišnja školarina: oko 8.520 KM (domaći) / 9.720 KM (strani)
                 <br />• Popust na školarinu: 20% za naredno dijete
-                <br />• Depoziti roditelja: 47.616 KM ukupno
-                <br />• Subvencije KS: 157.458 KM (cca 24% prihoda IMH)
+                <br />• Depoziti roditelja: {km(fin.imh?.deposits)} ({fin.imh?.periodTo})
+                <br />• Subvencije Ministarstva KS: {km(fin.imh?.ministrySubsidies)} do {fin.imh?.periodTo}, prolazna stavka (nije prihod IMH-a)
               </div>
             </div>
             <p>
-              Realizovana prosječna cijena kreće se oko 83% do 90% kataloške cijene usljed porodičnih popusta.
-              Godišnji trošak rada IDSS-a (cca 704.500 KM) iznosi približno 90% ugovorene školarine za 2026/27.
+              Realizovana školarina IDSS-a iznosi 87,4% cjenovnika (749.976 KM naspram 858.300 KM po cjenovniku) zbog popusta i ugovora bez školarine.
+              Godišnji nivo troškova rada IDSS-a (704.517 KM, obračun 09/2026) iznosi 90,4% ugovorene vrijednosti za 2026/27.
               (779.476 KM), što znači da ostali troškovi (transferne cijene, materijal, energenti, servis duga)
               moraju biti pokriveni rastom upisa ili strogom kontrolom rashoda.
             </p>
@@ -848,11 +762,11 @@ export default function App() {
             </div>
             <div className="p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50/20 dark:bg-emerald-950/20 my-3 text-xs">
               <span className="eyebrow text-emerald-600 dark:text-emerald-400 block mb-1 font-black">
-                KLJUČNA STRATEŠKA SIGURNOST: NOVI UGOVOR O ZAKUPU ZAKLJUČEN DO 2033. GODINE POD IDENTIČNIM USLOVIMA!
+                PREMA PODACIMA UPRAVE [U]: UGOVOR O ZAKUPU PRODUŽEN DO 2033. GODINE POD ISTIM USLOVIMA
               </span>
               <p className="m-0 leading-relaxed text-[var(--ink)] font-medium">
                 Izuzetno važna strateška činjenica za poslovanje i vrednovanje grupacije: Nakon isteka prvobitnog 10-godišnjeg perioda
-                (2013–2023), <b>dana 27.09.2023. godine zvanično je zaključen NOVI UGOVOR O ZAKUPU SA OPĆINOM CENTAR S VAŽENJEM DO 2033. GODINE</b>,
+                (2013–2023), prema podacima uprave <b>27.09.2023. zaključen je novi ugovor o zakupu s Općinom Centar s važenjem do 2033. godine</b> (dokument još nije dostavljen na verifikaciju),
                 i to <u>pod potpuno istim uslovima</u>:
                 <br />• <b>Ista zaštićena cijena zakupa:</b> 5,00 KM po m² neto (ukupno <b>6.437,00 KM neto + 1.094,29 KM PDV = 7.531,29 KM bruto mjesečno</b>).
                 <br />• <b>Ista ugovorena površina:</b> 1.287,40 m² u ulici Buka 11 i 13, što obezbjeđuje dugoročni mir i krov nad glavom za IDSS i IMH sve do jeseni 2033. godine.
@@ -863,36 +777,22 @@ export default function App() {
               <b>KRITIČNA FORENZIČKA KLAUZULA — ČLAN XIV (JEDNOSTRANI RASKID I DELOŽACIJA):</b> Prema članu XIV ugovora,
               Općina Centar ima zakonsko i ugovorno pravo <u>jednostrano raskinuti ugovor sa otkaznim rokom od samo 15 dana</u> ukoliko
               zakupac <b>ne plati dvije dospjele zakupnine</b> nakon prijema opomene! Takođe, član XI strogo zabranjuje podzakup ili bilo
-              kakvo učešće u poslovno-tehničkoj saradnji s trećim licima bez saglasnosti. S obzirom na akumulirani dug i povremeno kašnjenje
-              servisiranja tekućih faktura, pravna i operativna sigurnost objekta Buka 11/13 zahtijeva momentalni pismeni reprogram s Općinom kako bi se ugovor do 2033. sačuvao bez ikakvih pravnih rizika.
+              kakvo učešće u poslovno-tehničkoj saradnji s trećim licima bez saglasnosti. Na 31.10.2026. u IMH-u je za 10 mjeseci proknjiženo 8 faktura Općine (60.250 KM), a kartica Općine pokazuje
+              pretplatu od 22.469 KM. Stanje treba usaglasiti izvodom otvorenih stavki s Općinom i u data room uvrstiti ugovor do 2033.
             </p>
 
             {/* POGLAVLJE 4 */}
             <h2 id="sec-4-finansije">4. FINANSIJSKA HISTORIJA 2022. DO 2025.</h2>
             <p>
-              Konsolidirani prihodi nakon eliminacije transfernih cijena rasli su sa 1.357.925 KM (2022.) na
-              1.701.240 KM (2025.), što je rast od 25,3%. IDSS je porastao za 42% (sa 633.571 na 899.881 KM), dok je
-              IMH porastao za 24% (sa 724.354 na 900.571 KM).
+              Konsolidovani prihodi rasli su sa 1.516.304 KM (2023.) na 1.701.240 KM (2025.), što je rast od 12,2%.
+              Zbir za 2022. (1.357.925 KM) sadrži 260.190 KM najma koji je IMH naplatio od IDSS-a; nakon eliminacije
+              iznosi 1.097.735 KM. IDSS je od 2022. porastao za 42% (sa 633.571 na 899.881 KM), a IMH za 24% (sa
+              724.354 na 900.571 KM).
             </p>
 
-            <div className="flex flex-wrap items-center justify-between gap-2 mb-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-[var(--line)] text-xs">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="font-bold text-[var(--ink)]">
-                  Stanje evidencije: <span className="text-emerald-700 dark:text-emerald-300 font-extrabold">Sinhronizovano u realnom vremenu</span>
-                </span>
-                <span className="text-[var(--muted)] hidden sm:inline">· Presjek: {lastSyncTime}</span>
-              </div>
-              <button
-                onClick={handleRefreshFinancials}
-                disabled={isSyncingFinancials}
-                className="px-2.5 py-1 rounded-lg bg-[var(--surface)] hover:bg-[var(--surface-alt)] border border-[var(--line)] text-[11px] font-bold text-[var(--idss-blue)] dark:text-[var(--idss-cyan)] flex items-center gap-1.5 transition cursor-pointer"
-                title="Povuci najnovije finansijske izvještaje iz računovodstva"
-              >
-                <RefreshCw className={`w-3 h-3 ${isSyncingFinancials ? 'animate-spin' : ''}`} />
-                <span>{isSyncingFinancials ? 'Ažuriranje...' : 'Osvježi tabele sada'}</span>
-              </button>
-            </div>
+            <p className="text-xs text-[var(--muted)]">
+              [V] FIA obrasci 2022–2023, bruto bilansi 2024–2025, godišnji izvještaji 2025. Red za 2026. preuzet je iz aktivnih bruto bilansa ({periodLabel}).
+            </p>
 
             <div className="table-wrap">
               <table className="data-table">
@@ -908,20 +808,34 @@ export default function App() {
                   </tr>
                 </thead>
                 <tbody>
-                  {financials.map((f) => (
+                  {[
+                    ...financials.filter((f) => !f.year.startsWith('2026')),
+                    ...(fin.idss && fin.imh && fin.idss.revenue !== null && fin.imh.revenue !== null && fin.idss.result !== null && fin.imh.result !== null
+                      ? [{
+                          year: `2026 (do ${periodLabel})`,
+                          idssRev: Math.round(fin.idss.revenue),
+                          imhRev: Math.round(fin.imh.revenue),
+                          eliminations: Math.round(g?.intercompanyRevenue ?? 0),
+                          consolidatedRev: Math.round(g?.revenueExternal ?? 0),
+                          idssNet: Math.round(fin.idss.result),
+                          imhNet: Math.round(fin.imh.result),
+                          consolidatedNet: Math.round(g?.resultBooks ?? 0),
+                        }]
+                      : []),
+                  ].map((f) => (
                     <tr key={f.year}>
                       <td><b>{f.year}</b></td>
-                      <td>{f.idssRev.toLocaleString('bs-BA')} KM</td>
-                      <td>{f.imhRev.toLocaleString('bs-BA')} KM</td>
-                      <td><b>{f.consolidatedRev.toLocaleString('bs-BA')} KM</b></td>
+                      <td>{formatBs(f.idssRev)} KM</td>
+                      <td>{formatBs(f.imhRev)} KM</td>
+                      <td><b>{formatBs(f.consolidatedRev)} KM</b></td>
                       <td className={f.idssNet < 0 ? 'text-[var(--idss-red)] font-semibold' : ''}>
-                        {f.idssNet.toLocaleString('bs-BA')} KM
+                        {formatBs(f.idssNet)} KM
                       </td>
                       <td className="text-[var(--imh-green)] font-semibold">
-                        {f.imhNet.toLocaleString('bs-BA')} KM
+                        {formatBs(f.imhNet)} KM
                       </td>
                       <td className="font-bold">
-                        {f.consolidatedNet.toLocaleString('bs-BA')} KM
+                        {formatBs(f.consolidatedNet)} KM
                       </td>
                     </tr>
                   ))}
@@ -937,79 +851,34 @@ export default function App() {
             </p>
             <p>
               <b>Struktura rashoda i plate:</b> Plate i doprinosi u 2025. činili su 75,7% rashoda IDSS-a (688.011 KM)
-              i 64,4% rashoda IMH-a (535.612 KM). Finansijski rashodi IDSS-a po kamatama porasli su na 13.998 KM.
+              i 64,4% rashoda IMH-a (535.612 KM).
             </p>
 
             {/* POGLAVLJE 5 */}
-            <div className="flex items-center justify-between flex-wrap gap-2 pt-4">
-              <h2 id="sec-5-forenzika" className="m-0">5. FORENZIČKI PRESJEK STANJA NA 31.08.2026.</h2>
-              <span className="text-xs bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 px-2.5 py-1 rounded-full font-bold flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                Live sinhronizacija: {lastSyncTime}
-              </span>
-            </div>
-            <div className="table-wrap">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Pokazatelj na 31.08.2026.</th>
-                    <th scope="col">IDSS</th>
-                    <th scope="col">IMH</th>
-                    <th scope="col">Grupa</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Prihodi (8 mjeseci)</td>
-                    <td>774.489 KM</td>
-                    <td>654.567 KM</td>
-                    <td>{(liveMetrics?.totalConsolidatedRevenue || 1429056).toLocaleString('bs-BA')} KM</td>
-                  </tr>
-                  <tr>
-                    <td>Iskazani rezultat (8 mjeseci)</td>
-                    <td>+115.145 KM</td>
-                    <td>+60.720 KM</td>
-                    <td>+{(liveMetrics?.iskazaniRezultatCirkularni || 175864).toLocaleString('bs-BA')} KM (uključuje 100k)</td>
-                  </tr>
-                  <tr>
-                    <td>Operativni rezultat (bez 100k)</td>
-                    <td>+15.145 KM</td>
-                    <td>+60.720 KM</td>
-                    <td><b>+{(liveMetrics?.operativniRezultatStvarni || 75864).toLocaleString('bs-BA')} KM (referentni broj)</b></td>
-                  </tr>
-                  <tr>
-                    <td>Gotovina na računima</td>
-                    <td>{(liveMetrics?.cashIDSS || 13491).toLocaleString('bs-BA')} KM</td>
-                    <td>{(liveMetrics?.cashIMH || 24148).toLocaleString('bs-BA')} KM</td>
-                    <td>{(liveMetrics?.cashTotal || 37639).toLocaleString('bs-BA')} KM (napeto)</td>
-                  </tr>
-                  <tr>
-                    <td>Vlastiti kapital (prije rezultata 2026.)</td>
-                    <td>-18.391 KM</td>
-                    <td>-18.913 KM</td>
-                    <td>{(liveMetrics?.negativeEquityGrupa || -37304).toLocaleString('bs-BA')} KM</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            <h2 id="sec-5-forenzika">5. FORENZIČKI PRESJEK STANJA NA {periodLabel}</h2>
+            <p>
+              Presjek se računa direktno iz bruto bilansa IDSS-a i IMH-a. Nove bilanse možete učitati u modularnom
+              harmonizacijskom sistemu, i tada se cijeli izvještaj preračunava. Pojedinačni podaci o roditeljima i djeci
+              nisu dio javnog izvještaja.
+            </p>
+            <LedgerSnapshot onOpenHarmonization={() => setDrawerOpen(true)} />
 
             <p>
-              <b>Stavka od 100.000 KM (cirkularni tok):</b> MF Banka je odobrila IMH operativna sredstva (kredit od
-              30.07.2026.). Novac se nije mogao prebaciti direktno na račun IMH, već preko prefakturisanja IDSS
-              prema IMH. Banka je uplatila novac na IDSS, koji je potom preraspodijeljen za doprinose i obaveze oba
-              subjekta. Riječ je o alatu za tekuću likvidnost, a ne o operativnoj prodaji. U strateškim projekcijama
-              i razgovorima s bankom ova stavka mora se tretirati kao neoperativna, uz pripremljen interni memo u
-              arhivi u roku od 30 dana.
+              <b>Fakture IDSS → IMH od 100.000 KM (kredit MF Banke):</b> IMH je 30.07.2026. dobio kredit od 100.000 KM
+              namijenjen plaćanju dobavljača, kod kojeg banka novac isplaćuje dobavljaču po fakturi, a ne dužniku. IDSS je
+              IMH-u fakturisao usluge (renoviranje dvorišta i slično), a MF Banka je iznos uplatila IDSS-u. Kod IDSS-a je to
+              prihod od povezanog lica, a IMH je fakture kapitalizovao kao „ulaganja u tuđe građevinske objekte” (konto 0211).
+              Na nivou grupe ovo nije prihod od trećih lica, pa se eliminiše. IMH je kao plaćeno IDSS-u knjižio 87.800 KM, a
+              IDSS vodi 100.000 KM naplaćeno; razliku od 12.200 KM treba usaglasiti. Osnovna djelatnost IDSS-a je obrazovanje,
+              pa bez ugovora i dokaza o izvedenim radovima fakture nose rizik prema banci, poreskim organima i reviziji.
             </p>
 
             <p>
-              <b>Potraživanja i pozajmica Lamie Kacile:</b> IMH bilježi 167.290 KM potraživanja od zaposlenih i uprave
-              (127.725 KM nenovčane koristi i plaćeni troškovi + 39.565 KM krediti fizičkim licima), a IDSS 17.402 KM.
-              Osnivač (Lamia Kacila) je pristupila otplati duga: Ugovorom o pozajmici od 14.07.2026. definisano je da
-              IMH duguje Lamiji 93.484,84 KM (vrijednost njenog Porschea datog firmi AUTO MT
-              Mostar kao učešće u leasingu novog vozila). Pozajmica je beskamatna na 12 rata po 7.790,40 KM
-              (01.11.2026.–01.10.2027.) na lični račun zajmodavca kod Sparkasse. Preostali dio potraživanja (iznad 93.484,84
-              KM, odnosno cca 91.207 KM) mora se formalizovati pisanim priznanjem duga i planom otplate u roku od 12 mjeseci.
+              <b>Potraživanja od osnivača i obaveza prema osnivaču:</b> Cijelih 184.692 KM potraživanja od zaposlenih,
+              uprave i fizičkih lica (IMH 127.725 KM + 39.565 KM, IDSS 17.402 KM) duguje osnivač obje ustanove. IMH istovremeno
+              duguje osnivaču 93.484,84 KM, jer je ranije vozilo osnivača dato kao učešće za novo vozilo u leasingu. Ugovor
+              o tome potpisan je 07.11.2026., a nosi datum 14.07.2026.; treba ga zamijeniti ugovorom ili aneksom s datumom
+              potpisa. Preporuka je prebijanje: neto dug osnivača grupi iznosi 91.207 KM, bez ikakve gotovinske isplate.
             </p>
 
             {/* POGLAVLJE 6 - NOVO: DETALJNE KREDITNE OBAVEZE, LEASING I POZAJMICA */}
@@ -1053,13 +922,13 @@ export default function App() {
             </div>
 
             <div className="p-4 rounded-xl border border-[var(--idss-red)] bg-red-50/20 dark:bg-red-950/20 my-4">
-              <span className="eyebrow text-[var(--idss-red)] block mb-1">KRITIČNI NALAZ: ZBIRNI ODLIVI PREKO 15.000 KM MJESEČNO</span>
+              <span className="eyebrow text-[var(--idss-red)] block mb-1">KRITIČNI NALAZ: DUG SERVIS PO UGOVORIMA ≈14.460 KM MJESEČNO</span>
               <p className="text-xs text-[var(--ink)] m-0 leading-relaxed">
                 Zbroj fiksnih obaveza samo po osnovu finansiranja (anuitet MF kredita IMH cca 4.661 KM + leasing rata
                 Sparkasse Porsche Cayenne 1.027,91 EUR / cca 2.010 KM + rata pozajmice prema Lamiji Kacili 7.790,40 KM)
-                <b> prelazi 14.460 do 15.000 KM svakog mjeseca</b>, prije isplate ijedne plate nastavnicima, prije uplate
-                doprina i prije plaćanja tekućeg zakupa za zgradu Buka 11/13! Uključujući anuitet IDSS kredita i kamate na
-                overdraft, fiksni odliv duga je primarni teret likvidnosti.
+                <b> iznosi oko 14.460 KM svakog mjeseca</b>, prije plata, doprinosa i zakupa. Uz to, prekoračenja na računima
+                iznose {km((fin.imh?.overdraft ?? 0) + (fin.idss?.overdraft ?? 0))} ({periodLabel}). Prebijanjem obaveze prema osnivaču
+                mjesečni odliv pada za 7.790 KM.
               </p>
             </div>
 
@@ -1070,16 +939,18 @@ export default function App() {
                 <br />• Vozilo: Porsche Cayenne 2025.
                 <br />• Neto vrijednost: 100.980,15 EUR. Učešće: 47.798,04 EUR (47,33%). Finansirano: 53.182,11 EUR.
                 <br />• Rok: 60 mjeseci. Mjesečna rata: 1.027,91 EUR (6M Euribor + 3,44% marža; EKS s PDV 8,02%).
-                <br />• Mjenični dužnik: Lamia Kacila. Vozilo se vodi na IMH, a koristi ga osnivač lično. Neoperativna imovina.
+                <br />• Mjenični dužnik: Lamia Kacila. Vozilo se vodi na IMH, a koristi ga isključivo osnivač privatno: korist u naravi i nepriznati rashod.
+                <br />• U knjigama IMH-a (31.10.2026.): vozilo 216.933,55 KM, obaveza po leasingu {km(fin.imh?.leasing, 2)}. Iznos uključuje i učešće koje je dao osnivač; amortizacija nije knjižena.
               </div>
 
               <div className="p-3.5 rounded-xl border border-[var(--line)] bg-[var(--surface)]">
-                <b>Ugovor o pozajmici Lamia Kacila ➔ IMH (14.07.2026.):</b>
+                <b>Ugovor o pozajmici Lamia Kacila ➔ IMH (datum na ugovoru 14.07.2026., potpisan 07.11.2026.):</b>
                 <br />• <b>Zajmodavac:</b> KACILA LAMIA (osnivač; lični podaci izostavljeni)
                 <br />• <b>Zajmoprimac:</b> PPU INTERNATIONAL MONTESSORI HOUSE (ID: 4201731140006, Buka 11, zastupa direktor Davor Mulalić)
                 <br />• <b>Iznos pozajmice:</b> 93.484,84 KM (beskamatna, 0% kamate).
                 <br />• <b>Predmet:</b> Predaja vozila PORSCHE 9YA CAYENNE (reg. oznaka i VIN izostavljeni) dobavljaču AUTO MT d.o.o. Mostar (Buna 154 A) kao učešće za novi Cayenne 2025.
                 <br />• <b>Povrat:</b> 12 mjesečnih rata po 7.790,40 KM (zadnja 7.790,44 KM) na lični račun zajmodavca kod SPARKASSE BANK D.D. BIH.
+                <br />• <b>Stvarna otplata:</b> prva uplata ≈4.400 KM 09.11.2026., dalje sukcesivno prema raspoloživoj gotovini. Preporuka: prebijanje s potraživanjima od osnivača.
                 <br />• <b>Ugovorna sankcija (Čl. 6):</b> Kašnjenje dvije uzastopne rate daje pravo Zajmodavcu da pisanim putem zahtijeva vraćanje <u>cijelog preostalog iznosa odjednom</u> sa zakonskim zateznim kamatama!
               </div>
             </div>
@@ -1114,9 +985,9 @@ export default function App() {
                         <td><b>{s.installmentNo}. rata</b></td>
                         <td><b>{s.dueDate}</b></td>
                         <td className="font-bold text-[var(--idss-blue)] dark:text-[var(--idss-cyan)]">
-                          {s.amountKM.toLocaleString('bs-BA', { minimumFractionDigits: 2 })} KM
+                          {formatBs(s.amountKM, 2)} KM
                         </td>
-                        <td>{s.remainingDebtKM.toLocaleString('bs-BA', { minimumFractionDigits: 2 })} KM</td>
+                        <td>{formatBs(s.remainingDebtKM, 2)} KM</td>
                         <td className="text-[11px] text-[var(--muted)]">
                           Sparkasse (lični račun zajmodavca) {s.installmentNo === 1 ? '(Prva dospjela rata)' : s.installmentNo === 12 ? '(Konačno poravnanje duga)' : ''}
                         </td>
@@ -1145,14 +1016,14 @@ export default function App() {
             <div className="p-4 rounded-xl border border-[var(--line)] bg-[var(--surface-alt)] my-5">
               <div className="flex items-center justify-between mb-2">
                 <span className="eyebrow text-emerald-600 dark:text-emerald-400 font-extrabold">
-                  NOVI UGOVOR O ZAKUPU DO 2033. GODINE POD ISTIM USLOVIMA · ZGRADA BUKA 11 I 13
+                  UGOVOR O ZAKUPU · ZGRADA BUKA 11 I 13 (PRODUŽENJE DO 2033. PREMA UPRAVI [U])
                 </span>
                 <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                   VAŽNOST DO 2033. · ISTI USLOVI (5,00 KM/m² · 1.287,40 m²)
                 </span>
               </div>
               <p className="text-xs text-[var(--muted)] mb-3">
-                Zvanični kontinuitet zakupa: Nakon prvobitnog 10-godišnjeg ugovora (br. 04-49-36-59/13), <b>zaključen je novi ugovor s Općinom Centar s rokom važenja do 2033. godine pod potpuno istim uslovima</b>:
+                Nakon prvobitnog 10-godišnjeg ugovora (br. 04-49-36-59/13), prema podacima uprave <b>zaključen je novi ugovor s Općinom Centar s rokom važenja do 2033. godine pod istim uslovima</b>; dokument treba dostaviti na verifikaciju:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs mb-3">
                 <div className="p-3 rounded-lg border border-[var(--line)] bg-[var(--surface)]">
@@ -1161,7 +1032,7 @@ export default function App() {
                   <br />• <b>Zakupac:</b> PPU THE INTERNATIONAL MONTESSORI HOUSE (Buka 11).
                   <br />• <b>Predmet i površina:</b> Poslovna zgrada u ulici Buka 11 i 13, ukupne površine <b>1.287,40 m²</b>.
                   <br />• <b>Namjena:</b> Isključivo iz oblasti obrazovanja za cjelokupan kampus IDSS i IMH.
-                  <br />• <b>Ugovorni rok:</b> <b>NOVI UGOVOR ZAKLJUČEN DO 2033. GODINE</b> (garantovana stabilnost lokacije narednih 7+ godina).
+                  <br />• <b>Ugovorni rok:</b> do 2033. prema podacima uprave [U].
                 </div>
                 <div className="p-3 rounded-lg border border-[var(--line)] bg-[var(--surface)]">
                   <b>Identični finansijski uslovi zakupa do 2033.:</b>
@@ -1181,8 +1052,8 @@ export default function App() {
                 </p>
                 <p className="m-0 text-[var(--idss-red)] font-semibold">
                   ⚠️ <b>Član XIV (Raskid ugovora):</b> Ako zakupac ne plati <u>dvije dospjele zakupnine</u> u roku od 15 dana od prijema opomene,
-                  Općina Centar ima pravo na jednostrani raskid ugovora. S obzirom na akumulirani dug i neredovno servisiranje, hitan prioritet
-                  menadžmenta jeste potpisivanje novog formalnog protokola o izmirenju duga i uredno plaćanje tekućih 7.531,29 KM mjesečno.
+                  Općina Centar ima pravo na jednostrani raskid ugovora. Na 31.10.2026. kartica Općine u IMH-u pokazuje pretplatu (22.469 KM) uz
+                  2 neproknjižene fakture; prioritet je usaglašavanje stanja s Općinom i uredno plaćanje 7.531,29 KM do 15. u mjesecu.
                 </p>
               </div>
             </div>
@@ -1194,9 +1065,9 @@ export default function App() {
               nakon čega je uslijedio pad na 68 učenika (2025/26., -28%), te oporavak na 83 učenika u 2026/27. godini.
             </p>
             <p>
-              <b>Stvarni uzrok pada u 2025/26. godini:</b> Pad je uglavnom posljedica odlaska stranih porodica nakon
-              isteka mandata i ugovora roditelja u međunarodnim firmama i ambasadama. To je uobičajena fluktuacija
-              međunarodnog segmenta, a ne pad kvaliteta nastave. Ipak, pad od 28% pokazuje osjetljivost na miks upisa.
+              <b>Uzrok pada u 2025/26. godini:</b> Prema upravi, pad je uglavnom posljedica odlaska stranih porodica nakon
+              isteka mandata roditelja [U]; uzrok nije dokumentovan, pa analiza ispisa po razlozima mora postati dio
+              godišnjeg izvještavanja. Pad od 28% pokazuje osjetljivost na miks upisa.
               Zato je obrazovna vertikala IMH ➔ IDSS (domaće porodice s višegodišnjim životnim ciklusom) primarni hedge
               protiv fluktuacije stranog diplomatskog kora.
             </p>
@@ -1209,21 +1080,22 @@ export default function App() {
                 <ul className="text-xs space-y-1 m-0 p-0 list-none">
                   <li>• Funkcionalna vertikala sa 64% prelaska (7 od 11 učenika).</li>
                   <li>• Komplementarni programi: Montessori i njemački kurikulum.</li>
-                  <li>• Stabilan rast prihoda 2022–2025. (+25,3%). Prihodna strana je zdrava.</li>
+                  <li>• Rast prihoda 2023–2025. (+12,2%). Prihodna strana je zdrava.</li>
                   <li>• Zajednički kompleks Buka 11/13 smanjuje troškove po entitetu.</li>
                   <li>• Uveden TC elaborat (84 fakture) – profesionalizacija je započeta.</li>
-                  <li>• Oporavak upisa u 2026/27. i formalizovan plan pozajmice.</li>
+                  <li>• Oporavak upisa u 2026/27. (83 učenika).</li>
                 </ul>
               </div>
 
               <div className="p-4 rounded-xl border border-[var(--idss-red)] bg-[var(--surface)]">
                 <span className="eyebrow text-[var(--idss-red)] block mb-1">SLABOSTI</span>
                 <ul className="text-xs space-y-1 m-0 p-0 list-none">
-                  <li>• Negativan vlastiti kapital oba subjekta (-37.304 KM zbirno).</li>
+                  <li>• Negativan vlastiti kapital oba subjekta ({km(g?.equity)} zbirno).</li>
                   <li>• Visok udio plata (64% do 76% rashoda, 90,4% školarine). Niska operativna poluga.</li>
-                  <li>• Napeta gotovina (37.639 KM) naspram 47.616 KM depozita roditelja.</li>
-                  <li>• Akumulirani dug za zakup i neredovno plaćanje tekućeg zakupa.</li>
-                  <li>• Cirkularni tok 100k koji iskrivljuje iskazani rezultat.</li>
+                  <li>• Napeta gotovina: na računima ≈{km(g?.bankCash)} naspram {km(g?.deposits)} depozita roditelja.</li>
+                  <li>• Neusaglašen zakup s Općinom i nezatvoreni prelazni konti.</li>
+                  <li>• Fakture IDSS → IMH od 100.000 KM bez ugovora i dokaza o radovima.</li>
+                  <li>• Bruto bilans IDSS-a na 31.10.2026. nije u ravnoteži (−812,54 KM).</li>
                   <li>• Leasing luksuznog Cayennea (1.028 EUR/mj.) uz ličnu upotrebu.</li>
                   <li>• Sezonalnost prihoda: ljetni mjeseci operativno negativni.</li>
                 </ul>
@@ -1245,7 +1117,7 @@ export default function App() {
                 <span className="eyebrow text-[var(--idss-yellow)] block mb-1">PRIJETNJE</span>
                 <ul className="text-xs space-y-1 m-0 p-0 list-none">
                   <li>• Promjena uslova zakupa ili gubitak lokacije Buka 11/13.</li>
-                  <li>• Poreski i inspekcijski rizici: Ugovori o djelu (77.632 KM), transferne cijene.</li>
+                  <li>• Poreski i inspekcijski rizici: ugovori o djelu IDSS (93.117 KM u 10 mj. 2026.), transferne cijene, privatna upotreba vozila.</li>
                   <li>• Kašnjenje kantonalnih subvencija prema roditeljima (prolazna stavka koju IMH preusmjerava).</li>
                   <li>• Povećanje Euribora na leasing ratu Cayennea.</li>
                   <li>• Ovisnost o ključnim osobama (direktor, računovođa, osnivač kao garant).</li>
@@ -1258,7 +1130,7 @@ export default function App() {
             <h2 id="sec-9-vizija-stubovi">9. STRATEŠKA VIZIJA I PLAN 2027. DO 2032.</h2>
             <p>
               <b>Vizija:</b> Postati referentan i kapitalno zdrav edukacijski sistem u Sarajevu i šire, s
-              pozitivnim vlastitim kapitalom do kraja 2028., stabilnom operativnom maržom iznad 8 do 10 posto,
+              pozitivnim vlastitim kapitalom do kraja 2028., EBITDA maržom iznad 9% do 2028/29 i 12,6% do 2031/32 (bazni scenarij),
               discipliniranim cash-flowom i jasnom vertikalom. Vizija nije agresivan rast po svaku cijenu, već
               održivi rast na očišćenoj i transparentnoj bazi.
             </p>
@@ -1266,22 +1138,22 @@ export default function App() {
             <div className="space-y-3 my-4">
               <div className="p-3.5 rounded-xl border border-[var(--line)] bg-[var(--surface)]">
                 <b>Stub 1: Stabilizacija i čišćenje (Q4 2026. do Q2 2027.)</b>
-                <br />Interni memo o toku 100.000 KM; praćenje otplatnog plana pozajmice 93.484,84 KM; dogovor s
-                Općinom o dugu za zakup i redovno plaćanje tekućeg; mjesečni cash-flow forecasting koji uključuje
+                <br />Dokumentacija faktura od 100.000 KM; prebijanje obaveze prema osnivaču (93.484,84 KM); usaglašavanje
+                zakupa s Općinom i redovno plaćanje tekućeg; mjesečni cash-flow forecasting koji uključuje
                 plate, doprinose, zakup, anuitete, leasing ratu i rate pozajmice; potvrda Porezne uprave; usklađivanje
                 međufirmskih salda.
               </div>
               <div className="p-3.5 rounded-xl border border-[var(--line)] bg-[var(--surface)]">
                 <b>Stub 2: Konsolidacija i rast upisa (2027. do 2028.)</b>
-                <br />Stabilan upis IDSS-a na razini 90 do 95 učenika uz dokumentirani plan zadržavanja. Kontrola udjela
-                plata (cilj ispod 68 do 70 posto rashoda kroz produktivnost). Prelazak grupe u pozitivan kapital do kraja
+                <br />Stabilan upis IDSS-a na razini 90 do 95 učenika uz dokumentirani plan zadržavanja. Troškovi rada
+                najviše 72% prihoda do 2028/29. Prelazak grupe u pozitivan kapital do kraja
                 2028.
               </div>
               <div className="p-3.5 rounded-xl border border-[var(--line)] bg-[var(--surface)]">
                 <b>Stub 3: Razvoj i diverzifikacija (2029. do 2032.)</b>
                 <br />Dodatni programi (ljetni kampovi, STEM, bilingvalni moduli), razmatranje proširenja kapaciteta nakon
                 stabilizacije, kontinuirani monitoring transfernih cijena i priprema za eventualnu transakciju na očišćenoj
-                bazi. Konsolidirani prihod 2,2 do 2,8 miliona KM uz maržu 8 do 12%.
+                bazi. Bazni scenarij 2031/32: prihod 2,35 miliona KM i EBITDA marža 12,6%.
               </div>
             </div>
 
@@ -1299,16 +1171,16 @@ export default function App() {
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Cirkularni tok 100k</td>
+                    <td>Fakture IDSS → IMH 100.000 KM (kredit MF Banke)</td>
                     <td>Srednja</td>
                     <td className="text-[var(--idss-red)] font-bold">Visok</td>
-                    <td>Interni memo u arhivi; tretiranje isključivo operativnog broja (75.864 KM).</td>
+                    <td>Ugovor i dokazi o izvedenim radovima; usaglasiti razliku od 12.200 KM; koristiti normalizovani rezultat.</td>
                   </tr>
                   <tr>
                     <td>Leasing Cayenne (1.028 EUR/mj.)</td>
                     <td>Srednja</td>
                     <td className="text-[var(--idss-red)] font-bold">Visok</td>
-                    <td>Uključiti u mjesečni cash-flow; dokumentovati poslovnu namjenu.</td>
+                    <td>Prenos leasinga na osnivača ili obračun koristi u naravi; ispraviti knjiženje učešća.</td>
                   </tr>
                   <tr>
                     <td>Solidarni dužnici i mjenice</td>
@@ -1320,10 +1192,10 @@ export default function App() {
                     <td>Potraživanja od zaposlenih (184.692 KM)</td>
                     <td>Niska-srednja</td>
                     <td>Srednji</td>
-                    <td>Pozajmica 93.484,84 KM (otplata) + plan formalizacije preostalog dijela.</td>
+                    <td>Prebijanje s obavezom prema osnivaču (93.484,84 KM); za 91.207 KM priznanje duga i otplatni plan.</td>
                   </tr>
                   <tr>
-                    <td>Likvidnost i servis duga (&gt;15k/mj.)</td>
+                    <td>Likvidnost i servis duga (≈14,5k/mj.)</td>
                     <td>Srednja</td>
                     <td className="text-[var(--idss-red)] font-bold">Visok</td>
                     <td>Jedinstveni mjesečni cash-flow list; disciplina i rezerva za ljeto.</td>
@@ -1335,22 +1207,28 @@ export default function App() {
                     <td>Plan zadržavanja porodica; jačanje domaće baze kroz IMH vertikalu.</td>
                   </tr>
                   <tr>
-                    <td>Dug za zakup Buka 11/13</td>
+                    <td>Usaglašenost zakupa Buka 11/13</td>
                     <td>Srednja</td>
                     <td className="text-[var(--idss-red)] font-bold">Visok</td>
-                    <td>Pismeni dogovor s Općinom Centar o otplati duga i tekućem plaćanju.</td>
+                    <td>Izvod otvorenih stavki s Općinom; knjiženje svih faktura; ugovor do 2033. u data room.</td>
                   </tr>
                   <tr>
-                    <td>UOD preklasifikacija (77.632 KM)</td>
+                    <td>UOD preklasifikacija (93.117 KM, jan–okt 2026.)</td>
                     <td>Srednja</td>
                     <td>Srednji</td>
                     <td>Pravni pregled ugovora; prevođenje u dopunski rad.</td>
                   </tr>
                   <tr>
-                    <td>Poreski (TC, doprinosi kašnjenje 60 dana)</td>
-                    <td>Niska-srednja</td>
-                    <td>Srednji</td>
-                    <td>Potvrda Porezne uprave; redovno ažuriranje TC dokumentacije.</td>
+                    <td>Poreski (sporazumi {km(g?.publicAgreements)} neizmireni; doprinosi IMH ≈4 obračuna)</td>
+                    <td>Visoka</td>
+                    <td className="text-[var(--idss-red)] font-bold">Visok</td>
+                    <td>Potvrda Porezne uprave; plan izmirenja; redovno ažuriranje TC dokumentacije.</td>
+                  </tr>
+                  <tr>
+                    <td>Integritet knjiga (bilans IDSS nije u ravnoteži; prelazni konti otvoreni)</td>
+                    <td>Visoka</td>
+                    <td className="text-[var(--idss-red)] font-bold">Visok</td>
+                    <td>Računovođa objašnjava razliku od 812,54 KM; mjesečno zatvaranje prelaznih konta.</td>
                   </tr>
                 </tbody>
               </table>
@@ -1358,7 +1236,7 @@ export default function App() {
 
             <p className="note">
               <b>Opservacija o rizicima:</b> Najveći rizik nije jedan izolovani događaj, već <b>kumulacija</b>: napeta
-              likvidnost plus neuredan zakup plus stalan odliv leasinga i kredita (&gt;15.000 KM/mj.) plus eventualni novi
+              likvidnost plus neusaglašen zakup plus stalan odliv leasinga i kredita (≈14.460 KM/mj.) plus eventualni novi
               pad upisa. Zato je jedinstveni mjesečni cash-flow list svih odliva prioritet broj jedan.
             </p>
 
@@ -1382,18 +1260,21 @@ export default function App() {
                 <b>2. Interni memo o toku 100.000 KM za arhivu:</b> nalozi, fakture, obrazloženje namjene kredita.
               </li>
               <li>
-                <b>3. Prati otplatni plan pozajmice 93.484,84 KM:</b> prva rata dospijeva 01.11.2026. (7.790,40 KM).
+                <b>3. Prebij obavezu prema osnivaču (93.484,84 KM)</b> s potraživanjima od osnivača i zamijeni ugovor ugovorom s datumom potpisa (07.11.2026.).
               </li>
               <li>
-                <b>4. Dogovor s Općinom o dugu za zakup:</b> priznanje stanja, plan servisiranja, redovno tekuće plaćanje.
+                <b>4. Usaglašavanje s Općinom:</b> 2 neproknjižene fakture i pretplata 22.469 KM; redovno plaćanje do 15. u mjesecu.
+              </li>
+              <li>
+                <b>5. Neravnoteža bruto bilansa IDSS-a (812,54 KM):</b> računovođa mora pronaći i ispraviti razliku prije svakog vanjskog izvještaja.
               </li>
             </ol>
 
             <h3 id="sub-11-2-srednjorocno">11.2. Srednjoročno (30 do 100 dana)</h3>
             <ol className="text-xs space-y-2 pl-4">
               <li><b>1. Dokumentiraj fluktuaciju upisa:</b> analiza odlaska stranih porodica naspram domaće baze.</li>
-              <li><b>2. Pregled UOD-a:</b> pravna analiza rizika preklasifikacije ugovora o djelu od 77.632 KM.</li>
-              <li><b>3. Usklađivanje međufirmskih salda:</b> analitičke kartice između IDSS i IMH s računovođom.</li>
+              <li><b>2. Pregled UOD-a:</b> pravna analiza rizika preklasifikacije ugovora o djelu (93.117 KM u 10 mj. 2026.).</li>
+              <li><b>3. Usklađivanje međufirmskih salda:</b> razlike od 6.297,05 KM (fakture IMH → IDSS) i 12.200 KM (plaćanje 100.000 KM), avans od 32.150 KM.</li>
               <li><b>4. Potvrda Porezne uprave:</b> službeno uvjerenje o stanju duga i doprinosa.</li>
               <li><b>5. Formalizacija ostatka potraživanja:</b> rješavanje iznosa iznad 93.484,84 KM (cca 91.207 KM).</li>
             </ol>
@@ -1403,7 +1284,7 @@ export default function App() {
               <div className="p-3 rounded-lg border border-[var(--line)] bg-[var(--surface)]">
                 <b>2027. do 2028.:</b>
                 <br />• Stabilan upis 90 do 95 učenika.
-                <br />• Udio plata ispod 68 do 70 posto kroz produktivnost.
+                <br />• Troškovi rada najviše 72% prihoda (2028/29).
                 <br />• Prelazak grupe u pozitivan vlastiti kapital do kraja 2028.
                 <br />• Sve povezane pozajmice zatvorene ili pod jasnim planom.
               </div>
@@ -1411,7 +1292,7 @@ export default function App() {
                 <b>2029. do 2032.:</b>
                 <br />• Diverzifikacija programa (ljetne škole, STEM, jezici).
                 <br />• Jačanje vertikale na 75-80% konverzije.
-                <br />• Održiva marža 8 do 12 posto.
+                <br />• EBITDA marža 12,6% (bazni scenarij 2031/32).
                 <br />• Priprema za eventualnu transakciju na očišćenoj bazi.
               </div>
             </div>
@@ -1429,13 +1310,12 @@ export default function App() {
                   posljedica TC raspodjele.
                   <br /><br />
                   <b>Rigidnost troškova:</b> Plate čine 75,7% rashoda. Pri 83 učenika i školarinama od cca 779.476 KM,
-                  trošak rada od 704.500 KM ostavlja samo oko 75.000 KM za sve ostalo.
+                  trošak rada od 704.517 KM ostavlja samo 74.959 KM za sve ostalo. U 10 mjeseci 2026. IDSS je bez 100.000 KM od IMH-a na nuli (−225 KM).
                   <br /><br />
-                  <b>Kreditna izloženost:</b> 20.000 KM dugoročni kredit i 15.000 KM overdraft (dospijeva 12.06.2026. i
-                  mora se planski zatvoriti).
+                  <b>Kreditna izloženost ({fin.idss?.periodTo}):</b> kredit MF {km(fin.idss?.bankLoans)}, prekoračenje {km(fin.idss?.overdraft)},
+                  zajam od partnera bez naziva 23.700 KM (konto 4221-110), neisplaćene neto plate {km(fin.idss?.netSalariesPayable)}.
                   <br /><br />
-                  <b>Poluga upravljanja:</b> IDSS se spašava isključivo volumenom upisa (popunjavanjem postojećih
-                  odjeljenja do 90-95 učenika).
+                  <b>Poluga upravljanja:</b> volumen upisa i cjenovna disciplina; prelomna tačka škole je oko 98 učenika.
                 </p>
               </div>
 
@@ -1447,11 +1327,10 @@ export default function App() {
                   IMH je stabilniji generator dobiti (+63.815 KM u 2025.). Prihodi 2025. od 900.571 KM izjednačeni su
                   sa školom. Udio plata od 64,4% je povoljniji, ali i dalje visok.
                   <br /><br />
-                  <b>Fiksni odlivi i servis duga:</b> IMH nosi glavninu finansijskog duga grupe: kredit 100.000 KM (rata 4.661
-                  KM), leasing Cayenne (1.027,91 EUR / cca 2.010 KM), pozajmicu prema Lamiji (7.790,40 KM od 01.11.2026.)
-                  i zakup Buka 11.
+                  <b>Fiksni odlivi i servis duga:</b> IMH nosi glavninu duga grupe: kredit MF {km(fin.imh?.bankLoans)} (rata ≈4.661 KM),
+                  prekoračenje {km(fin.imh?.overdraft)}, leasing {km(fin.imh?.leasing)}, obavezu prema osnivaču (93.485 KM) i zakup Buka 11.
                   <br /><br />
-                  <b>Kantonalne subvencije (Prolazna stavka za roditelje):</b> 157.458 KM godišnje su <u>strogo prolazna sredstva</u>.
+                  <b>Kantonalne subvencije (Prolazna stavka za roditelje):</b> {km(fin.imh?.ministrySubsidies)} do {fin.imh?.periodTo} su <u>strogo prolazna sredstva</u>.
                   Roditelji plaćaju punu školarinu IMH-u, IMH šalje mjesečni izvještaj Ministarstvu KS, a primljeni iznos subvencije
                   IMH u cjelosti prosljeđuje roditeljima na njihove račune. IMH nema finansijske koristi od subvencija i <b>ne zavisi od njih</b>.
                   Ako Ministarstvo kasni, IMH nema šta prebaciti roditeljima, ali redovni prihodi, likvidnost i plate IMH-a ostaju potpuno stabilni.
@@ -1472,9 +1351,9 @@ export default function App() {
             {/* POGLAVLJE 13 - NOVO: CASH-FLOW DISCIPLINA I OPERATIVNI RITAM */}
             <h2 id="sec-13-cash-flow-ritam">13. CASH-FLOW DISCIPLINA I OPERATIVNI RITAM</h2>
             <p>
-              Iskazani rezultat od 175.864 KM stvara lažni osjećaj komfora. Operativni rezultat od 75.864 KM i gotovina od
-              37.639 KM govore drugo. Fiksni odlivi (&gt;15.000 KM duga + plate + zakup) dospijevaju svakog mjeseca bez
-              obzira na ljetnu pauzu školarina.
+              Rezultat po knjigama od {km(g?.resultBooks)} stvara lažni osjećaj komfora. Normalizovani rezultat od
+              {' '}{km(g?.resultNormalized)} i stvarna gotovina na računima od oko {km(g?.bankCash)} govore drugo. Fiksni odlivi
+              (≈14.460 KM duga, plate i zakup) dospijevaju svakog mjeseca bez obzira na ljetnu pauzu školarina.
             </p>
 
             <div className="p-4 rounded-xl border border-[var(--line)] bg-[var(--surface)] my-3">
@@ -1512,49 +1391,34 @@ export default function App() {
 
             {/* POGLAVLJE 14 - NOVO: SCENARIJI UPISA I OSJETLJIVOST */}
             <h2 id="sec-14-scenariji-upisa">14. SCENARIJI UPISA I OSJETLJIVOST (IDSS)</h2>
+            <p>
+              Jedinična ekonomika iz izvještaja: prihod po učeniku 9.391 KM, puni godišnji trošak škole 900.153 KM pri 83
+              učenika, direktni trošak dodatnog učenika oko 1.200 KM [P]. Prije ostalih prihoda (ljetna škola, dodatne usluge).
+            </p>
             <div className="table-wrap">
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th scope="col">Scenario</th>
-                    <th scope="col">Broj učenika</th>
-                    <th scope="col">Prosječni ARPU</th>
-                    <th scope="col">Prihod od školarina</th>
-                    <th scope="col">Trošak rada (plate)</th>
-                    <th scope="col">Preostali operativni prostor</th>
+                    <th scope="col">Učenika</th>
+                    <th scope="col">Prihod (× 9.391 KM)</th>
+                    <th scope="col">Ukupni trošak škole</th>
+                    <th scope="col">Rezultat škole</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td><b>Bazni scenario</b></td>
-                    <td>90 učenika</td>
-                    <td>9.500 KM</td>
-                    <td>855.000 KM</td>
-                    <td>cca 704.500 KM</td>
-                    <td className="text-[var(--idss-blue)] dark:text-[var(--idss-cyan)] font-bold">
-                      cca 150.500 KM (uzak prostor)
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><b>Optimistični scenario</b></td>
-                    <td>95 učenika</td>
-                    <td>9.800 KM</td>
-                    <td>931.000 KM</td>
-                    <td>cca 704.500 KM</td>
-                    <td className="text-[var(--imh-green)] font-bold">
-                      cca 226.500 KM (komforna zona, brži oporavak kapitala)
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><b>Pesimistični scenario</b></td>
-                    <td>80 učenika</td>
-                    <td>9.200 KM</td>
-                    <td>736.000 KM</td>
-                    <td>cca 704.500 KM</td>
-                    <td className="text-[var(--idss-red)] font-bold">
-                      cca 31.500 KM (deficit! Servis duga i zakup ulaze u minus)
-                    </td>
-                  </tr>
+                  {[80, 83, 90, 95, 98, 102].map((n) => {
+                    const rev = n * 9391;
+                    const cost = 900153 + (n - 83) * 1200;
+                    const res = rev - cost;
+                    return (
+                      <tr key={n}>
+                        <td><b>{n}</b>{n === 83 ? ' (2026/27)' : n === 98 ? ' (prelomna tačka)' : n === 102 ? ' (cilj 2031/32)' : ''}</td>
+                        <td>{km(rev)}</td>
+                        <td>{km(cost)}</td>
+                        <td className={res < 0 ? 'text-[var(--idss-red)] font-bold' : 'text-[var(--imh-green)] font-bold'}>{km(res)}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -1562,23 +1426,23 @@ export default function App() {
             {/* POGLAVLJE 15 - NOVO: DETALJNI OTPLATNI KALENDAR */}
             <h2 id="sec-15-otplatni-kalendar">15. DETALJNI OTPLATNI KALENDAR I LIKVIDNOSNI PRITISCI</h2>
             <p>
-              Od 01.11.2026. počinje otplata 12 mjesečnih rata pozajmice prema Lamiji Kacili (cca 7.790 KM/mj.). Paralelno
-              teku leasing rate za Cayenne od 1.027,91 EUR/mj. i anuitet kredita IMH od cca 4.661 KM. Overdraft IDSS-a od
-              15.000 KM dospijeva 12.06.2026.
+              Ugovor s osnivačem predviđa 12 rata po 7.790,40 KM od 01.11.2026.; stvarno je 09.11.2026. uplaćeno oko 4.400 KM,
+              a dalje se plaća sukcesivno. Preporuka je prebijanje umjesto isplate. Paralelno teku leasing rate od 1.027,91
+              EUR/mj. i anuitet kredita IMH od oko 4.661 KM. Prekoračenja na {periodLabel}: IMH {km(fin.imh?.overdraft)}, IDSS {km(fin.idss?.overdraft)}.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs my-4">
               <div className="p-3 rounded-lg border border-[var(--line)] bg-[var(--surface)]">
                 <b>Nov. 2026. – Jan. 2027.:</b>
                 <p className="text-[11px] text-[var(--muted)] m-0 mt-1">
-                  Uspostava ritma plaćanja rata pozajmice, leasing i anuiteti bez kašnjenja, sklapanje sporazuma s
-                  Općinom Centar o dugu za zakup.
+                  Prebijanje obaveze prema osnivaču, leasing i anuiteti bez kašnjenja, usaglašavanje stanja zakupa
+                  s Općinom Centar.
                 </p>
               </div>
               <div className="p-3 rounded-lg border border-[var(--line)] bg-[var(--surface)]">
                 <b>Feb. – Maj 2027.:</b>
                 <p className="text-[11px] text-[var(--muted)] m-0 mt-1">
-                  Akumuliranje likvidnosne rezerve za ljeto; plansko refinansiranje overdrafta prije juna 2026.; kampanja
+                  Akumuliranje likvidnosne rezerve za ljeto; refinansiranje prekoračenja IMH-a; kampanja
                   ranog upisa za 2027/28.
                 </p>
               </div>
@@ -1599,8 +1463,9 @@ export default function App() {
                 <li>✖ <b>Ne isplaćuj dobit</b> dok grupni kapital nije bar na nuli ili jasan put do pozitivnog nije dokazan (pravilo: bez dividendi prije pozitivnog kapitala).</li>
                 <li>✖ <b>Ne ponavljaj cirkularne tokove</b> poput stavke 100k kao rutinu. Ako treba likvidnost, traži čist instrument (garancija, kredit).</li>
                 <li>✖ <b>Ne gradi projekcije na iskazanom rezultatu</b> koji uključuje 100k; jedini referentni broj je operativni rezultat.</li>
-                <li>✖ <b>Ne zanemaruj dospijeće overdrafta (12.06.2026.)</b> do zadnjeg trenutka.</li>
-                <li>✖ <b>Ne tretiraj kantonalne subvencije kao vječne</b>; imaj spreman kalkulativni scenario bez njih.</li>
+                <li>✖ <b>Ne povećavaj prekoračenja</b> ({km((fin.imh?.overdraft ?? 0) + (fin.idss?.overdraft ?? 0))} na {periodLabel}); refinansiraj ih dugoročnom linijom.</li>
+                <li>✖ <b>Ne isplaćuj rate osnivaču</b> dok osnivač duguje grupi 184.692 KM: prebij obaveze.</li>
+                <li>✖ <b>Ne knjiži kantonalne subvencije kao prihod</b>: to je prolazna stavka koju IMH prosljeđuje roditeljima.</li>
                 <li>✖ <b>Ne štedi na formalizaciji:</b> interni memo, ugovori, poreske potvrde štite poslovanje više nego usmena obećanja.</li>
               </ul>
             </div>
@@ -1615,8 +1480,8 @@ export default function App() {
               <div className="p-3.5 rounded-xl border border-[var(--line)] bg-[var(--surface)]">
                 <b>Scenario imaginarnog Due Diligence-a:</b>
                 <br />Šta vidi banka ili potencijalni investitor? Rast prihoda: pozitivno. Vertikala 64%: pozitivno.
-                Negativan kapital: negativno. Cirkularnih 100k bez memoa: negativno. Dug za zakup: negativno. Pozajmica s
-                otplatnim planom: pozitivno jer je formalizovano. Cilj je da sve stavke budu dokumentovane.
+                Negativan kapital: negativno. Fakture od 100.000 KM bez dokaza o radovima: negativno. Bilans IDSS-a koji nije u
+                ravnoteži: negativno. Antedatiran ugovor o pozajmici: negativno dok se ne ispravi. Cilj je da sve stavke budu dokumentovane.
               </div>
             </div>
 
@@ -1627,8 +1492,8 @@ export default function App() {
                 <b className="text-[var(--idss-blue)] dark:text-[var(--idss-cyan)]">DANI 1 DO 30:</b>
                 <ul className="mt-1 space-y-1 list-none p-0">
                   <li>• <i>Sedmica 1:</i> Sastaviti cash-flow list sa svim fiksnim odlivima za narednih 12 mjeseci i projekcijom prihoda.</li>
-                  <li>• <i>Sedmica 2:</i> Pripremiti interni memo o toku 100.000 KM (priložiti fakture, naloge) i provjeriti prvu ratu pozajmice (01.11.2026.).</li>
-                  <li>• <i>Sedmica 3:</i> Zatražiti sastanak s Općinom Centar za priznanje duga, prijedlog plana otplate i redovno tekuće plaćanje.</li>
+                  <li>• <i>Sedmica 2:</i> Pripremiti dokumentaciju za fakture od 100.000 KM (ugovor, radovi, izvodi) i potpisati izjavu o prebijanju s osnivačem.</li>
+                  <li>• <i>Sedmica 3:</i> Zatražiti od Općine Centar izvod otvorenih stavki i usaglasiti 2 neproknjižene fakture.</li>
                   <li>• <i>Sedmica 4:</i> Zatražiti zvaničnu potvrdu Porezne uprave o stanju javnih obaveza i ažurirati starosnu strukturu potraživanja od roditelja.</li>
                 </ul>
               </div>
@@ -1701,8 +1566,8 @@ export default function App() {
                 Model radi. Prihodi rastu. Vertikala postoji. Cjenovnik je konkurentan. IMH generira dobit. IDSS raste u
                 prihodu. To je temelj na kojem se gradi.
                 <br /><br />
-                Istovremeno, likvidnost je napeta, kapital negativan, odlivi fiksni i značajni (&gt;15.000 KM/mj.), zakup nije
-                uredan, a jednokratni cirkularni tok iskrivljuje iskazani rezultat. To nije propast. To je poziv na
+                Istovremeno, likvidnost je napeta, kapital negativan, odlivi fiksni i značajni (≈14.460 KM/mj.), zakup nije
+                usaglašen, a fakture od 100.000 KM iskrivljuju iskazani rezultat. To nije propast. To je poziv na
                 disciplinu.
                 <br /><br />
                 Posao menadžmenta nije da izmisli novi biznis, već da učini postojeći biznis predvidivim: jedan cash-flow,
@@ -1738,9 +1603,27 @@ export default function App() {
                   </tr>
                   <tr>
                     <td>Vlastiti kapital (31.12.2025.)</td>
-                    <td>-37.304 KM (tabela)</td>
-                    <td>-18.389 KM (tekst IDSS) / -18.913 KM (tekst IMH) = -37.302 KM</td>
-                    <td>Razlika 2 KM je zaokruživanje (IDSS: −8.890 − 9.501 = −18.391 KM); važeći iznos je −37.304 KM.</td>
+                    <td>−37.328 KM (knjige 31.10.2026.)</td>
+                    <td>IDSS −18.391,27 KM + IMH −18.936,30 KM = −37.327,57 KM</td>
+                    <td>Mjerodavno je stanje iz knjiga. Izvođenje preko dobiti 2025. daje −37.302 KM; razlika od 26 KM je u IMH-u (23,75 KM na kontu 3000 i zaokruživanje).</td>
+                  </tr>
+                  <tr>
+                    <td>Bruto bilans IDSS-a 31.10.2026.</td>
+                    <td>Duguje 5.300.494,50 KM</td>
+                    <td>Potražuje 5.301.307,04 KM</td>
+                    <td>Bilans nije u ravnoteži za −812,54 KM; računovođa mora pronaći razliku.</td>
+                  </tr>
+                  <tr>
+                    <td>Međusobne fakture IMH → IDSS</td>
+                    <td>IMH 132.083,60 KM</td>
+                    <td>IDSS 125.786,55 KM</td>
+                    <td>Razlika 6.297,05 KM; usaglasiti izvodom otvorenih stavki.</td>
+                  </tr>
+                  <tr>
+                    <td>Plaćanje faktura od 100.000 KM</td>
+                    <td>IDSS naplaćeno 100.000 KM</td>
+                    <td>IMH plaćeno 87.800 KM</td>
+                    <td>Razlika 12.200 KM; provjeriti knjiženje sredstava kredita MF Banke u IMH-u.</td>
                   </tr>
                   <tr>
                     <td>Cjenovnik školarina 2026/27.</td>
@@ -1752,7 +1635,7 @@ export default function App() {
                     <td>Pad upisa 2025/26.</td>
                     <td>Zaokruženo 28%</td>
                     <td>Pad sa 94 na 68 učenika = tačno 27,66%</td>
-                    <td>Uzrok je istek mandata stranih porodica; ojačati domaću bazu kroz IMH vertikalu.</td>
+                    <td>Uzrok prema upravi: odlazak stranih porodica [U]; nije dokumentovano.</td>
                   </tr>
                   <tr>
                     <td>Stopa konverzije IMH u IDSS</td>
@@ -1770,16 +1653,15 @@ export default function App() {
                 DODATAK B: FORENZIKA KARTICE PARTNERA (OBRAZLOŽENJE DUG / PRETPLATA)
               </h2>
               <p className="text-xs text-[var(--muted)] mb-4">
-                Uski fokusirani direktorski alat: uploadujte analitičku karticu partnera (jednog ili bulk) za IMH ili IDSS.
-                AI forenzički vještak kreira detaljnu analizu i pismeni nalaz koji direktor može direktno preuzeti u PDF/tekstualnom
-                formatu i proslijediti roditeljima, upravi ili trećim licima koja su finansijski laici, sa potpunim obrazloženjem kako je dug ili pretplata nastala.
+                Pregled potraživanja od kupaca iz aktivnih bilansa i kartica. Učitana kartica kupaca prikazuje stanje po partneru samo u
+                vašem pregledniku. Detaljni AI nalaz za pojedinačnog partnera radi samo na serveru s Gemini ključem; na javnoj verziji nije dostupan.
               </p>
               <PartnerCardForensics />
             </div>
 
             <h2 className="endmark">KRAJ DOKUMENTA</h2>
             <p className="text-center text-xs text-[var(--muted)]">
-              Interni radni alat za upravljanje · Direktor Davor Mulalić · IDSS i IMH · 6. novembar 2026.
+              Interni radni alat za upravljanje · Direktor Davor Mulalić · IDSS i IMH · 9. novembar 2026.
               <br />
               Samo za internu upotrebu.
             </p>
@@ -1791,31 +1673,12 @@ export default function App() {
               IDSS + IMH · Sveobuhvatna forenzička i strateška analiza poslovanja 2022–2032. · Buka 11/13, Sarajevo
             </span>
             <span>
-              Interni radni sistem · Verifikovano na dan 6. novembar 2026.
+              Interni radni sistem · Podaci: bruto bilansi na {periodLabel}
             </span>
           </footer>
         </main>
       </div>
 
-      {/* Real-time Accounting Sync Toast Notification */}
-      {syncToast && (
-        <div className="fixed bottom-6 right-6 z-50 p-4 rounded-2xl bg-slate-900/95 text-white border-2 border-emerald-500 shadow-2xl flex items-center gap-3.5 text-xs max-w-md backdrop-blur-md animate-in fade-in slide-in-from-bottom duration-300">
-          <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-400 flex items-center justify-center text-emerald-400 shrink-0">
-            <CheckCircle2 className="w-5 h-5" />
-          </div>
-          <div className="flex-1">
-            <p className="m-0 font-bold leading-snug text-white">{syncToast}</p>
-            <span className="text-[10px] text-emerald-300 block mt-0.5">Izvor: Računovodstveni sistem IDSS i IMH (CR-6235/5)</span>
-          </div>
-          <button
-            onClick={() => setSyncToast(null)}
-            className="text-slate-400 hover:text-white font-bold p-1 cursor-pointer"
-            aria-label="Zatvori notifikaciju"
-          >
-            ✕
-          </button>
-        </div>
-      )}
     </div>
   );
 }

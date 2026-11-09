@@ -15,9 +15,11 @@ import {
   Eye,
   FileText
 } from 'lucide-react';
+import { useFinancials, type FinancialState } from '../lib/bilans/store';
+import { formatBs } from '../lib/bilans/parser';
 
 export interface RiskMatrixItem {
-  id: string; // 'RF-02' to 'RF-07'
+  id: string; // 'RF-02' do 'RF-10'
   title: string;
   shortTitle: string;
   category: 'Porezni & Krivični Rizici' | 'Likvidnost & Trezor' | 'Imovinsko-Pravni Status' | 'Operativni & Troškovi Rada';
@@ -41,206 +43,252 @@ export interface RiskMatrixItem {
   harmonizationCondition: string;
 }
 
-export const MATRIX_RISKS: RiskMatrixItem[] = [
-  {
-    id: 'RF-02',
-    title: 'Potraživanja od uprave (184.692 KM) i pozajmica prema Lamiji Kacili (93.484,84 KM)',
-    shortTitle: 'Potraživanja od uprave & Pozajmica',
-    category: 'Porezni & Krivični Rizici',
-    severity: 'Kritično (CRITICAL)',
-    amountKM: 184692,
-    probVal: 3.8,
-    impactVal: 4.8,
-    probLabel: 'Srednje-Visoka (75%)',
-    impactLabel: 'Kritičan (Prikrivena isplata dohotka)',
-    zone: 'CRITICAL',
-    forensicFinding: 'IMH potražuje 167.290 KM (127.725 KM nenovčane koristi i plaćeni troškovi uprave + 39.565 KM krediti fizičkim licima), a IDSS 17.402 KM. Ugovorom od 14.07.2026. definisan je povrat 93.484,84 KM za učešće u Porsche Cayenneu u 12 rata po 7.790,40 KM. Ostatak potraživanja iznad 93.484,84 KM (cca 91.207 KM) ostaje formalno nepokriven ugovorom.',
-    statutoryBasis: 'Zakon o porezu na dohodak FBiH (čl. 10 i 14 - oporezivanje nenovčanih koristi), Zakon o doprinosima FBiH, Ugovor o pozajmici od 14.07.2026.',
-    systemicImpact: 'U slučaju porezne inspekcije, nepokriveni dio potraživanja se prekvalifikuje u prikriveni lični dohodak uz nalog za retroaktivno plaćanje 60.000+ KM poreza, doprinosa i zateznih kamata.',
-    mitigationSteps: {
-      urgent0to30: [
-        'Uredno i bez kašnjenja servisirati 12 mjesečnih rata po 7.790,40 KM po Ugovoru o pozajmici od 14.07.2026. na lični račun zajmodavca kod Sparkasse (Član 6: kašnjenje 2 rate povlači cijeli iznos odjednom).',
-        'Zabraniti dalja plaćanja ličnih ili privatnih računa osnivača i uprave sa transakcijskih računa IMH i IDSS.'
-      ],
-      medium30to90: [
-        'Za preostali dio potraživanja (cca 91.207 KM) sačiniti pisani sporazum o priznanju duga sa preciznim anuitetnim planom povrata sredstava.',
-        'Provesti usaglašavanje konta 22 i 43 između licenciranog računovođe i osnivača.'
-      ],
-      permanentPolicy: [
-        'Uspostaviti striktan pravilnik o materijalno-finansijskom poslovanju: sva službena putovanja i troškovi moraju imati vjerodostojan putni nalog i fiskalni račun.',
-        'Godišnje eksterno usklađivanje salda sa ovlaštenim revizorom.'
-      ],
-      responsiblePerson: 'Direktor Davor Mulalić & Licencirani računovođa Ilvana Raščić',
-      targetDeadline: 'Početak otplate 01.11.2026., ugovor za ostatak do 31.12.2026.'
+const fmtKM = (n: number) => `${formatBs(Math.round(n))} KM`;
+
+/** Rizici se računaju iz aktivnih bilansa (verifikovanih ili učitanih). */
+export function buildMatrixRisks(fin: FinancialState): RiskMatrixItem[] {
+  const idss = fin.idss;
+  const imh = fin.imh;
+  const g = fin.group;
+  const period = g?.periodTo ?? '31.10.2026.';
+  const months = imh?.months ?? 10;
+  const imhBankCash = imh ? imh.cash - imh.cashInTransit : 0;
+  const depositGap = imh ? Math.max(0, imh.deposits - imhBankCash) : 0;
+  const rentExpected = Math.round(months) * 7531.29;
+  const rentGap = imh?.rent !== null && imh?.rent !== undefined ? Math.max(0, rentExpected - imh.rent) : 0;
+  const reconDiff = fin.recon.filter((r) => r.diff !== null && Math.abs(r.diff) >= 0.01 && !r.label.startsWith('Avans'));
+  const reconSum = reconDiff.reduce((s, r) => s + Math.abs(r.diff ?? 0), 0);
+  const imbalance = [fin.idssDoc, fin.imhDoc]
+    .flatMap((d) => d?.issues ?? [])
+    .filter((i) => i.severity === 'kritično' && /ravnotež/i.test(i.text))
+    .reduce((s, i) => Math.max(s, Math.abs(i.amount ?? 0)), 0);
+  const transit = g?.cashInTransit ?? 0;
+
+  return [
+    {
+      id: 'RF-02',
+      title: `Potraživanja od osnivača (${fmtKM(g?.receivablesFounder ?? 0)}) i obaveza IMH-a prema osnivaču (93.484,84 KM)`,
+      shortTitle: 'Potraživanja od osnivača i obaveza prema osnivaču',
+      category: 'Porezni & Krivični Rizici',
+      severity: 'Kritično (CRITICAL)',
+      amountKM: g?.receivablesFounder ?? 0,
+      probVal: 3.8,
+      impactVal: 4.8,
+      probLabel: 'Srednje-visoka',
+      impactLabel: 'Kritičan (prikrivena isplata dohotka)',
+      zone: 'CRITICAL',
+      forensicFinding: `Na ${period} potraživanja od zaposlenih, uprave i fizičkih lica iznose ${fmtKM(g?.receivablesFounder ?? 0)} i prema upravi ih cijela duguje osnivač obje ustanove. IMH istovremeno duguje osnivaču 93.484,84 KM (ranije vozilo osnivača dato kao učešće). Ugovor o tome potpisan je 07.11.2026., a nosi datum 14.07.2026.; prva uplata od oko 4.400 KM izvršena je 09.11.2026., a dalje se plaća sukcesivno.`,
+      statutoryBasis: 'Zakon o porezu na dohodak FBiH (nenovčane koristi), Zakon o doprinosima FBiH, Zakon o obligacionim odnosima (prebijanje).',
+      systemicImpact: 'Gotovinske uplate osnivaču dok osnivač duguje grupi dvostruko više smanjuju likvidnost bez ekonomskog razloga; nepokriven dio potraživanja porezni organ može tretirati kao prikriveni dohodak.',
+      mitigationSteps: {
+        urgent0to30: [
+          'Potpisati izjavu o prebijanju obaveze IMH-a prema osnivaču (93.484,84 KM) s potraživanjima od osnivača.',
+          'Zamijeniti ugovor o pozajmici ugovorom ili aneksom s datumom potpisa (07.11.2026.) koji potvrđuje obavezu nastalu 14.07.2026.',
+        ],
+        medium30to90: [
+          'Za ostatak od oko 91.207 KM sačiniti pisano priznanje duga s otplatnim planom.',
+          'Zabraniti plaćanje privatnih troškova osnivača s računa IMH-a i IDSS-a.',
+        ],
+        permanentPolicy: ['Registar transakcija s povezanim licima i godišnje usaglašavanje salda s revizorom.'],
+        responsiblePerson: 'Direktor i računovođa',
+        targetDeadline: 'Prebijanje u roku od 15 dana',
+      },
+      harmonizationCondition: 'Izjava o prebijanju i priznanje duga za ostatak potraživanja.',
     },
-    harmonizationCondition: 'Striktno plaćanje 12 rata po 7.790,40 KM i pisano priznanje duga sa otplatnim planom za preostali iznos potraživanja.'
-  },
-  {
-    id: 'RF-03',
-    title: 'Deficit pokrića depozita roditelja (47.616 KM obaveza spram 24.148 KM gotovine IMH)',
-    shortTitle: 'Deficit pokrića depozita roditelja',
-    category: 'Likvidnost & Trezor',
-    severity: 'Kritično (CRITICAL)',
-    amountKM: 47616,
-    probVal: 4.1,
-    impactVal: 4.5,
-    probLabel: 'Visoka (80% pri završetku ciklusa)',
-    impactLabel: 'Kritičan (Nelikvidnost / Gubitak ugleda)',
-    zone: 'CRITICAL',
-    forensicFinding: 'Sigurnosni depoziti roditelja u IMH iznose 47.616 KM, dok je ukupna gotovina IMH-a na dan 31.08.2026. iznosila 24.148 KM (neto deficit 23.468 KM). Sredstva kaucija roditelja nisu izdvojena na namjenski escrow račun, već su apsorbovana u operativnu potrošnju.',
-    statutoryBasis: 'Zakon o obligacionim odnosima FBiH (namjenski depoziti i depozitni ugovori), Zakon o zaštiti potrošača BiH.',
-    systemicImpact: 'Ukoliko 10-15 porodica istovremeno zatraži povrat depozita (npr. pri prelasku u školu ili odlasku iz države), ustanova ne bi imala gotovinu za isplatu, što vodi blokadi i reputacijskom skandalu.',
-    mitigationSteps: {
-      urgent0to30: [
-        'Otvoriti poseban namjenski podračun kod Sparkasse Banke namijenjen isključivo za sigurnosne depozite roditelja.',
-        'Donijeti odluku uprave da se depoziti više ne smiju miješati sa tekućom likvidnošću za isplatu plata i dobavljača.'
-      ],
-      medium30to90: [
-        'Sukcesivno izdvajati po 4.000 KM mjesečno iz redovnih priliva školarina na namjenski depozitni račun do potpunog zatvaranja deficita od 23.468 KM.',
-        'Ažurirati evidenciju svih važećih depozita po djetetu u analitičkom računovodstvu.'
-      ],
-      permanentPolicy: [
-        'Svaki novi uplaćeni depozit roditelja automatski deponovati na namjenski podračun u roku od 24 sata od uplate.',
-        'Mjesečni izvještaj o 100% pokrivenosti depozita gotovinom na računu.'
-      ],
-      responsiblePerson: 'Rukovodstvo IMH, Finansijski referent & Direktor',
-      targetDeadline: 'Namjenski račun u roku od 15 dana; 100% pokriće do 31.03.2027.'
+    {
+      id: 'RF-03',
+      title: `Depoziti roditelja (${fmtKM(imh?.deposits ?? 0)}) naspram stvarne gotovine IMH-a na računima (${fmtKM(imhBankCash)})`,
+      shortTitle: 'Nepokriveni depoziti roditelja',
+      category: 'Likvidnost & Trezor',
+      severity: depositGap > 0 ? 'Kritično (CRITICAL)' : 'Srednje (MEDIUM)',
+      amountKM: depositGap,
+      probVal: 4.1,
+      impactVal: 4.5,
+      probLabel: 'Visoka pri kraju ciklusa',
+      impactLabel: 'Kritičan (nelikvidnost i ugled)',
+      zone: depositGap > 0 ? 'CRITICAL' : 'MEDIUM',
+      forensicFinding: `Na ${period} depoziti roditelja u IMH-u iznose ${fmtKM(imh?.deposits ?? 0)}. Gotovina IMH-a u knjigama je ${fmtKM(imh?.cash ?? 0)}, ali ${fmtKM(imh?.cashInTransit ?? 0)} od toga stoji na prelaznim kontima, pa je stvarno na računima oko ${fmtKM(imhBankCash)}. Nepokriveni dio iznosi ${fmtKM(depositGap)}.`,
+      statutoryBasis: 'Zakon o obligacionim odnosima FBiH (depoziti), Zakon o zaštiti potrošača BiH.',
+      systemicImpact: 'Istovremeni zahtjevi više porodica za povrat depozita ustanova ne bi mogla isplatiti.',
+      mitigationSteps: {
+        urgent0to30: ['Zatvoriti prelazne konte i utvrditi stvarno stanje gotovine.', 'Otvoriti namjenski podračun za depozite.'],
+        medium30to90: [`Sukcesivno izdvajati sredstva do pokrića nepokrivenog dijela (${fmtKM(depositGap)}).`],
+        permanentPolicy: ['Mjesečni izvještaj o pokriću depozita gotovinom.'],
+        responsiblePerson: 'Direktor i računovođa',
+        targetDeadline: 'Namjenski račun u roku od 15 dana',
+      },
+      harmonizationCondition: 'Stvarna gotovina IMH-a na računima jednaka ili veća od depozita roditelja.',
     },
-    harmonizationCondition: 'Otvaranje namjenskog podračuna za depozite i sukcesivno izdvajanje 4.000 KM mjesečno do uspostave 100% pokrića.'
-  },
-  {
-    id: 'RF-04',
-    title: 'Akumulirani dug za zakup i neredovno plaćanje tekućeg zakupa Buka 11/13',
-    shortTitle: 'Dug za zakup Buka 11/13 (Općina Centar)',
-    category: 'Imovinsko-Pravni Status',
-    severity: 'Visoko (HIGH)',
-    amountKM: 90375,
-    probVal: 4.2,
-    impactVal: 5.0,
-    probLabel: 'Visoka (75%)',
-    impactLabel: 'Katastrofalan (Jednostrani raskid i deložacija)',
-    zone: 'CRITICAL',
-    forensicFinding: 'Objekat od 1.287,40 m² na adresi Buka 11/13 koristi se po ugovoru zaključenom sa Općinom Centar, produženim do 2033. godine pod istim uslovima (5,00 KM/m² neto = 6.437,00 KM + PDV 17% = 7.531,29 KM/mj.). Zbog neredovnog plaćanja postoji akumulirani dug. Po članu XIV Ugovora, kašnjenje sa plaćanjem dvije uzastopne zakupnine daje Općini pravo na jednostrani raskid bez sudskog postupka i iseljenje u roku od 15 dana!',
-    statutoryBasis: 'Ugovor o zakupu poslovne zgrade broj 04-49-36-59/13 (Član XIV - Raskid ugovora), Zakon o zakupu poslovnih zgrada i prostorija FBiH.',
-    systemicImpact: 'Gubitak lokacije Buka 11/13 značio bi momentalni prestanak rada i škole i vrtića. Prelazak na komercijalni zakup (15-25 KM/m²) uvećao bi troškove na 250.000–380.000 KM godišnje, što bi uništilo poslovanje.',
-    mitigationSteps: {
-      urgent0to30: [
-        'Zatražiti zvanični sastanak sa Službom za stambene i komunalne poslove Općine Centar Sarajevo radi usaglašavanja IOS-a.',
-        'Uspostaviti trajni nalog u banci za automatsko plaćanje tekuće zakupnine od 7.531,29 KM svakog 1. u mjesecu.'
-      ],
-      medium30to90: [
-        'Potpisati zvanični sporazum o obročnoj otplati akumuliranog duga na 24 do 36 mjeseci (npr. 2.500 KM/mj. uz tekuću zakupninu).',
-        'Uspostaviti 3 uzastopna mjeseca 100% urednih uplata kako bi se otklonio rizik aktivacije Člana XIV.'
-      ],
-      permanentPolicy: [
-        'Prioritetizacija zakupa kao zaštićenog fiksnog troška prve kategorije u sedmičnom cash-flow rasporedu.',
-        'Očuvanje novog ugovora do 2033. godine kao ključnog stuba strateške vrijednosti grupacije.'
-      ],
-      responsiblePerson: 'Direktor Davor Mulalić & Pravni savjetnik grupacije',
-      targetDeadline: 'Sastanak i usaglašavanje u roku od 30 dana; prvi aneks do 31.01.2027.'
+    {
+      id: 'RF-04',
+      title: 'Zakup Buka 11/13: neusaglašeno stanje s Općinom Centar',
+      shortTitle: 'Zakup Buka 11/13 (Općina Centar)',
+      category: 'Imovinsko-Pravni Status',
+      severity: 'Visoko (HIGH)',
+      amountKM: rentGap,
+      probVal: 2.8,
+      impactVal: 5.0,
+      probLabel: 'Srednja',
+      impactLabel: 'Katastrofalan (raskid ugovora)',
+      zone: 'HIGH',
+      forensicFinding: `Zakupnina iznosi 7.531,29 KM mjesečno. U IMH-u je do ${imh?.periodTo ?? period} trošak zakupa ${fmtKM(imh?.rent ?? 0)}, a za ${Math.round(months)} mjeseci očekuje se ${fmtKM(rentExpected)}; nedostaje ${fmtKM(rentGap)}. Kartica Općine na 31.10.2026. pokazivala je pretplatu od 22.469 KM. Produženje ugovora do 2033. potvrđeno je samo izjavom uprave [U]. Po članu XIV, neplaćanje dvije zakupnine nakon opomene daje Općini pravo na raskid.`,
+      statutoryBasis: 'Ugovor o zakupu br. 04-49-36-59/13 (čl. XIV), aneks 04-49-13-12/14.',
+      systemicImpact: 'Gubitak lokacije zaustavio bi rad obje ustanove.',
+      mitigationSteps: {
+        urgent0to30: ['Zatražiti izvod otvorenih stavki od Općine Centar.', 'Proknjižiti sve fakture zakupa za 2026.'],
+        medium30to90: ['Uvrstiti ugovor do 2033. u data room.'],
+        permanentPolicy: ['Trajni nalog za zakupninu do 15. u mjesecu.'],
+        responsiblePerson: 'Direktor',
+        targetDeadline: '30 dana',
+      },
+      harmonizationCondition: 'Usaglašen izvod otvorenih stavki s Općinom i dostavljen ugovor do 2033.',
     },
-    harmonizationCondition: 'Sastanak s Općinom Centar, formalni plan obročne otplate i 3 uzastopna mjeseca urednog plaćanja tekućeg zakupa.'
-  },
-  {
-    id: 'RF-05',
-    title: 'Status kantonalnih subvencija KS (157.458 KM — Prolazna stavka za roditelje)',
-    shortTitle: 'Subvencije KS (Prolazna stavka / Nema ovisnosti IMH)',
-    category: 'Operativni & Troškovi Rada',
-    severity: 'Srednje (MEDIUM)',
-    amountKM: 157458,
-    probVal: 1.8,
-    impactVal: 1.5,
-    probLabel: 'Niska (Prolazni tok)',
-    impactLabel: 'Nizak (IMH naplaćuje puni iznos od roditelja)',
-    zone: 'MEDIUM',
-    forensicFinding: 'PRAVNA I FINANSIJSKA ČINJENICA: Roditelj plaća puni iznos školarine/boravka koji određuje IMH (redovni cjenovnik ili popust UO IMH). IMH svakog mjeseca sačinjava izvještaj za resorno ministarstvo. Ministarstvo po osnovu izvještaja uplaćuje subvenciju na račun IMH, a IMH cjelokupan iznos pojedinačno prosljeđuje roditeljima na njihove račune. IMH NEMA KORISTI od subvencija i NE ZAVISI od njih. Ako ministarstvo kasni s isplatom, IMH nema šta prebaciti roditeljima, ali redovno poslovanje i naplata IMH-a ostaju 100% netaknuti.',
-    statutoryBasis: 'Javni poziv Ministarstva za odgoj i obrazovanje KS o sufinansiranju boravka djece u predškolskim ustanovama.',
-    systemicImpact: 'Nema direktnog sistemskog rizika po likvidnost ili plate ustanove IMH, jer IMH svoj prihod naplaćuje direktno od roditelja. Rizik je isključivo administrativno-komunikacijski prema roditeljima u slučaju kašnjenja budžetskih doznaka kantona.',
-    mitigationSteps: {
-      urgent0to30: [
-        'Uspostaviti jasan info-dopis roditeljima o mehanizmu refundacije: IMH prosljeđuje novac roditeljima onog trenutka kada ga ministarstvo uplati na račun ustanove.',
-        'Pravovremeno i uredno slati mjesečne zbirne izvještaje resornom ministarstvu prvog dana u mjesecu za prethodni mjesec.'
-      ],
-      medium30to90: [
-        'Kreirati automatizovanu evidenciju prolaznih doznaka kako bi roditelji u svakom trenutku imali uvid u status kantonalnih uplata.',
-        'Održavati besprijekorno porezno uvjerenje radi administrativne urednosti aplikacije.'
-      ],
-      permanentPolicy: [
-        'Zadržavanje principa pune samoodrživosti: ekonomska cijena vrtića formira se isključivo iz vlastitog cjenovnika, dok subvencije tretiraju strogo kao prolazna pomoć roditeljima.',
-        'Nulta tolerancija na finansijsko oslanjanje na javne transfere.'
-      ],
-      responsiblePerson: 'Finansijska služba & Direktor Davor Mulalić',
-      targetDeadline: 'Uspostavljeno kao trajno operativno pravilo.'
+    {
+      id: 'RF-05',
+      title: `Subvencije Ministarstva KS (${fmtKM(imh?.ministrySubsidies ?? 0)} do ${imh?.periodTo ?? period}): prolazna stavka`,
+      shortTitle: 'Subvencije KS (prolazna stavka)',
+      category: 'Operativni & Troškovi Rada',
+      severity: 'Srednje (MEDIUM)',
+      amountKM: imh?.ministrySubsidies ?? 0,
+      probVal: 1.8,
+      impactVal: 1.5,
+      probLabel: 'Niska',
+      impactLabel: 'Nizak',
+      zone: 'MEDIUM',
+      forensicFinding: 'Roditelj plaća punu školarinu, IMH izvještava Ministarstvo, a primljenu subvenciju u cjelosti prosljeđuje roditeljima. Subvencija nije prihod IMH-a i ne utiče na rezultat; u knjigama se vodi preko konta 238800.',
+      statutoryBasis: 'Javni poziv Ministarstva za odgoj i obrazovanje KS o sufinansiranju boravka djece.',
+      systemicImpact: 'Rizik je samo administrativan: kašnjenje doznake prema roditeljima.',
+      mitigationSteps: {
+        urgent0to30: ['Redovni mjesečni izvještaji Ministarstvu.'],
+        medium30to90: ['Evidencija prolaznih doznaka po porodici.'],
+        permanentPolicy: ['Subvencije se nikad ne knjiže kao prihod IMH-a.'],
+        responsiblePerson: 'Finansijska služba',
+        targetDeadline: 'Trajno pravilo',
+      },
+      harmonizationCondition: 'Saldo konta 238800 usaglašen s isplatama roditeljima.',
     },
-    harmonizationCondition: 'Redovno slanje mjesečnih izvještaja ministarstvu i transparentna direktna isplata roditeljima po prijemu doznake.'
-  },
-  {
-    id: 'RF-06',
-    title: 'Troškovi rada na 90,4% školarine i rizik Ugovora o djelu (77.632 KM)',
-    shortTitle: 'Ugovori o djelu za nastavu & Troškovi rada',
-    category: 'Operativni & Troškovi Rada',
-    severity: 'Visoko (HIGH)',
-    amountKM: 77632,
-    probVal: 4.5,
-    impactVal: 3.7,
-    probLabel: 'Vrlo visoka (85% inspekcijski rizik)',
-    impactLabel: 'Značajan (Prekvalifikacija i kazne)',
-    zone: 'HIGH',
-    forensicFinding: 'Ukupni troškovi plata u IDSS-u iznose 704.500 KM naspram 779.476 KM ugovorene školarine (90,38%), što ostavlja minimalan prostor za ostale troškove. Pored toga, 77.632 KM u 8 mjeseci 2026. isplaćeno je vanjskim nastavnicima kroz ugovore o djelu za redovnu nastavu.',
-    statutoryBasis: 'Zakon o radu FBiH (čl. 26 i 143 - izričita zabrana angažmana putem ugovora o djelu za redovnu djelatnost poslodavca).',
-    systemicImpact: 'Kantonalna inspekcija rada u redovnim nadzorima prekvalifikuje ugovore o djelu u radni odnos sa nalogom za uplatu punih doprinosa (cca 72% umjesto 14%) uz prekršajne kazne od 2.000 do 10.000 KM po ugovoru.',
-    mitigationSteps: {
-      urgent0to30: [
-        'Pravni pregled svih postojećih ugovora o djelu za predavače i nastavnike u IDSS-u.',
-        'Uskladiti formulacije opisa poslova (fokus na jednokratne ekspertize, autorska predavanja, izradu kurikuluma).'
-      ],
-      medium30to90: [
-        'Prevesti redovne nastavnike na ugovore o dopunskom radu (do trećine punog radnog vremena) u skladu sa Članom 26. Zakona o radu FBiH uz saglasnost matičnih škola.',
-        'Pokrenuti kampanju upisa za podizanje broja učenika sa 83 na 95, čime udio plata u prihodu pada ispod 70%.'
-      ],
-      permanentPolicy: [
-        'Potpuna zabrana angažmana nastavnog osoblja preko ugovora o djelu za fond sati redovne nastave.',
-        'Standardizovani modeli ugovora o dopunskom radu verifikovani od strane radno-pravnog advokata.'
-      ],
-      responsiblePerson: 'Direktor Davor Mulalić & Pravna služba',
-      targetDeadline: 'Revizija do 15.12.2026.; prevođenje ugovora do početka II polugodišta.'
+    {
+      id: 'RF-06',
+      title: `Ugovori o djelu u IDSS-u (${fmtKM(idss?.contractsWork ?? 0)} do ${idss?.periodTo ?? period})`,
+      shortTitle: 'Ugovori o djelu za nastavu',
+      category: 'Operativni & Troškovi Rada',
+      severity: 'Visoko (HIGH)',
+      amountKM: idss?.contractsWork ?? 0,
+      probVal: 4.0,
+      impactVal: 3.7,
+      probLabel: 'Visoka',
+      impactLabel: 'Značajan (preklasifikacija i kazne)',
+      zone: 'HIGH',
+      forensicFinding: `Troškovi ugovora o djelu u IDSS-u iznose ${fmtKM(idss?.contractsWork ?? 0)} za ${idss?.months ?? '–'} mjeseci (oko ${fmtKM((idss?.contractsWork ?? 0) / (idss?.months || 1))} mjesečno). Saradnici redovno izvode nastavu, a prema upravi zaposleni su u matičnim školama [U]. Godišnji nivo troškova rada IDSS-a (704.517 KM) iznosi 90,4% ugovorene vrijednosti školske godine.`,
+      statutoryBasis: 'Zakon o radu FBiH (dopunski rad uz saglasnost matičnog poslodavca).',
+      systemicImpact: 'Inspekcija rada može ugovore preklasifikovati u radni odnos s retroaktivnim doprinosima i kaznama.',
+      mitigationSteps: {
+        urgent0to30: ['Pravno mišljenje o statusu saradnika.'],
+        medium30to90: ['Prelazak na dopunski rad uz saglasnost matičnih poslodavaca.'],
+        permanentPolicy: ['Kadrovski plan prema popunjenosti razreda.'],
+        responsiblePerson: 'Direktor i pravni savjetnik',
+        targetDeadline: '90 dana',
+      },
+      harmonizationCondition: 'Saglasnosti matičnih poslodavaca i pravno mišljenje u data roomu.',
     },
-    harmonizationCondition: 'Prevođenje UOD aranžmana u dopunski rad u skladu sa Zakonom o radu i podizanje upisa na 90-95 učenika.'
-  },
-  {
-    id: 'RF-07',
-    title: 'Hronično kašnjenje doprinosa (60 dana) i negativan kapital grupacije (-37.304 KM)',
-    shortTitle: 'Kašnjenje doprinosa & Negativan kapital',
-    category: 'Likvidnost & Trezor',
-    severity: 'Srednje (MEDIUM)',
-    amountKM: 37304,
-    probVal: 4.4,
-    impactVal: 3.2,
-    probLabel: 'Visoka (85% operativna realnost)',
-    impactLabel: 'Značajan (Kamate / Blokada / Diskvalifikacija)',
-    zone: 'MEDIUM',
-    forensicFinding: 'Doprinosi na plate redovno se servisiraju sa zakašnjenjem od cca 60 dana, što stvara nepotreban trošak zakonskih zateznih kamata. Na dan 31.12.2025. vlastiti kapital oba entiteta je negativan (IDSS: -18.391 KM, IMH: -18.913 KM, zbirno -37.304 KM).',
-    statutoryBasis: 'Zakon o poreznoj upravi FBiH, Zakon o doprinosima FBiH, Zakon o privrednim društvima FBiH (adekvatnost kapitala).',
-    systemicImpact: 'Negativan vlastiti kapital formalno diskvalifikuje ustanove pri apliciranju za međunarodne grantove i komercijalne bankarske kredite, dok kašnjenje doprinosa stvara rizik porezne blokade.',
-    mitigationSteps: {
-      urgent0to30: [
-        'Pribaviti zvaničnu analitičku karticu iz Porezne uprave FBiH i usaglasiti tačno stanje dospjelih doprinosa i obračunatih kamata.',
-        'Isplanirati postepeno skraćenje roka kašnjenja doprinosa sa 60 na 45 dana.'
-      ],
-      medium30to90: [
-        'Uvesti pravilo paralelnog plaćanja poreza i doprinosa istovremeno sa isplatom neto plata do 15. u mjesecu.',
-        'Donijeti odluku osnivača o potpunom zadržavanju ostvarene dobiti za 2026. i 2027. radi sanacije kapitala.'
-      ],
-      permanentPolicy: [
-        'Zadržavanje dobiti do potpunog prelaska kapitala u pozitivnu zonu od najmanje +50.000 KM do kraja 2028. godine.',
-        'Nulta tolerancija na zatezne kamate Porezne uprave u godišnjem budžetu.'
-      ],
-      responsiblePerson: 'Licencirani računovođa Ilvana Raščić & Direktor Davor Mulalić',
-      targetDeadline: 'Skraćenje kašnjenja do 28.02.2027.; pozitivan kapital do 31.12.2027.'
+    {
+      id: 'RF-07',
+      title: `Javne obaveze po sporazumima (${fmtKM(g?.publicAgreements ?? 0)}) i negativan kapital (${fmtKM(g?.equity ?? 0)})`,
+      shortTitle: 'Javne obaveze i negativan kapital',
+      category: 'Likvidnost & Trezor',
+      severity: 'Visoko (HIGH)',
+      amountKM: (g?.publicAgreements ?? 0) + Math.abs(Math.min(0, g?.equity ?? 0)),
+      probVal: 4.4,
+      impactVal: 3.6,
+      probLabel: 'Visoka',
+      impactLabel: 'Značajan (kamate, blokada)',
+      zone: 'HIGH',
+      forensicFinding: `Na ${period} obaveze po sporazumima s Poreznom upravom iznose ${fmtKM(g?.publicAgreements ?? 0)} (IDSS ${fmtKM(idss?.publicAgreements ?? 0)}, IMH ${fmtKM(imh?.publicAgreements ?? 0)}), ostale javne obaveze ${fmtKM(g?.publicCurrent ?? 0)}, a neisplaćene neto plate ${fmtKM(g?.netSalariesPayable ?? 0)}. Kapital grupe iznosi ${fmtKM(g?.equity ?? 0)}.`,
+      statutoryBasis: 'Zakon o poreznoj upravi FBiH, Zakon o doprinosima FBiH.',
+      systemicImpact: 'Kašnjenje javnih obaveza nosi zatezne kamate i rizik blokade računa; negativan kapital otežava kreditiranje.',
+      mitigationSteps: {
+        urgent0to30: ['Pribaviti uvjerenje Porezne uprave za obje ustanove.'],
+        medium30to90: ['Plan izmirenja sporazuma i redovno plaćanje doprinosa uz plate.'],
+        permanentPolicy: ['Zadržavanje dobiti do pozitivnog kapitala.'],
+        responsiblePerson: 'Računovođa i direktor',
+        targetDeadline: '30 dana za uvjerenje',
+      },
+      harmonizationCondition: 'Sporazumi izmireni (saldo 0) i kapital pozitivan.',
     },
-    harmonizationCondition: 'Pribavljanje zvanične potvrde Porezne uprave o stanju duga i zadržavanje dobiti do potpunog prelaska kapitala u pozitivnu zonu.'
-  }
-];
+    {
+      id: 'RF-08',
+      title: `Fakture IDSS → IMH (100.000 KM) i neusaglašena međusobna salda (${fmtKM(reconSum)})`,
+      shortTitle: 'Fakture 100.000 KM i međusobna salda',
+      category: 'Porezni & Krivični Rizici',
+      severity: 'Visoko (HIGH)',
+      amountKM: (idss?.revenueRelated ?? 0) + reconSum,
+      probVal: 3.5,
+      impactVal: 4.2,
+      probLabel: 'Srednja',
+      impactLabel: 'Visok (banka, porezni organ, revizija)',
+      zone: 'HIGH',
+      forensicFinding: `Za povlačenje namjenskog kredita MF Banke IDSS je IMH-u fakturisao usluge (renoviranje dvorišta i slično). IDSS to vodi kao prihod od povezanog lica (${fmtKM(idss?.revenueRelated ?? 0)}), a IMH kao ulaganje u tuđe objekte. ${reconDiff.map((r) => `${r.label}: razlika ${fmtKM(Math.abs(r.diff ?? 0))}`).join('; ')}.`,
+      statutoryBasis: 'Ugovor o kreditu MF Banke (namjena), Zakon o porezu na dobit FBiH (transferne cijene), Zakon o računovodstvu i reviziji FBiH.',
+      systemicImpact: 'Bez ugovora i dokaza o izvedenim radovima fakture se mogu smatrati fakturama bez stvarnog prometa.',
+      mitigationSteps: {
+        urgent0to30: ['Prikupiti dokaze o izvedenim radovima (ugovori, situacije, računi podizvođača, fotografije).'],
+        medium30to90: ['Usaglasiti međusobna salda izvodom otvorenih stavki.', 'Nezavisna pravno-poreska ocjena.'],
+        permanentPolicy: ['Ugovor o podjeli troškova i zabrana faktura bez ugovornog osnova.'],
+        responsiblePerson: 'Direktor i računovođa',
+        targetDeadline: '45 dana',
+      },
+      harmonizationCondition: 'Sva međusobna salda usaglašena i dokumentacija radova u data roomu.',
+    },
+    {
+      id: 'RF-09',
+      title: `Vozilo u leasingu za privatnu upotrebu osnivača (obaveza ${fmtKM(imh?.leasing ?? 0)})`,
+      shortTitle: 'Vozilo u leasingu (privatna upotreba)',
+      category: 'Porezni & Krivični Rizici',
+      severity: 'Visoko (HIGH)',
+      amountKM: imh?.leasing ?? 0,
+      probVal: 4.0,
+      impactVal: 3.0,
+      probLabel: 'Visoka',
+      impactLabel: 'Značajan (porez i nepriznati rashodi)',
+      zone: 'HIGH',
+      forensicFinding: `IMH je 14.07.2026. zaključio leasing za vozilo koje osnivač koristi isključivo privatno. U knjigama je obaveza po leasingu ${fmtKM(imh?.leasing ?? 0)}; iznos odgovara zbiru rata s kamatom i učešća, iako je učešće (93.484,84 KM) dao osnivač. Amortizacija vozila nije knjižena. Rata iznosi 1.027,91 EUR (≈2.010 KM) mjesečno.`,
+      statutoryBasis: 'Zakon o porezu na dohodak FBiH (primici u naravi), Zakon o porezu na dobit FBiH (nepriznati rashodi).',
+      systemicImpact: 'Korist u naravi podliježe porezu i doprinosima; troškovi vozila nisu priznat rashod; učešće može biti dvostruko iskazano.',
+      mitigationSteps: {
+        urgent0to30: ['Rekonstruisati knjiženje leasinga prema otplatnom planu Sparkasse Leasinga.'],
+        medium30to90: ['Prenos ugovora o leasingu na osnivača ili obračun koristi u naravi.'],
+        permanentPolicy: ['Putni nalozi i evidencija upotrebe za svako vozilo u vlasništvu ustanove.'],
+        responsiblePerson: 'Direktor i poreski savjetnik',
+        targetDeadline: '60 dana',
+      },
+      harmonizationCondition: 'Leasing knjižen po otplatnom planu, a tretman privatne upotrebe riješen.',
+    },
+    {
+      id: 'RF-10',
+      title: `Integritet knjiga: neravnoteža bilansa (${fmtKM(imbalance)}) i prelazni konti (${fmtKM(transit)})`,
+      shortTitle: 'Integritet knjiga',
+      category: 'Likvidnost & Trezor',
+      severity: imbalance > 0 ? 'Kritično (CRITICAL)' : 'Visoko (HIGH)',
+      amountKM: imbalance + Math.abs(transit),
+      probVal: 4.5,
+      impactVal: 4.0,
+      probLabel: 'Visoka (utvrđeno)',
+      impactLabel: 'Visok (pouzdanost svih brojki)',
+      zone: imbalance > 0 ? 'CRITICAL' : 'HIGH',
+      forensicFinding: `${imbalance > 0 ? `Bruto bilans nije u ravnoteži: razlika ukupnog duguje i potražuje iznosi ${fmtKM(imbalance)}. ` : ''}Na prelaznim kontima gotovine stoji ${fmtKM(transit)}, iako ti konti na kraju perioda moraju biti zatvoreni. Amortizacija u 2026. nije knjižena ni u jednoj ustanovi.`,
+      statutoryBasis: 'Zakon o računovodstvu i reviziji FBiH, MSFI za MSP.',
+      systemicImpact: 'Dok knjige nisu u ravnoteži, nijedan zbir nije pouzdan za banku, revizora ili vlasnika.',
+      mitigationSteps: {
+        urgent0to30: ['Računovođa pronalazi i ispravlja razliku.', 'Zatvaranje prelaznih konta.'],
+        medium30to90: ['Mjesečno zatvaranje knjiga i obračun amortizacije.'],
+        permanentPolicy: ['Kontrola ravnoteže bilansa prije svakog izvještaja.'],
+        responsiblePerson: 'Računovođa',
+        targetDeadline: '15 dana',
+      },
+      harmonizationCondition: 'Bilans u ravnoteži i prelazni konti zatvoreni.',
+    },
+  ];
+}
 
 interface RiskMatrixVisualProps {
   className?: string;
@@ -251,6 +299,8 @@ export const RiskMatrixVisual: React.FC<RiskMatrixVisualProps> = ({
   className = '',
   resolvedRiskIds = []
 }) => {
+  const fin = useFinancials();
+  const MATRIX_RISKS = buildMatrixRisks(fin);
   const [selectedRisk, setSelectedRisk] = useState<RiskMatrixItem | null>(null);
   const [activeFilter, setActiveFilter] = useState<'ALL' | 'CRITICAL' | 'HIGH' | 'MEDIUM'>('ALL');
 
@@ -263,6 +313,9 @@ export const RiskMatrixVisual: React.FC<RiskMatrixVisualProps> = ({
   });
 
   const totalExposedKM = MATRIX_RISKS.reduce((acc, r) => acc + r.amountKM, 0);
+  const zoneSum = (z: RiskMatrixItem['zone']) => MATRIX_RISKS.filter((r) => r.zone === z).reduce((acc, r) => acc + r.amountKM, 0);
+  const zoneIds = (z: RiskMatrixItem['zone']) => MATRIX_RISKS.filter((r) => r.zone === z).map((r) => r.id).join(', ');
+  const sevCount = (s: string) => MATRIX_RISKS.filter((r) => r.severity.includes(s)).length;
 
   return (
     <div className={`p-6 md:p-8 rounded-2xl border-2 border-[var(--idss-blue)] bg-[var(--surface)] shadow-xl my-8 ${className}`}>
@@ -279,7 +332,7 @@ export const RiskMatrixVisual: React.FC<RiskMatrixVisualProps> = ({
             </span>
           </div>
           <h3 className="text-xl md:text-2xl font-black text-[var(--ink)] m-0 mt-1">
-            Vizuelna matrica ne-saniranih crvenih zastavica (RF-02 do RF-07)
+            Vizuelna matrica crvenih zastavica (RF-02 do RF-10)
           </h3>
           <p className="text-xs text-[var(--muted)] m-0 mt-1">
             Mapiranje preostalih rizika po <b>vjerovatnoći nastanka (X-osa)</b> i <b>uticaju na poslovanje (Y-osa)</b>. Kliknite na bilo koju tačku za otvaranje detaljnog plana mitigacije.
@@ -299,10 +352,10 @@ export const RiskMatrixVisual: React.FC<RiskMatrixVisualProps> = ({
                   : 'bg-[var(--surface-alt)] text-[var(--ink)] border border-[var(--line)] hover:border-[var(--idss-blue)]'
               }`}
             >
-              {filterKey === 'ALL' && 'Svi rizici (6)'}
-              {filterKey === 'CRITICAL' && 'Kritični (2)'}
-              {filterKey === 'HIGH' && 'Visoki (3)'}
-              {filterKey === 'MEDIUM' && 'Srednji (1)'}
+              {filterKey === 'ALL' && `Svi rizici (${MATRIX_RISKS.length})`}
+              {filterKey === 'CRITICAL' && `Kritični (${sevCount('CRITICAL')})`}
+              {filterKey === 'HIGH' && `Visoki (${sevCount('HIGH')})`}
+              {filterKey === 'MEDIUM' && `Srednji (${sevCount('MEDIUM')})`}
             </button>
           ))}
         </div>
@@ -312,19 +365,19 @@ export const RiskMatrixVisual: React.FC<RiskMatrixVisualProps> = ({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 my-5">
         <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-[var(--line)]">
           <span className="text-[11px] font-bold text-[var(--muted)] block">Ukupna finansijska izloženost:</span>
-          <span className="text-lg font-black text-[var(--ink)]">{totalExposedKM.toLocaleString('bs-BA')} KM</span>
+          <span className="text-lg font-black text-[var(--ink)]">{formatBs(Math.round(totalExposedKM))} KM</span>
         </div>
         <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900">
-          <span className="text-[11px] font-bold text-red-700 dark:text-red-300 block">Kritična zona (RF-02, RF-04):</span>
-          <span className="text-lg font-black text-red-800 dark:text-red-200">275.067 KM</span>
+          <span className="text-[11px] font-bold text-red-700 dark:text-red-300 block">Kritična zona ({zoneIds('CRITICAL')}):</span>
+          <span className="text-lg font-black text-red-800 dark:text-red-200">{formatBs(Math.round(zoneSum('CRITICAL')))} KM</span>
         </div>
         <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900">
-          <span className="text-[11px] font-bold text-amber-700 dark:text-amber-300 block">Visoka zona (RF-03, 05, 06):</span>
-          <span className="text-lg font-black text-amber-800 dark:text-amber-200">282.706 KM</span>
+          <span className="text-[11px] font-bold text-amber-700 dark:text-amber-300 block">Visoka zona ({zoneIds('HIGH')}):</span>
+          <span className="text-lg font-black text-amber-800 dark:text-amber-200">{formatBs(Math.round(zoneSum('HIGH')))} KM</span>
         </div>
         <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900">
-          <span className="text-[11px] font-bold text-blue-700 dark:text-blue-300 block">Srednja zona (RF-07):</span>
-          <span className="text-lg font-black text-blue-800 dark:text-blue-200">37.304 KM</span>
+          <span className="text-[11px] font-bold text-blue-700 dark:text-blue-300 block">Srednja zona ({zoneIds('MEDIUM')}):</span>
+          <span className="text-lg font-black text-blue-800 dark:text-blue-200">{formatBs(Math.round(zoneSum('MEDIUM')))} KM</span>
         </div>
       </div>
 
@@ -425,7 +478,7 @@ export const RiskMatrixVisual: React.FC<RiskMatrixVisualProps> = ({
                   <div className="text-[10px] text-slate-300 leading-tight mb-1.5">{risk.category}</div>
                   <div className="flex justify-between items-center text-[10px] border-t border-slate-700/80 pt-1">
                     <span className="text-slate-400">Izloženost:</span>
-                    <span className="font-black text-rose-300">{risk.amountKM.toLocaleString('bs-BA')} KM</span>
+                    <span className="font-black text-rose-300">{formatBs(Math.round(risk.amountKM))} KM</span>
                   </div>
                   <div className="flex justify-between items-center text-[9px] text-slate-400 mt-0.5">
                     <span>Vjerovatnoća: <b>{risk.probVal}/5</b></span>
@@ -486,7 +539,7 @@ export const RiskMatrixVisual: React.FC<RiskMatrixVisualProps> = ({
                       {risk.id} · {risk.severity.split(' ')[0]}
                     </span>
                     <span className="font-extrabold text-[var(--ink)]">
-                      {risk.amountKM.toLocaleString('bs-BA')} KM
+                      {formatBs(Math.round(risk.amountKM))} KM
                     </span>
                   </div>
                   <h5 className="font-extrabold text-[var(--ink)] text-xs m-0 leading-snug">
@@ -536,7 +589,7 @@ export const RiskMatrixVisual: React.FC<RiskMatrixVisualProps> = ({
                   {selectedRisk.title}
                 </h3>
                 <div className="flex items-center gap-3 text-xs text-[var(--muted)] mt-1">
-                  <span>Finansijska izloženost: <b className="text-[var(--ink)]">{selectedRisk.amountKM.toLocaleString('bs-BA')} KM</b></span>
+                  <span>Finansijska izloženost: <b className="text-[var(--ink)]">{formatBs(Math.round(selectedRisk.amountKM))} KM</b></span>
                   <span>·</span>
                   <span>Vjerovatnoća: <b>{selectedRisk.probLabel} ({selectedRisk.probVal}/5)</b></span>
                   <span>·</span>

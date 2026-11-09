@@ -39,37 +39,6 @@ export interface DebtObligation {
   status: string;
 }
 
-export interface RedFlag {
-  id: string;
-  title: string;
-  category: 'Porezni & Krivični Rizici' | 'Likvidnost & Trezor' | 'Imovinsko-Pravni Status' | 'Operativni & Troškovi Rada';
-  severity: 'Kritično (CRITICAL)' | 'Visoko (HIGH)' | 'Srednje (MEDIUM)';
-  amountKM?: number;
-  forensicFinding: string;
-  statutoryBasis: string;
-  systemicImpact: string;
-  harmonizationCondition: string;
-  status: 'Otvoreno (Aktivan rizik)' | 'Djelimično sanirano' | 'Harmonizovano';
-}
-
-export interface IngestedDocument {
-  id: string;
-  code: string;
-  title: string;
-  source: string;
-  date: string;
-  impactAreas: string[];
-  summary: string;
-  effects: {
-    cashDeltaKM?: number;
-    ebitdaDeltaKM?: number;
-    equityDeltaKM?: number;
-    riskResolved?: string[];
-    studentsChange?: number;
-  };
-  isActive: boolean;
-}
-
 export const HISTORICAL_FINANCIALS: FinancialYear[] = [
   {
     year: '2022',
@@ -126,8 +95,8 @@ export const HISTORICAL_FINANCIALS: FinancialYear[] = [
 export const ENROLLMENT_DATA: EnrollmentYear[] = [
   { period: '2023/24', students: 79, contractValue: 717527, avgPerStudent: 9083, realizationRate: 88, note: 'Polazna baza upisa' },
   { period: '2024/25', students: 94, contractValue: 884763, avgPerStudent: 9412, realizationRate: 89, note: 'Vrhunac posmatranog razdoblja' },
-  { period: '2025/26', students: 68, contractValue: 717089, avgPerStudent: 10545, realizationRate: 84, note: 'Pad od 27,66% (~28%) usljed odlaska stranih porodica nakon isteka mandata' },
-  { period: '2026/27', students: 83, contractValue: 779476, avgPerStudent: 9391, realizationRate: 86, note: 'Oporavak: 63,64% prvačića (7 od 11) potiče iz predškolske grupe IMH-a' },
+  { period: '2025/26', students: 68, contractValue: 717089, avgPerStudent: 10545, realizationRate: 84, note: 'Pad od 27,66% (~28%); uzrok prema upravi: odlazak stranih porodica [U]' },
+  { period: '2026/27', students: 83, contractValue: 779476, avgPerStudent: 9391, realizationRate: 87.4, note: 'Oporavak: 63,64% prvačića (7 od 11) potiče iz predškolske grupe' },
 ];
 
 export const DEBT_OBLIGATIONS: DebtObligation[] = [
@@ -138,7 +107,7 @@ export const DEBT_OBLIGATIONS: DebtObligation[] = [
     type: 'Kredit',
     originalAmount: '100.000 KM',
     monthlyBurden: 'oko 4.661 KM / mj.',
-    maturity: 'avgust 2028. (24 rate)',
+    maturity: 'avgust 2028. (24 rate); stanje 31.10.2026.: 92.481,66 KM',
     interestRate: '10,99% fiksna (EKS 12,63%)',
     collateral: 'Mjenice, namjena operativna likvidnost',
     purpose: 'Finansiranje tekuće likvidnosti i obaveza. Partija kredita: [izostavljeno]. Ukupni trošak kredita 13.489 KM.',
@@ -164,11 +133,11 @@ export const DEBT_OBLIGATIONS: DebtObligation[] = [
     type: 'Overdraft',
     originalAmount: '15.000 KM limit',
     monthlyBurden: 'Kamata mjesečno (glavnica na dospijeću)',
-    maturity: '12.06.2026.',
+    maturity: '12.06.2026. (status nakon dospijeća nije potvrđen); prekoračenje 31.10.2026.: 5.554,04 KM',
     interestRate: '11,90% fiksna',
     collateral: 'Solidarni dužnici: IMH i Lamia Kacila',
     purpose: 'Tekuća likvidnost. Dospijeva 12.06.2026. i mora se planski refinansirati ili zatvoriti.',
-    status: 'Dospijeva 12.06.2026.'
+    status: 'Dospijeće prošlo; potvrditi obnovu ili zatvaranje'
   },
   {
     id: 'DEBT-04',
@@ -180,7 +149,7 @@ export const DEBT_OBLIGATIONS: DebtObligation[] = [
     maturity: 'juli 2031. (60 mjeseci, ugovor 14.07.2026.)',
     interestRate: '5,99% (6M Euribor + 3,44%), EKS 8,02%',
     collateral: 'Vozilo, učešće 47.798 EUR (47,33%), mjenični dužnik Lamia Kacila',
-    purpose: 'Porsche Cayenne 2025. Ugovor br. 12546/26. Neoperativna imovina koja tereti cash-flow.',
+    purpose: 'Porsche Cayenne 2025. Ugovor br. 12546/26. Vozilo koristi isključivo osnivač privatno. U knjigama IMH-a 31.10.2026.: obaveza 214.882,90 KM (uključuje učešće), amortizacija nije knjižena.',
     status: 'Aktivan'
   },
   {
@@ -190,24 +159,24 @@ export const DEBT_OBLIGATIONS: DebtObligation[] = [
     type: 'Pozajmica',
     originalAmount: '93.484,84 KM',
     monthlyBurden: '7.790,40 KM / mj. (zadnja 7.790,44 KM)',
-    maturity: '01.11.2026. – 01.10.2027. (12 rata)',
+    maturity: 'Po ugovoru 01.11.2026. – 01.10.2027. (12 rata); stvarno: prva uplata ≈4.400 KM 09.11.2026., dalje sukcesivno',
     interestRate: '0% (beskamatna pozajmica)',
-    collateral: 'Sporazum od 14.07.2026. (prethodno vozilo dato kao učešće)',
+    collateral: 'Ugovor potpisan 07.11.2026., na njemu datum 14.07.2026. (prethodno vozilo osnivača dato kao učešće)',
     purpose: 'Učešće za nabavku novog Cayennea dato preko AUTO MT d.o.o. Mostar. Uplata na lični račun zajmodavca kod Sparkasse. Kašnjenje 2 rate povlači cijeli iznos.',
-    status: 'Počinje 01.11.2026.'
+    status: 'Nije proknjiženo na 31.10.2026.; preporuka: prebijanje s potraživanjima od osnivača'
   },
   {
     id: 'DEBT-06',
     creditor: 'Općina Centar Sarajevo',
     entity: 'Grupa',
     type: 'Zakup',
-    originalAmount: 'Novi ugovor od 27.09.2023. do 2033. godine (raniji ugovor 04-49-36-59/13 od 30.08.2013. i Anex 13.03.2014.)',
+    originalAmount: 'Prema upravi novi ugovor od 27.09.2023. do 2033. [U] (raniji ugovor 04-49-36-59/13 od 30.08.2013. i Anex 13.03.2014.)',
     monthlyBurden: '7.531,29 KM / mj. (6.437,00 KM neto + 1.094,29 KM PDV 17%)',
-    maturity: '31.08.2033. (Puni novi 10-godišnji ugovorni mandat pod identičnim uslovima)',
+    maturity: '31.08.2033. prema podacima uprave [U]',
     interestRate: 'Zakonska zatezna kamata na dospjela dugovanja',
     collateral: 'Poslovna zgrada Buka 11 i 13 (1.287,40 m² po fiksnoj zaštićenoj cijeni 5,00 KM/m²)',
-    purpose: 'STABILNOST LOKACIJE DO 2033.: Uspješno zaključen NOVI UGOVOR DO 2033. GODINE POD POTPUNO ISTIM USLOVIMA ZAKUPA (5,00 KM/m² neto = 6.437,00 KM + PDV = 7.531,29 KM/mj.). Zgrada od 1.287,40 m² na adresi Buka 11 i 13 osigurana je za obrazovnu djelatnost IDSS i IMH narednih 7+ godina. Ključni operativni prioritet je redovno plaćanje tekuće zakupnine i mirno poravnanje akumuliranog duga kako se ne bi aktivirao čl. XIV o jednostranom raskidu.',
-    status: 'Osiguran dugoročni zakup do 2033. pod istim uslovima (potrebno uredno servisiranje)'
+    purpose: 'Zgrada Buka 11 i 13 (1.287,40 m²) za obrazovnu djelatnost IDSS i IMH. Zakupnina 7.531,29 KM/mj. do 15. u mjesecu; po čl. XIV neplaćanje dvije zakupnine nakon opomene daje Općini pravo na raskid.',
+    status: 'Ugovor do 2033. treba dostaviti; stanje s Općinom treba usaglasiti (31.10.2026.: pretplata 22.468,71 KM, 8 od 10 faktura proknjiženo)'
   }
 ];
 
@@ -328,227 +297,3 @@ export const LEASE_CONTRACT_FULL = {
     }
   }
 };
-
-export const BASE_RED_FLAGS: RedFlag[] = [
-  {
-    id: 'RF-01',
-    title: 'Cirkularni tok i međufirmska faktura od 100.000 KM preko MF Banke',
-    category: 'Porezni & Krivični Rizici',
-    severity: 'Kritično (CRITICAL)',
-    amountKM: 100000,
-    forensicFinding: 'MF Banka je odobrila kredit IMH-u za operativna sredstva (30.07.2026., 100.000 KM, partija [izostavljeno]). Sredstva nisu prebačena direktno na IMH već preko prefakturisanja IDSS prema IMH. Banka je uplatila IDSS-u, a novac je preraspodijeljen za doprinose i tekuće obaveze oba subjekta. Riječ je o cirkularnom toku radi likvidnosti, a ne operativnoj prodaji usluga. Uključivanjem u prihod IDSS-a fiktivno je iskazan 8-mjesečni rezultat od 115.145 KM (bez toga 15.145 KM).',
-    statutoryBasis: 'Zakon o porezu na dobit FBiH (čl. 45-48, Transferne cijene), Međunarodni računovodstveni standardi (MSFI za MSP, sekcija 33, Objavljivanje povezanih lica).',
-    systemicImpact: 'Nevažeći operativni EBITDA u pregovorima s bankama; rizik poreznog osporavanja troškova u IMH i pitanje namjenskog utroška kredita prema MF Banci.',
-    harmonizationCondition: 'Sačiniti interni memo u arhivi o toku odobrenja, isporuke i preraspodjele; u operativnom P&L-u i cash-flowu isključiti 100k kao neoperativnu stavku.',
-    status: 'Otvoreno (Aktivan rizik)'
-  },
-  {
-    id: 'RF-02',
-    title: 'Potraživanja od uprave (184.692 KM) i pozajmica prema Lamiji Kacili (93.484,84 KM)',
-    category: 'Porezni & Krivični Rizici',
-    severity: 'Kritično (CRITICAL)',
-    amountKM: 184692,
-    forensicFinding: 'IMH potražuje 167.290 KM (127.725 KM nenovčane koristi i plaćeni troškovi uprave + 39.565 KM krediti fizičkim licima), a IDSS 17.402 KM. Ugovorom od 14.07.2026. regulisan je dio: IMH duguje Lamiji Kacili 93.484,84 KM (vrijednost prethodnog Porschea datog firmi AUTO MT d.o.o. Mostar kao učešće za novi leasing). Pozajmica se vraća u 12 rata po 7.790,40 KM od 01.11.2026. do 01.10.2027. na lični račun zajmodavca kod Sparkasse. Međutim, ostatak potraživanja iznad 93.484,84 KM (cca 91.207 KM) ostaje formalno neriješen.',
-    statutoryBasis: 'Zakon o porezu na dohodak FBiH (čl. 10 i 14, Prikrivena isplata dohotka), Zakon o doprinosima FBiH, Ugovor o pozajmici od 14.07.2026.',
-    systemicImpact: 'Rizik da Porezna uprava neregulisani dio potraživanja tretira kao prikriveni lični dohodak uz obračun 60.000+ KM retroaktivnih poreza, doprinosa i kamata.',
-    harmonizationCondition: 'Striktno plaćanje 12 rata po 7.790,40 KM prema planu i pisano priznanje duga sa otplatnim planom za preostali iznos potraživanja.',
-    status: 'Otvoreno (Aktivan rizik)'
-  },
-  {
-    id: 'RF-03',
-    title: 'Deficit pokrića depozita roditelja (47.616 KM obaveza spram 24.148 KM gotovine IMH)',
-    category: 'Likvidnost & Trezor',
-    severity: 'Kritično (CRITICAL)',
-    amountKM: 47616,
-    forensicFinding: 'Sigurnosni depoziti roditelja u IMH iznose 47.616 KM, dok je ukupna gotovina IMH-a na dan 31.08.2026. iznosila 24.148 KM (deficit 23.468 KM). Sredstva roditelja nisu odvojena na namjenski escrow račun, već su apsorbovana u operativnu potrošnju.',
-    statutoryBasis: 'Zakon o obligacionim odnosima FBiH (namjenski depoziti i kaucije), Zakon o zaštiti potrošača BiH.',
-    systemicImpact: 'U slučaju serijskog raskida ugovora od strane 10-15 porodica, ustanova ulazi u stanje trenutne tehničke nesolventnosti i gubitka pedagoške reputacije.',
-    harmonizationCondition: 'Otvaranje namjenskog podračuna za depozite i sukcesivno izdvajanje 4.000 KM mjesečno do uspostave 100% pokrića.',
-    status: 'Otvoreno (Aktivan rizik)'
-  },
-  {
-    id: 'RF-04',
-    title: 'Akumulirani dug za zakup i neuredno plaćanje tekućeg zakupa Buka 11/13',
-    category: 'Imovinsko-Pravni Status',
-    severity: 'Visoko (HIGH)',
-    amountKM: 90375,
-    forensicFinding: 'Kompleks od 1.287,40 m² koristi se po osnovnom Ugovoru broj 04-49-36-59/13 od 30.08.2013. zaključenom s Općinom Centar (načelnik Dževad Bećirević) na 10 godina (do 31.08.2023.), uz Anex broj 04-49-13-12/14 od 13.03.2014. kojim je priznato 58.795,86 KM (60% od 97.993,10 KM) nužnih ulaganja kroz kompenzaciju dospjelih 48.187,74 KM duga i 9-mjesečno umanjenje na 5.258,32 KM/mj. Od 01.01.2015. tekući zakup iznosi 6.437,00 KM + PDV 1.094,29 KM = 7.531,29 KM/mj. Ugovor je produžen 27.09.2023. do 2033. godine. Međutim, postoji akumulirani dug, a tekući zakup se neredovno plaća. Po članu XIV Ugovora, kašnjenje sa dvije dospjele zakupnine nakon opomene daje Općini pravo na momentalni jednostrani raskid i iseljenje u roku od 15 dana!',
-    statutoryBasis: 'Ugovor o zakupu poslovne zgrade 04-49-36-59/13 (30.08.2013.), Anex 04-49-13-12/14 (13.03.2014.), Zakon o zakupu poslovnih zgrada i prostorija FBiH.',
-    systemicImpact: 'Gubitak lokacije Buka 11/13 ili prelazak na komercijalnu cijenu (15-25 KM/m² = 250.000 - 380.000 KM godišnje) uništava ekonomski model grupe.',
-    harmonizationCondition: 'Sastanak s Općinom Centar: formalno priznanje stanja duga, pismeni plan obročne otplate i uspostava 3 uzastopna mjeseca urednog plaćanja tekućeg zakupa.',
-    status: 'Otvoreno (Aktivan rizik)'
-  },
-  {
-    id: 'RF-05',
-    title: 'Status kantonalnih subvencija KS (157.458 KM — Prolazna stavka za roditelje, nema zavisnosti IMH)',
-    category: 'Operativni & Troškovi Rada',
-    severity: 'Srednje (MEDIUM)',
-    amountKM: 157458,
-    forensicFinding: 'PRAVNA I FINANSIJSKA ČINJENICA: Roditelj plaća puni iznos cjelokupne školarine koji određuje IMH. IMH po završetku mjeseca podnosi izvještaj Ministarstvu KS. Ministarstvo uplaćuje subvenciju na račun IMH, a IMH je u cjelosti prebacuje roditeljima na njihove račune. IMH nema nikakve koristi od subvencija niti zavisi od njih. Ako ministarstvo kasni, IMH nema šta proslijediti roditeljima, ali redovno poslovanje i plate IMH-a su 100% nezavisni i naplaćeni.',
-    statutoryBasis: 'Javni poziv Ministarstva za odgoj i obrazovanje Kantona Sarajevo o sufinansiranju boravka djece u predškolskim ustanovama.',
-    systemicImpact: 'Nema operativnog rizika za IMH. Rizik je isključivo administrativno kašnjenje preusmjeravanja sredstava roditeljima.',
-    harmonizationCondition: 'Mjesečno izvještavanje resornom ministarstvu i automatsko prosljeđivanje primljenih subvencija na tekuće račune roditelja.',
-    status: 'Djelimično sanirano'
-  },
-  {
-    id: 'RF-06',
-    title: 'Troškovi rada na 90,4% školarine i rizik Ugovora o djelu (77.632 KM)',
-    category: 'Operativni & Troškovi Rada',
-    severity: 'Visoko (HIGH)',
-    amountKM: 77632,
-    forensicFinding: 'Godišnji trošak osoblja IDSS-a za 2026/27. iznosi 704.500 KM naspram 779.476 KM ugovorene školarine (90,38%). Za sve ostale troškove ostaje samo 74.976 KM. Dodatno, u 8 mjeseci 2026. isplaćeno je 77.632 KM (prosječno 9.700 KM/mj.) nastavnicima kroz ugovore o djelu koji imaju matična zaposlenja u drugim školama.',
-    statutoryBasis: 'Zakon o radu FBiH (čl. 26 i 143, zabrana UOD za redovnu nastavnu djelatnost).',
-    systemicImpact: 'Inspekcija rada rutinski preklasifikuje ugovore o djelu u radni odnos sa nalogom za retroaktivnu uplatu punih doprina i novčane kazne.',
-    harmonizationCondition: 'Prevođenje UOD aranžmana u dopunski rad u skladu sa Zakonom o radu i podizanje upisa na 90-95 učenika kako bi se udio plata spustio ispod 70%.',
-    status: 'Otvoreno (Aktivan rizik)'
-  },
-  {
-    id: 'RF-07',
-    title: 'Hronično kašnjenje doprinosa (60 dana) i negativan kapital grupacije (-37.304 KM)',
-    category: 'Likvidnost & Trezor',
-    severity: 'Srednje (MEDIUM)',
-    amountKM: 37304,
-    forensicFinding: 'Raniji porezni sporovi su otplaćeni, ali se redovni doprinosi servisiraju s uobičajenim kašnjenjem od cca 2 mjeseca uz obračun zateznih kamata. Na dan 31.12.2025. vlastiti kapital oba entiteta je negativan (IDSS: -18.391 KM, IMH: -18.913 KM, zbir -37.304 KM).',
-    statutoryBasis: 'Zakon o poreznoj upravi FBiH, Zakon o doprinosima FBiH, Zakon o privrednim društvima FBiH (adekvatnost kapitala).',
-    systemicImpact: 'Rizik prinudne blokade računa od strane Porezne uprave i formalna diskvalifikacija pri ugovaranju komercijalnih bankarskih kredita.',
-    harmonizationCondition: 'Pribavljanje zvanične potvrde Porezne uprave o stanju duga i zadržavanje dobiti do potpunog prelaska kapitala u pozitivnu zonu do kraja 2028.',
-    status: 'Otvoreno (Aktivan rizik)'
-  }
-];
-
-export const INITIAL_INGESTED_DOCS: IngestedDocument[] = [
-  {
-    id: 'DOC-01',
-    code: 'ZB-2025',
-    title: 'Godišnji finansijski izvještaji i bruto bilansi 2022–2025.',
-    source: 'FIA FBiH i licencirani računovođa Ilvana Raščić (CR-6235/5)',
-    date: '31.12.2025.',
-    impactAreas: ['Konsolidacija', 'Kapital', 'Prihodi'],
-    summary: 'Potvrđeni konsolidirani prihodi od 1.701.240 KM, 84 fakture transfernih cijena (99.212 KM) i negativan vlastiti kapital grupe od -37.304 KM.',
-    effects: {},
-    isActive: true,
-  },
-  {
-    id: 'DOC-02',
-    code: 'BB-08-2026',
-    title: 'Bruto bilans i interpretacija stanja na 31.08.2026.',
-    source: 'Računovodstvo grupacije',
-    date: '31.08.2026.',
-    impactAreas: ['Tekući rezultat', 'Likvidnost', 'Potraživanja'],
-    summary: 'Iskazan rezultat grupe od 175.864 KM, gotovina 37.639 KM, međufirmska stavka 100.000 KM i potraživanja od uprave 184.692 KM.',
-    effects: {},
-    isActive: true,
-  },
-  {
-    id: 'DOC-03',
-    code: 'POZ-LAMIJA',
-    title: 'Ugovor o pozajmici Lamia Kacila – IMH od 14.07.2026.',
-    source: 'Arhiva osnivača i IMH',
-    date: '14.07.2026.',
-    impactAreas: ['Pozajmice', 'Leasing', 'Cash-flow'],
-    summary: 'Beskamatna pozajmica od 93.484,84 KM u 12 mjesečnih rata po 7.790,40 KM (01.11.2026.–01.10.2027.) na lični račun zajmodavca kod Sparkasse. Prethodno vozilo predato dobavljaču AUTO MT.',
-    effects: {},
-    isActive: true,
-  },
-  {
-    id: 'DOC-04',
-    code: 'LEAS-SPARKASSE',
-    title: 'Finansijski leasing Sparkasse br. 12546/26 za Porsche Cayenne',
-    source: 'Sparkasse Leasing d.o.o. Sarajevo',
-    date: '14.07.2026.',
-    impactAreas: ['Leasing', 'Odlivi', 'Cash-flow'],
-    summary: 'Vozilo Porsche Cayenne 2025. Neto 100.980 EUR, učešće 47.798 EUR (47,33%), finansirano 53.182 EUR. Rata 1.027,91 EUR/mj. tokom 60 mj. Mjenični dužnik Lamia Kacila.',
-    effects: {},
-    isActive: true,
-  },
-  {
-    id: 'DOC-05',
-    code: 'MF-KREDITI',
-    title: 'Ugovori o kreditima i overdraftu MF Banke (IDSS & IMH)',
-    source: 'MF Banka a.d. Banja Luka / Filijala Sarajevo',
-    date: '30.07.2026.',
-    impactAreas: ['Krediti', 'Solidarni dužnici', 'Overdraft'],
-    summary: 'IMH kredit 100.000 KM (rata cca 4.661 KM do 08.2028.). IDSS kredit 20.000 KM i overdraft 15.000 KM (dospijeva 12.06.2026.). Solidarni dužnici IMH i Lamia Kacila.',
-    effects: {},
-    isActive: true,
-  },
-  {
-    id: 'DOC-06',
-    code: 'ZAK-2013-2023',
-    title: 'Ugovor o zakupu Buka 11/13 (br. 04-49-36-59/13), Anex 2014 i obnova do 2033.',
-    source: 'Općina Centar Sarajevo (zastupa Načelnik Dževad Bećirević) & IMH (Lamija Kacila)',
-    date: '30.08.2013. / Anex 13.03.2014. / 27.09.2023.',
-    impactAreas: ['Imovina', 'Zakup', 'Dug', 'Pravna sigurnost'],
-    summary: 'Poslovna zgrada Buka 11 i 13 površine 1.287,40 m² po cijeni 5,00 KM/m² (6.437,00 KM neto + 1.094,29 KM PDV = 7.531,29 KM/mj.). Anexom priznato 58.795,86 KM ulaganja (kompenzovano 48.187,74 KM duga + 9 mj. zakupnina 5.258,32 KM). Član XIV propisuje jednostrani raskid ugovora i deložaciju ako se zakasni sa dvije uzastopne zakupnine.',
-    effects: {},
-    isActive: true,
-  },
-  {
-    id: 'DOC-EXT-01',
-    code: 'DOGOVOR-ZAKUP',
-    title: 'Sporazum sa Općinom Centar o otplati duga za zakup Buka 11/13',
-    source: 'Služba za upravljanje imovinom Općine Centar Sarajevo',
-    date: 'Simulirani akt',
-    impactAreas: ['Imovina', 'Zakup', 'Pravna sigurnost'],
-    summary: 'Pismeni sporazum o reprogramu akumuliranog duga za zakup i uspostava trajnog trajnog naloga za 7.531,29 KM tekućeg zakupa. Otklanja se rizik deložacije.',
-    effects: {
-      riskResolved: ['RF-04'],
-    },
-    isActive: false,
-  },
-  {
-    id: 'DOC-EXT-02',
-    code: 'PU-POTVRDA',
-    title: 'Pismena potvrda Porezne uprave FBiH o stanju javnih obaveza',
-    source: 'Porezna uprava FBiH - Porezna ispostava Centar',
-    date: 'Simulirani akt',
-    impactAreas: ['Porezi', 'Subvencije', 'Likvidnost'],
-    summary: 'Službena potvrda da su dospjele obaveze za doprinose servisirane, zatezne kamate poravnate i da nema smetnji za isplatu kantonalnih subvencija od 157.458 KM.',
-    effects: {
-      riskResolved: ['RF-07', 'RF-05'],
-    },
-    isActive: false,
-  },
-  {
-    id: 'DOC-EXT-03',
-    code: 'SANACIJA-DUGA',
-    title: 'Formalizacija plana otplate preostalih potraživanja od uprave',
-    source: 'Notarska kancelarija Sarajevo / Osnivač',
-    date: 'Simulirani akt',
-    impactAreas: ['Likvidnost', 'Porezi', 'Keš Tok'],
-    summary: 'Pismeni notarski aneks kojim se definiše otplata preostalog dijela potraživanja (iznad 93.484,84 KM) u iznosu od 91.207 KM u roku od 12 mjeseci.',
-    effects: {
-      cashDeltaKM: 91207,
-      riskResolved: ['RF-02'],
-    },
-    isActive: false,
-  },
-  {
-    id: 'DOC-EXT-04',
-    code: 'MEMO-100K',
-    title: 'Interni računovodstveni memo o toku i reklasifikaciji 100.000 KM',
-    source: 'Uprava grupacije i ovlašteni revizor',
-    date: 'Simulirani akt',
-    impactAreas: ['EBITDA', 'Transferne cijene', 'Pravni status'],
-    summary: 'Kompletan interni dosije sa pratećim fakturama, bankovnim izvodima i pravnim obrazloženjem namjene sredstava MF Banke, uz izdvajanje iz redovnog prihoda.',
-    effects: {
-      riskResolved: ['RF-01'],
-    },
-    isActive: false,
-  },
-  {
-    id: 'DOC-EXT-05',
-    code: 'UPIS-95-CILJ',
-    title: 'Realizacija plana ranog upisa: 95 učenika u IDSS (2027/28.)',
-    source: 'Upisna komisija IDSS & IMH',
-    date: 'Simulirani akt',
-    impactAreas: ['Upis', 'EBITDA', 'Koeficijent Plata'],
-    summary: 'Dostizanje cilja od 95 učenika (ARPU 9.800 KM = 931.000 KM prihoda od školarina). Udio plata pada sa 90,4% na 75,6% bez rasta nastavnog kadra.',
-    effects: {
-      ebitdaDeltaKM: 151524,
-      studentsChange: 12,
-      riskResolved: ['RF-06'],
-    },
-    isActive: false,
-  },
-];

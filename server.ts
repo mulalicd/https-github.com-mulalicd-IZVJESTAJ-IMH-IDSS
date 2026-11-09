@@ -1,6 +1,6 @@
 import express from 'express';
 import { createServer as createViteServer } from 'vite';
-import { analyzePartnerCard, syncLatest } from './server/handlers';
+import { analyzePartnerCard } from './server/handlers';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -18,9 +18,6 @@ async function startServer() {
 
   // Forensic Partner Card Analysis API Endpoint
   app.post('/api/forensics/analyze-partner-card', (req, res) => analyzePartnerCard(req, res));
-
-  // Accounting Ledger Financials Endpoint
-  app.get('/api/financials/sync-latest', (req, res) => syncLatest(req, res));
 
   // Vite development middleware
   if (process.env.NODE_ENV !== 'production') {
