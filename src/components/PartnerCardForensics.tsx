@@ -302,7 +302,7 @@ UKUPAN PROMET:                                                  1.950,00        
     setAnalysisReportHtml(null);
 
     try {
-      const res = await fetch('/api/forensics/analyze-partner-card', {
+      const res = await fetch(`${import.meta.env.BASE_URL}api/forensics/analyze-partner-card`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

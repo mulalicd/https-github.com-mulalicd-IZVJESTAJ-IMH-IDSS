@@ -5,6 +5,8 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    // GitHub Pages servira aplikaciju na /<ime-repoa>/; lokalno i na drugim hostovima ostaje '/'.
+    base: process.env.PAGES_BASE || '/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {

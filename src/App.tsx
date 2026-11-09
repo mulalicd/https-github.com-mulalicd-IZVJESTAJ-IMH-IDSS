@@ -69,7 +69,7 @@ export default function App() {
     setIsSyncingFinancials(true);
     setSyncToast(null);
     try {
-      const res = await fetch('/api/financials/sync-latest');
+      const res = await fetch(`${import.meta.env.BASE_URL}api/financials/sync-latest`);
       if (!res.ok) throw new Error('Greška servera pri povlačenju podataka.');
       const data = await res.json();
       if (data.historicalFinancials && Array.isArray(data.historicalFinancials)) {
@@ -81,12 +81,12 @@ export default function App() {
       if (data.timestamp) {
         setLastSyncTime(data.timestamp);
       }
-      setSyncToast(`Najnoviji finansijski izvještaji uspješno povučeni iz računovodstvenog sistema (IDSS & IMH)! Ažurirane sve tabele i bilansni indikatori na dan ${data.timestamp}.`);
+      setSyncToast(`Podaci učitani sa servera aplikacije (statički podaci iz izvještaja, stanje 31.08.2026.) na dan ${data.timestamp}.`);
       setTimeout(() => setSyncToast(null), 6000);
     } catch {
       const nowStr = new Date().toLocaleDateString('bs-BA') + ' ' + new Date().toLocaleTimeString('bs-BA', { hour: '2-digit', minute: '2-digit' });
       setLastSyncTime(nowStr);
-      setSyncToast(`Finansijski izvještaji uspješno osvježeni iz lokalnog računovodstvenog registra na dan ${nowStr}.`);
+      setSyncToast(`Server aplikacije nije dostupan; prikazani su podaci iz izvještaja (stanje 31.08.2026.). Provjereno ${nowStr}.`);
       setTimeout(() => setSyncToast(null), 5000);
     } finally {
       setIsSyncingFinancials(false);
@@ -202,7 +202,7 @@ export default function App() {
   // Standalone HTML Download
   const handleDownloadStandaloneHTML = () => {
     const link = document.createElement('a');
-    link.href = '/assets/aistudio/IDSS_IMH_Strateski_Izvjestaj_Standalone_2026_5ff15bac.html';
+    link.href = `${import.meta.env.BASE_URL}assets/aistudio/IDSS_IMH_Strateski_Izvjestaj_Standalone_2026_5ff15bac.html`;
     link.download = 'IDSS_IMH_Strateski_Izvjestaj_Standalone_2026.html';
     document.body.appendChild(link);
     link.click();

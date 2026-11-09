@@ -5,6 +5,12 @@ Interaktivni prikaz forenzičke dijagnoze poslovanja, programa stabilizacije i s
 > Stanje podataka: 31.08.2026. · Datum izvještaja: novembar 2026. · Svi iznosi su u KM.
 > Lični identifikacioni brojevi, adrese, brojevi računa i podaci o vozilima uklonjeni su iz koda. Primjeri kartica partnera i portfelj naplate koriste pseudonime (P-101, P-201 …).
 
+## Web aplikacija
+
+**https://mulalicd.github.io/https-github.com-mulalicd-IZVJESTAJ-IMH-IDSS/**
+
+Objavljuje se automatski (GitHub Pages) pri svakoj izmjeni grane `main`. Na objavljenoj verziji AI analiza kartica partnera radi u lokalnom režimu, bez Gemini servera.
+
 ## Glavni zaključak
 
 **Grupa ima zdrav obrazovni proizvod, ali neodrživu ekonomsku strukturu.** Prihodi rastu, ali troškovi rada rastu brže. Bez intervencije, konsolidovana EBITDA u školskoj godini 2026/27 pada na oko 9.000 KM (0,6%). Uz program stabilizacije i rasta, bazni scenarij dostiže **EBITDA od oko 296.000 KM i maržu od 12,6%** do 2031/32.
