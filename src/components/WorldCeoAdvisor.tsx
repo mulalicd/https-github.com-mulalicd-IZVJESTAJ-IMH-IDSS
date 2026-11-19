@@ -10,6 +10,7 @@ import {
   Loader2,
   Minimize2,
 } from 'lucide-react';
+import { generateLocalCeoReply } from '../lib/ceoKnowledgeEngine';
 
 export type AdvisorFocus = 'strategy' | 'cashflow' | 'legal' | 'growth';
 
@@ -77,13 +78,23 @@ const INITIAL_GREETING: ChatMessage = {
 };
 
 function renderInlineBold(line: string): React.ReactNode[] {
-  const segments = line.split(/(\*\*[^*]+\*\*)/g);
+  const segments = line.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
   return segments.map((seg, idx) => {
     if (seg.startsWith('**') && seg.endsWith('**') && seg.length > 4) {
       return (
         <strong key={idx} className="font-bold text-[var(--ink)]">
           {seg.slice(2, -2)}
         </strong>
+      );
+    }
+    if (seg.startsWith('`') && seg.endsWith('`') && seg.length > 2) {
+      return (
+        <code
+          key={idx}
+          className="px-1 py-0.5 rounded bg-[var(--surface-alt)] border border-[var(--line)] font-mono text-[11px] font-semibold text-[var(--idss-blue)] dark:text-[var(--idss-cyan)]"
+        >
+          {seg.slice(1, -1)}
+        </code>
       );
     }
     return <React.Fragment key={idx}>{seg}</React.Fragment>;
@@ -272,6 +283,31 @@ export const WorldCeoAdvisor: React.FC<WorldCeoAdvisorProps> = ({
 
         const contentType = res.headers.get('content-type') || '';
 
+        // Statički hosting (npr. GitHub Pages) vraća 404/405 na POST /api/* — prebaci na lokalni USTAVNI VDR savjetnički motor
+        if (res.status === 404 || res.status === 405 || res.status === 501 || res.status === 502 || res.status === 503) {
+          const localReply = generateLocalCeoReply(textToSend, activeFocus, {
+            harmonizedCash,
+            harmonizedNetResult,
+            currentStudents,
+            resolvedRisksCount,
+            totalRisksCount,
+          });
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: modelId,
+              role: 'model',
+              text: localReply,
+              focus: activeFocus,
+              timestamp: new Date().toLocaleTimeString('bs-BA', {
+                hour: '2-digit',
+                minute: '2-digit',
+              }),
+            },
+          ]);
+          return;
+        }
+
         if (!res.ok || contentType.includes('application/json') || !res.body) {
           const data = await res.json().catch(() => ({}));
           if (!res.ok) {
@@ -369,11 +405,27 @@ export const WorldCeoAdvisor: React.FC<WorldCeoAdvisorProps> = ({
         }
       } catch (err) {
         if (err instanceof DOMException && err.name === 'AbortError') return;
-        const msg =
-          err instanceof Error && err.message
-            ? err.message
-            : 'Nije moguće kontaktirati CEO savjetnika.';
-        setErrorMsg(msg);
+        // Ako je backend nedostupan (mrežni prekid / statički hosting), posluži verifikovani lokalni odgovor
+        const localReply = generateLocalCeoReply(textToSend, activeFocus, {
+          harmonizedCash,
+          harmonizedNetResult,
+          currentStudents,
+          resolvedRisksCount,
+          totalRisksCount,
+        });
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: modelId,
+            role: 'model',
+            text: localReply,
+            focus: activeFocus,
+            timestamp: new Date().toLocaleTimeString('bs-BA', {
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+          },
+        ]);
       } finally {
         setIsLoading(false);
       }
