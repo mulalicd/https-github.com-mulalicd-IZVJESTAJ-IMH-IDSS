@@ -1,6 +1,6 @@
 import express from 'express';
 import { createServer as createViteServer } from 'vite';
-import { analyzePartnerCard } from './server/handlers';
+import { analyzePartnerCard, ceoAdvisorChat } from './server/handlers';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -15,6 +15,19 @@ async function startServer() {
   const PORT = 3000;
 
   app.use(express.json({ limit: '25mb' }));
+
+  // Health check endpoint
+  app.get('/api/health', (_req, res) => {
+    res.json({
+      status: 'ok',
+      vdrFilesIndexed: 92,
+      bilansPeriod: '31.10.2026.',
+      timestamp: new Date().toISOString(),
+    });
+  });
+
+  // World CEO & Strategic Specialist Advisor API Endpoint
+  app.post('/api/advisor/ceo-chat', (req, res) => ceoAdvisorChat(req, res));
 
   // Forensic Partner Card Analysis API Endpoint
   app.post('/api/forensics/analyze-partner-card', (req, res) => analyzePartnerCard(req, res));

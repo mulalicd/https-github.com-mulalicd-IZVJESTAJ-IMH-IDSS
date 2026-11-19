@@ -102,55 +102,55 @@ export const ENROLLMENT_DATA: EnrollmentYear[] = [
 export const DEBT_OBLIGATIONS: DebtObligation[] = [
   {
     id: 'DEBT-01',
-    creditor: 'MF Banka',
+    creditor: 'MF Banka a.d. Banja Luka',
     entity: 'IMH',
     type: 'Kredit',
-    originalAmount: '100.000 KM',
-    monthlyBurden: 'oko 4.661 KM / mj.',
-    maturity: 'avgust 2028. (24 rate); stanje 31.10.2026.: 92.481,66 KM',
+    originalAmount: '100.000,00 KM',
+    monthlyBurden: '4.660,68 KM / mj. (zadnja 4.660,73 KM)',
+    maturity: '20.08.2028. (24 rate od 20.09.2026.); stanje 31.10.2026.: 92.481,66 KM',
     interestRate: '10,99% fiksna (EKS 12,63%)',
-    collateral: 'Mjenice, namjena operativna likvidnost',
-    purpose: 'Finansiranje tekuće likvidnosti i obaveza. Partija kredita: [izostavljeno]. Ukupni trošak kredita 13.489 KM.',
-    status: 'Aktivan'
+    collateral: 'Bjanko mjenice, naknada 1.000 KM + interkalarna kamata 632,30 KM',
+    purpose: 'Dugoročni kredit (30.07.2026.) za operativnu likvidnost. Ukupni trošak kredita 13.488,67 KM (ukupno za povrat 113.488,67 KM).',
+    status: 'Verifikovano [V] · Aktivan'
   },
   {
     id: 'DEBT-02',
-    creditor: 'MF Banka',
+    creditor: 'MF Banka a.d. Banja Luka',
     entity: 'IDSS',
     type: 'Kredit',
-    originalAmount: '20.000 KM',
-    monthlyBurden: 'Anuitet (36 mj.)',
-    maturity: 'juni 2028. (ugovoreno 12.06.2025.)',
-    interestRate: '10,99% fiksna',
-    collateral: 'Solidarni dužnici: IMH i Lamia Kacila',
-    purpose: 'Obrtna sredstva IDSS. Ugovoreno 12.06.2025.',
-    status: 'Aktivan'
+    originalAmount: '20.000,00 KM',
+    monthlyBurden: 'Anuitet (36 mj.), stanje 31.10.2026.: 8.447,36 KM',
+    maturity: 'juni 2028. (ugovor br. 457-0249/2025 od 12.06.2025.)',
+    interestRate: '10,99% fiksna (EKS 12,69%)',
+    collateral: '5 bjanko mjenica bez protesta (3 IDSS + 2 IMH) + solidarni dužnici IMH i Lamia Kacila (cjelokupna imovina, Sud u Banjoj Luci)',
+    purpose: 'Trajna obrtna sredstva IDSS (plaćanje po fakturama). Zabrana poklanjanja/otuđenja imovine i obaveza prijave statusnih promjena banci.',
+    status: 'Verifikovano [V] · Aktivan'
   },
   {
     id: 'DEBT-03',
-    creditor: 'MF Banka',
+    creditor: 'MF Banka a.d. Banja Luka',
     entity: 'IDSS',
     type: 'Overdraft',
-    originalAmount: '15.000 KM limit',
-    monthlyBurden: 'Kamata mjesečno (glavnica na dospijeću)',
-    maturity: '12.06.2026. (status nakon dospijeća nije potvrđen); prekoračenje 31.10.2026.: 5.554,04 KM',
-    interestRate: '11,90% fiksna',
-    collateral: 'Solidarni dužnici: IMH i Lamia Kacila',
-    purpose: 'Tekuća likvidnost. Dospijeva 12.06.2026. i mora se planski refinansirati ili zatvoriti.',
-    status: 'Dospijeće prošlo; potvrditi obnovu ili zatvaranje'
+    originalAmount: '15.000,00 KM limit',
+    monthlyBurden: 'Kamata mjesečno (stanje 31.10.2026.: 5.554,04 KM)',
+    maturity: '12.06.2026. (ugovor br. 437-0154/2025) – aneks produženja nedostaje u VDR-u',
+    interestRate: '11,90% fiksna (EKS 13,45%)',
+    collateral: '3 bjanko mjenice bez protesta + solidarni dužnici IMH i Lamia Kacila (Sud u Banjoj Luci)',
+    purpose: 'Revolving likvidnost na računu 5724560000042638. Ugovorni rok istekao 12.06.2026., ali je konto 4240 i dalje aktivan – dostaviti aneks produženja u VDR.',
+    status: 'Verifikovano [V] · Nedostaje aneks obnove nakon 12.06.2026.'
   },
   {
     id: 'DEBT-04',
-    creditor: 'Sparkasse Leasing d.o.o.',
+    creditor: 'Sparkasse Leasing d.o.o. Sarajevo',
     entity: 'IMH',
     type: 'Leasing',
-    originalAmount: '53.182,11 EUR (nabavna 100.980,15 EUR)',
-    monthlyBurden: '1.027,91 EUR / mj. (cca 2.010 KM)',
-    maturity: 'juli 2031. (60 mjeseci, ugovor 14.07.2026.)',
-    interestRate: '5,99% (6M Euribor + 3,44%), EKS 8,02%',
-    collateral: 'Vozilo, učešće 47.798 EUR (47,33%), mjenični dužnik Lamia Kacila',
-    purpose: 'Porsche Cayenne 2025. Ugovor br. 12546/26. Vozilo koristi isključivo osnivač privatno. U knjigama IMH-a 31.10.2026.: obaveza 214.882,90 KM (uključuje učešće), amortizacija nije knjižena.',
-    status: 'Aktivan'
+    originalAmount: '53.182,11 EUR finansirano (nabavna 100.980,15 EUR = 197.500,01 KM)',
+    monthlyBurden: '1.027,91 EUR / mj. (≈2.010 KM) + zavisni troškovi 46.371 KM / 5 god.',
+    maturity: 'juli 2031. (60 rata, ugovor br. 12546/26 od 14.07.2026.)',
+    interestRate: '5,99% (6M Euribor 2,55% + 3,44%), EKS 8,02% s PDV',
+    collateral: 'Upisan zalog (197.500,01 KM) u Registru zaloga Ministarstva pravde BiH + 2 mjenice IMH + 1 mjenica Lamia Kacila',
+    purpose: 'Porsche Cayenne 2025 (368 kW, dobavljač AUTO MT d.o.o. Mostar). Tačka IX sadrži Change-of-Control raskidnu klauzulu pri promjeni vlasništva! Kasko 33.929,74 KM + reg. 7.358,32 KM + AO 5.083,30 KM.',
+    status: 'Verifikovano [V] · Change-of-Control rizik · Preporuka: carve-out'
   },
   {
     id: 'DEBT-05',
@@ -159,24 +159,24 @@ export const DEBT_OBLIGATIONS: DebtObligation[] = [
     type: 'Pozajmica',
     originalAmount: '93.484,84 KM',
     monthlyBurden: '7.790,40 KM / mj. (zadnja 7.790,44 KM)',
-    maturity: 'Po ugovoru 01.11.2026. – 01.10.2027. (12 rata); stvarno: prva uplata ≈4.400 KM 09.11.2026., dalje sukcesivno',
-    interestRate: '0% (beskamatna pozajmica)',
-    collateral: 'Ugovor potpisan 07.11.2026., na njemu datum 14.07.2026. (prethodno vozilo osnivača dato kao učešće)',
-    purpose: 'Učešće za nabavku novog Cayennea dato preko AUTO MT d.o.o. Mostar. Uplata na lični račun zajmodavca kod Sparkasse. Kašnjenje 2 rate povlači cijeli iznos.',
-    status: 'Nije proknjiženo na 31.10.2026.; preporuka: prebijanje s potraživanjima od osnivača'
+    maturity: '01.11.2026. – 01.10.2027. (12 rata po Prilogu 1)',
+    interestRate: '0% (beskamatna pozajmica; zakonska zatezna pri kašnjenju)',
+    collateral: 'Ugovor od 14.07.2026. (ranije vozilo Porsche 9YA Cayenne osnivača dato kao učešće 47.798,04 EUR)',
+    purpose: 'Učešće za nabavku novog Cayennea predato AUTO MT d.o.o. Mostar. Član 6: kašnjenje 2 uzastopne rate povlači dospijeće cijelog duga odjednom.',
+    status: 'Verifikovano [V] · Nije zasebno knjiženo na 422 · Prebiti s 184.692 KM'
   },
   {
     id: 'DEBT-06',
     creditor: 'Općina Centar Sarajevo',
     entity: 'Grupa',
     type: 'Zakup',
-    originalAmount: 'Prema upravi novi ugovor od 27.09.2023. do 2033. [U] (raniji ugovor 04-49-36-59/13 od 30.08.2013. i Anex 13.03.2014.)',
+    originalAmount: 'Notarski ugovor OPU-IP-850/2023 od 27.09.2023. (Notar Nedžada Kapidžić) + Zaključak 08.08.2023. (0 KM duga)',
     monthlyBurden: '7.531,29 KM / mj. (6.437,00 KM neto + 1.094,29 KM PDV 17%)',
-    maturity: '31.08.2033. prema podacima uprave [U]',
-    interestRate: 'Zakonska zatezna kamata na dospjela dugovanja',
-    collateral: 'Poslovna zgrada Buka 11 i 13 (1.287,40 m² po fiksnoj zaštićenoj cijeni 5,00 KM/m²)',
-    purpose: 'Zgrada Buka 11 i 13 (1.287,40 m²) za obrazovnu djelatnost IDSS i IMH. Zakupnina 7.531,29 KM/mj. do 15. u mjesecu; po čl. XIV neplaćanje dvije zakupnine nakon opomene daje Općini pravo na raskid.',
-    status: 'Ugovor do 2033. treba dostaviti; stanje s Općinom treba usaglasiti (31.10.2026.: pretplata 22.468,71 KM, 8 od 10 faktura proknjiženo)'
+    maturity: '01.09.2023. – 31.08.2033. (zahtjev za produženje min. 30 dana ranije)',
+    interestRate: 'Zakonska zatezna kamata; Član 9: neposredna notarska izvršnost bez parnice!',
+    collateral: 'Član 9: IMH + Lamia Kacila LIČNO cjelokupnom pokretnom i nepokretnom imovinom! Račun UniCredit 3386902296575219',
+    purpose: 'Poslovna zgrada Buka 11 i 13 (1.287,40 m², 5,00 KM/m²). Rok plaćanja PROMIJENJEN na 10. u mjesecu (Član 3). Član 6.5 i 11.3.e strogo zabranjuju podzakup/treće pravno lice (IDSS na Buka 13 treba pisanu saglasnost Općine!).',
+    status: 'Verifikovano [V] u VDR-u · Potreban IOS (pretplata 22.468,71 KM) i aneks za IDSS'
   }
 ];
 
@@ -210,7 +210,7 @@ export const LOAN_CONTRACT_FULL = {
     name: 'PPU INTERNATIONAL MONTESSORI HOUSE',
     address: 'Sarajevo, ul. Buka broj 11, 71000 Sarajevo',
     idNumber: '4201731140006',
-    representative: 'direktor Davor Mulalić',
+    representative: 'Davor Mulalić (potpisano 07.11.2026. — 3 dana nakon razrješenja Odlukom UO IMH 04.11.2026.; hitno zamijeniti potpisom v.d. Anesa Memića i prebiti)',
     role: 'Zajmoprimac'
   },
   subjectVehicle: {
@@ -241,58 +241,58 @@ export const LOAN_CONTRACT_FULL = {
 };
 
 export const LEASE_CONTRACT_FULL = {
-  contractTitle: 'UGOVOR O ZAKUPU POSLOVNE ZGRADE',
-  contractNumber: '04-49-36-59/13 (Šifra: 0-000-0-0)',
-  contractDate: '30.08.2013.',
+  contractTitle: 'NOTARSKI UGOVOR O ZAKUPU POSLOVNE ZGRADE (VERIFIKOVANO [V])',
+  contractNumber: 'OPU-IP-850/2023 (raniji ugovor: 04-49-36-59/13)',
+  contractDate: '27.09.2023. (Notar Nedžada Kapidžić, Sarajevo)',
   place: 'Sarajevo',
   landlord: {
     name: 'Općina Centar Sarajevo',
     address: 'ul. Mis Irbina br. 1, Sarajevo',
-    representative: 'Dževad Bećirević, Općinski načelnik',
+    representative: 'Pravobranilac Mia Jeličić-Pizović (Generalna punomoć OPU-IP-210/2023 načelnika Srđana Mandića)',
     role: 'Zakupodavac'
   },
   tenant: {
-    name: 'PPU THE INTERNATIONAL MONTESSORI HOUSE',
-    address: 'ul. Avde Smajlovića 9, Sarajevo (sjedište po osnivanju)',
-    ministryRegistration: 'Rješenje Ministarstva obrazovanja i nauke KS broj UP-11-01-38-29958/11 od 16.12.2011.',
-    representative: 'Lamija Kacila, osnivač Predškolske ustanove',
-    role: 'Zakupac'
+    name: 'PPU INTERNATIONAL MONTESSORI HOUSE SARAJEVO (+ lični supotpis: Lamia Kacila, Član Društva)',
+    address: 'ul. Buka br. 11, Sarajevo (MBS 65-01-0165-12, JIB 4201731140006)',
+    ministryRegistration: 'Rješenje Ministarstva KS UP-11-01-38-29958/11 (16.12.2011.) i izmjena 11-06/01-34-42039-1/26 (14.10.2026.)',
+    representative: 'Davor Mulalić (direktor u trenutku potpisa) i Lamia Kacila (Član Društva)',
+    role: 'Zakupac + Lični jemac izvršnosti'
   },
   premises: {
     address: 'Buka 11 i 13, Sarajevo',
     totalAreaM2: 1287.40,
-    purpose: 'Isključivo za obavljanje djelatnosti iz oblasti obrazovanja (čl. II)'
+    purpose: 'Isključivo za obavljanje djelatnosti iz oblasti obrazovanja (Član 1 i 6)'
   },
   financialTermsOriginal: {
     pricePerM2: 5.00,
     monthlyRentNetKM: 6437.00,
     monthlyRentVatKM: 1094.29,
     monthlyRentGrossKM: 7531.29,
-    paymentDeadline: 'Najkasnije do 15-tog u mjesecu za tekući mjesec na žiro račun zakupodavca',
-    startDate: '01.10.2013.',
-    operatingExpensesExcluded: 'Tekuće održavanje zgrade, dovođenje u stanje uslovnosti, komunalne naknade za građevinsko zemljište, odvoz smeća, voda, električna energija, centralno grijanje, dimnjačarske usluge'
+    paymentDeadline: 'Najkasnije do 10-tog u mjesecu (promijenjeno sa 15-tog!) na UniCredit Bank d.d. 3386902296575219 (Član 3)',
+    startDate: '01.09.2023. (kontinuitet od 01.09.2013.)',
+    operatingExpensesExcluded: 'Tekuće održavanje zgrade, komunalne naknade za građevinsko zemljište, odvoz smeća, voda, električna energija, centralno grijanje, dimnjačarske usluge'
   },
   securitiesAndDuration: {
-    security: 'Bankarska garancija na petogodišnji iznos zakupnine ILI 60 potpisanih mjenica na mjesečni iznos zakupnine ILI uplata jednogodišnjeg iznosa unaprijed (čl. V)',
-    durationOriginal: '10 godina, od 01.09.2013. do 31.08.2023. (Odluka Općinskog vijeća Centar 01-49-1594/13 od 29.07.2013.)',
-    renewalTo2033: 'NOVI UGOVOR ZAKLJUČEN 27.09.2023. GODINE DO 2033. GODINE POD POTPUNO ISTIM USLOVIMA ZAKUPA (isti iznos od 5,00 KM/m² neto, identična površina 1.287,40 m², bruto 7.531,29 KM/mj. s PDV, isključiva djelatnost obrazovanja)',
-    strategicHorizon: 'Zgrada Buka 11 i 13 je pravno osigurana za rad IDSS i IMH do kraja augusta 2033. godine!'
+    security: 'ČLAN 9 (IZVRŠNA NOTARSKA ISPRAVA): Neposredno prinudno izvršenje bez parničnog postupka na cjelokupnoj imovini IMH-a I ličnoj pokretnoj i nepokretnoj imovini Lamie Kacile (čl. 90 i 106 Zakona o notarima FBiH)!',
+    durationOriginal: 'Prvobitno 01.09.2013. – 31.08.2023.; Zaključkom Komisije br. 16-45-sl.-60/23 od 08.08.2023. potvrđeno je 0,00 KM duga na dan produženja.',
+    renewalTo2033: 'VERIFIKOVANO [V] U VDR-u: Notarski ugovor OPU-IP-850/2023 važi od 01.09.2023. do 31.08.2033. pod istom zaštićenom cijenom 5,00 KM/m² neto (7.531,29 KM/mj. bruto s PDV) za 1.287,40 m². Zahtjev za produženje podnosi se min. 30 dana ranije.',
+    strategicHorizon: 'Zgrada Buka 11 i 13 je notarski osigurana do 31.08.2033., ali su-korištenje IDSS-a na Buka 13 mora se formalizovati pisanim aneksom Općine Centar!'
   },
   prohibitionsAndTermination: {
-    subleaseProhibition: 'Izričita zabrana podzakupa ili korištenja kao učešće u poslovno-tehničkoj saradnji sa trećim licima (čl. XI)',
-    unilateralTerminationClause: 'Zakupodavac može jednostrano raskinuti ugovor u roku od 15 dana ako: (1) zakupac ne plati dvije dospjele zakupnine nakon opomene; (2) u roku od 3 mjeseca ne otpočne djelatnost; (3) izgubi pravo na djelatnost; (4) ne koristi zgradu duže od dva mjeseca (čl. XIV)'
+    subleaseProhibition: 'Član 6.5 i 11.3.e: Izričita zabrana podzakupa ili davanja prostora na korištenje trećem pravnom licu (uključujući poslovno-tehničku saradnju) – kršenje daje pravo na jednostrani raskid!',
+    unilateralTerminationClause: 'Član 9 i 11: Ako zakupac ne plati 2 dospjele zakupnine u roku od 15 dana od preporučene opomene, Općina ima pravo na jednostrani raskid I neposredno prinudno izvršenje bez parnice protiv IMH-a i Lamie Kacile lično.'
   },
   annex2014: {
-    annexTitle: 'ANEX UGOVORA O ZAKUPU POSLOVNE ZGRADE',
+    annexTitle: 'ANEX RANJEG UGOVORA O ZAKUPU (HISTORIJSKA KOMPENZACIJA 2014.)',
     annexNumber: '04-49-13-12/14',
     annexDate: '13.03.2014.',
     basis: 'Član 27. Odluke o dodjeli zgrada (Sl. novine KS 13/07) i Zaključak Komisije za ocjenu nužnih radova 04-49-2538/13 od 05.12.2013.',
     investmentsTotalKM: 97993.10,
     recognizedInvestments60PctKM: 58795.86,
     compensationStructure: {
-      immediateDueRentCompensationKM: 48187.74, // kompenzacija sa dospjelim dugovanjima na dan 15.03.2014.
-      remainingCompensationKM: 10608.12, // kompenzacija kroz 9 mjesečnih umanjenja zakupnine
-      reducedMonthlyRentNetKM: 5258.32, // umanjeno za 1.178,68 KM mjesečno (period 01.04.2014. do 31.12.2014.)
+      immediateDueRentCompensationKM: 48187.74,
+      remainingCompensationKM: 10608.12,
+      reducedMonthlyRentNetKM: 5258.32,
       fullRentResumptionDate: '01.01.2015. (6.437,00 KM neto + 1.094,29 KM PDV = 7.531,29 KM/mj.)'
     }
   }

@@ -29,39 +29,39 @@ interface WorldCeoAdvisorProps {
   totalRisksCount: number;
 }
 
-const STORAGE_KEY = 'idss_imh_ceo_advisor_history_v1';
+const STORAGE_KEY = 'idss_imh_ceo_advisor_history_v2';
 
 const FOCUS_OPTIONS: Array<{ id: AdvisorFocus; label: string }> = [
   { id: 'strategy', label: 'CEO Strategija' },
   { id: 'cashflow', label: 'Cash-Flow & Dug' },
-  { id: 'legal', label: 'Pravo & Općina' },
+  { id: 'legal', label: 'Pravo & VDR' },
   { id: 'growth', label: 'Upis & Vertikala' },
 ];
 
 const QUICK_PROMPTS: Array<{ label: string; focus: AdvisorFocus; prompt: string }> = [
   {
-    label: 'Plan za Općinu Centar (Čl. XIV)',
+    label: 'OPU-IP-850/2023 (Čl. 9 & IDSS Buka 13)',
     focus: 'legal',
     prompt:
-      'Sastavi preciznu pregovaračku strategiju i prijedlog protokola za Općinu Centar povodom duga za zakup Buka 11/13 (~90.375 KM) kako bismo u potpunosti zaštitili ugovor do 2033. od rizika Člana XIV.',
+      'Analiziraj rizike notarskog ugovora o zakupu OPU-IP-850/2023 (rok 10. u mjesecu, Član 9 direktna izvršnost na imovini IMH i Lamie Kacile, te Član 6.5 zabrana podzakupa za IDSS na Buka 13) i daj akcioni plan za Općinu Centar.',
   },
   {
-    label: 'Premošćavanje ljetne rupe 2027.',
+    label: 'KUIP 04.11.2026. & 4/4 Kartoni potpisa',
+    focus: 'legal',
+    prompt:
+      'Koji su hitni pravni koraci nakon KUIP inspekcije IMH (v.d. Anes Memić, 04.11.2026.), za eliminaciju latentnog rizika IDSS Član 30 (njemački C1) i za usklađivanje sva 4 bankovna kartona potpisa s limitom 2.000 KM?',
+  },
+  {
+    label: 'Prebijanje 93.485 KM & ljeto 2027.',
     focus: 'cashflow',
     prompt:
-      'Kako da između novembra 2026. i maja 2027. strukturiramo mjesečnu rezervu tako da servisiramo >15.000 KM duga mjesečno, ratu pozajmice od 7.790,40 KM i ljetni pad priliva (Jun–Aug 2027) bez kašnjenja plata?',
+      'Objasni kako prebijanje obaveze prema osnivaču (93.484,84 KM) sa 184.692 KM potraživanja smanjuje mjesečni odliv sa ~14.460 KM na ~6.670 KM i kako da pripremimo likvidnosnu rezervu za ljeto 2027.',
   },
   {
-    label: 'Rast IDSS sa 83 na 95 učenika',
-    focus: 'growth',
-    prompt:
-      'Daj konkretan izvršni plan kako da podignemo upis IDSS-a sa 83 na 90–95 učenika i konverziju IMH predškolaca sa 64% na 80%, čime udio plata pada ispod 70%.',
-  },
-  {
-    label: 'Pojasni prolazne subvencije KS',
+    label: 'Dopis: Prolazne subvencije KS',
     focus: 'strategy',
     prompt:
-      'Napiši kratak, autoritativan dopis upravi i roditeljima koji jasno objašnjava da IMH naplaćuje punu cijenu cjenovnika i nema zavisnosti od kantonalnih subvencija, te da subvencije samo prolazno prebacujemo roditeljima po uplati ministarstva.',
+      'Napiši kratak, autoritativan dopis roditeljima i upravi koji jasno pojašnjava da IMH naplaćuje punu cijenu cjenovnika i nema nikakve zavisnosti od kantonalnih subvencija, nego ih samo 100% prolazno prosljeđuje roditeljima po uplati Ministarstva KS.',
   },
 ];
 
@@ -71,8 +71,8 @@ const INITIAL_GREETING: ChatMessage = {
   focus: 'strategy',
   timestamp: '',
   text:
-    'Spreman sam za direktnu izvršnu konsultaciju, direktore Mulaliću.\n' +
-    'Imam kompletan uvid u bilanse IDSS i IMH (operativni rezultat +75.864 KM, gotovina 37.639 KM), ugovor za zgradu Buka 11/13 do 2033., otplatni plan pozajmice 93.484,84 KM i prolazni mehanizam kantonalnih subvencija.\n\n' +
+    'Spreman sam za direktnu izvršnu konsultaciju.\n' +
+    'Imam kompletan uvid u **verifikovane bruto bilanse IDSS + IMH na 31.10.2026.** (normalizovani rezultat **+77.490 KM**, gotovina **89.712 KM**, depoziti **65.091 KM**) te svih **92 dokumenta iz USTAVNOG / Legal DD VDR repozitorija** (notarski zakup **OPU-IP-850/2023** do 31.08.2033., KUIP tranzicija **04.11.2026.**, 4/4 bankovni kartoni vs limit **2.000 KM**, Sparkasse zalog, MF mjenice i prolazno pravilo KS subvencija).\n\n' +
     '- Odaberite fokus ili postavite konkretno pitanje ispod za brzu stratešku odluku.',
 };
 

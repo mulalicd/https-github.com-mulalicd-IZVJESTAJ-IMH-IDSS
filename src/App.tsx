@@ -18,6 +18,8 @@ import { RiskSimulator } from './components/RiskSimulator';
 import { RiskMatrixVisual, buildMatrixRisks } from './components/RiskMatrixVisual';
 import { CashFlowForecastVisual } from './components/CashFlowForecastVisual';
 import { PartnerCardForensics } from './components/PartnerCardForensics';
+import { VdrRepositorySection } from './components/VdrRepositorySection';
+import { WorldCeoAdvisor } from './components/WorldCeoAdvisor';
 import {
   Search,
   Moon,
@@ -99,6 +101,8 @@ export default function App() {
         'sec-17-operativni-prirucnik-90-dana',
         'sec-18-rjecnik-i-zakljucak',
         'dodatak-usaglasavanje',
+        'dodatak-ustavni-vdr',
+        'sec-forenzika-partnera',
       ];
 
       for (let i = sectionIds.length - 1; i >= 0; i--) {
@@ -419,6 +423,17 @@ export default function App() {
                 <span>DODATAK: USAGLAŠAVANJE</span>
               </a>
               <a
+                href="#dodatak-ustavni-vdr"
+                className={`font-black ${activeSection === 'dodatak-ustavni-vdr' ? 'active' : ''}`}
+                style={{ color: 'var(--imh-green)', background: 'rgba(44, 94, 59, 0.08)' }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-[var(--imh-green)]" />
+                  DODATAK A: USTAVNI VDR (92)
+                </span>
+              </a>
+              <a
                 href="#sec-forenzika-partnera"
                 className={`font-black ${activeSection === 'sec-forenzika-partnera' ? 'active' : ''}`}
                 style={{ color: 'var(--idss-blue)', background: 'rgba(3, 94, 161, 0.08)' }}
@@ -426,7 +441,7 @@ export default function App() {
               >
                 <span className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-[var(--idss-blue)] animate-pulse" />
-                  DODATAK: FORENZIKA KARTICA
+                  DODATAK B: FORENZIKA KARTICA
                 </span>
               </a>
             </nav>
@@ -552,14 +567,13 @@ export default function App() {
               jednokratna prezentacija.
             </p>
             <p>
-              Metodologija se oslanja isključivo na primarne izvore: godišnje finansijske izvještaje IDSS i
-              IMH za 2023., 2024. i 2025. godinu, bruto bilanse na 31.08.2026. i 31.10.2026., karticu kupaca IDSS-a na 02.11.2026.,
-              ugovore o kreditu MF Banke (20.000 KM i overdraft 15.000 KM za IDSS od 12.06.2025., dugoročni
-              kredit 100.000 KM za IMH od 30.07.2026.), ugovor o finansijskom leasingu Sparkasse za Porsche
-              Cayenne od 14.07.2026., ugovor o pozajmici između Lamie Kacile i IMH-a od 14.07.2026. o učešću u
-              nabavci vozila (93.484,84 KM), ugovor o zakupu poslovne zgrade s Općinom Centar od 27.09.2023.,
-              cjenovnike za školsku godinu 2026/27., otplatne planove, rekapitulacije plata i interne
-              strateške materijale.
+              Metodologija se oslanja isključivo na primarne, verifikovane izvore iz <b>USTAVNOG i Legal DD VDR repozitorija (92 dokumenta)</b> i računovodstvenih evidencija:
+              godišnje finansijske izvještaje IDSS i IMH (2022–2025), bruto bilanse na 31.10.2026., sudske registre oba entiteta
+              (MBS 65-01-0165-12 IMH i MBS 65-05-0026-16 IDSS), osnivačke akte i statute (OPU-IP 217/2016, OPU-IP 69/2018, Odluka 044/2019-1),
+              zapisnike UO i KUIP rješenje (04.11.2026.), sva 4 bankovna kartona potpisa, ugovore o kreditu MF Banke (457-0249/2025, 437-0154/2025,
+              dugoročni 100.000 KM od 30.07.2026.), ugovor o finansijskom leasingu Sparkasse 12546/26 i ugovor o zalogu BiH (14.07.2026.),
+              ugovor o pozajmici Lamia Kacila → IMH (93.484,84 KM), notarski ugovor o zakupu s Općinom Centar <b>OPU-IP-850/2023</b> od 27.09.2023.,
+              menadžerski ugovor IDSS (01.10.2024.), ugovor o radu 112/26, HR spiskove (44 pozicije) i cjenovnike 2026/27.
             </p>
             <p className="note">
               <b>Strateško promišljanje:</b> U privatnom obrazovanju najčešća greška menadžmenta nije
@@ -572,9 +586,9 @@ export default function App() {
             <h2 id="sec-2-izvrsni-pregled">2. IZVRŠNI PREGLED: GDJE STOJI GRUPA DANAS</h2>
             <p>
               <b>Jedna rečenica dijagnoze:</b> Grupa ima zdravu jezgru poslovanja i dokaziv rast prihoda od
-              2022. do 2025., ali je likvidnosno napeta, kapitalno negativna i opterećena fiksnim odlivima
-              (krediti, leasing, pozajmica, dug za zakup) koji zahtijevaju mjesečnu disciplinu i
-              formalizaciju.
+              2022. do 2025., ali je likvidnosno napeta, kapitalno negativna, opterećena fiksnim odlivima
+              (krediti, leasing, pozajmica, tekući notarski zakup OPU-IP-850/2023) te izložena hitnim
+              korporativno-pravnim rizicima utvrđenim u USTAVNOM VDR-u (KUIP tranzicija IMH, 4/4 bankovni kartoni potpisa i DD blokeri).
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
@@ -585,21 +599,21 @@ export default function App() {
                   <li>• <b>Rast prihoda:</b> Konsolidovani prihod s 1.516.304 KM (2023.) na 1.701.240 KM (2025.), rast 12,2%.</li>
                   <li>• <b>Profitabilnost IMH:</b> U 2025. ostvarena neto dobit od 63.815 KM i smanjen negativni kapital.</li>
                   <li>• <b>Cjenovnik:</b> Realizovana školarina IDSS-a iznosi 87,4% cjenovnika (odstupanje 108.324 KM, 12,6%).</li>
-                  <li>• <b>Ugovor o zakupu:</b> Prema upravi produžen do 2033. pod istim uslovima [U]; dokument treba uvrstiti u data room.</li>
-                  <li>• <b>Vozilo osnivača kao učešće:</b> Obaveza IMH-a prema osnivaču (93.484,84 KM) ima osnov, jer je ranije vozilo bilo osnivačevo; može se prebiti s potraživanjima od osnivača.</li>
+                  <li>• <b>Notarski zakup OPU-IP-850/2023 [V]:</b> Verifikovano u VDR-u — važi do <b>31.08.2033.</b> po zaštićenih 5,00 KM/m² (7.531,29 KM/mj., godišnja ušteda &gt;150.000 KM; pri obnovi 08.08.2023. potvrđen dug <b>0,00 KM</b>).</li>
+                  <li>• <b>Vozilo osnivača kao učešće:</b> Obaveza IMH-a prema osnivaču (93.484,84 KM) ima osnov, jer je ranije vozilo bilo osnivačevo; može se prebiti s potraživanjima od osnivača (184.692 KM).</li>
                 </ul>
               </div>
 
               <div className="p-4 rounded-xl border border-[var(--line)] bg-[var(--surface)]">
                 <span className="eyebrow text-[var(--idss-red)] block mb-1">Šta pritišće (Izazovi)</span>
                 <ul className="text-xs space-y-1.5 m-0 p-0 list-none text-[var(--ink)]">
-                  <li>• <b>Napeta gotovina:</b> Grupa {km(g?.cash)} na {periodLabel}, od čega {km(g?.cashInTransit)} na prelaznim kontima; stvarno na računima oko {km(g?.bankCash)}.</li>
+                  <li>• <b>Napeta gotovina:</b> Grupa {km(g?.cash)} na {periodLabel}, od čega {km(g?.cashInTransit)} na prelaznim kontima; stvarno na računima oko {km(g?.bankCash)} naspram {km(g?.deposits)} depozita roditelja.</li>
                   <li>• <b>Fakture IDSS → IMH od 100.000 KM:</b> Iz namjenskog kredita MF Banke; kod IDSS-a prihod, kod IMH-a kapitalizovano kao ulaganje. Rezultat grupe po knjigama {km(g?.resultBooks)}, normalizovano {km(g?.resultNormalized)}.</li>
                   <li>• <b>Negativan vlastiti kapital:</b> IDSS {km(fin.idss?.equity)}, IMH {km(fin.imh?.equity)}, grupa {km(g?.equity)}.</li>
-                  <li>• <b>Neusaglašen zakup:</b> U 2026. proknjiženo je 8 od 10 faktura Općine (60.250 KM), a kartica Općine u IMH-u pokazuje pretplatu od 22.469 KM.</li>
-                  <li>• <b>Dug servis ≈{formatBs(monthlyDebtService)} KM/mj.:</b> Kredit MF IMH (≈4.661 KM), leasing (1.027,91 EUR ≈ 2.010 KM), rata osnivaču po ugovoru (7.790,40 KM). Uz to: prekoračenja {km((fin.imh?.overdraft ?? 0) + (fin.idss?.overdraft ?? 0))}.</li>
-                  <li>• <b>Oscilacije upisa:</b> 79 ➔ 94 ➔ 68 ➔ 83 učenika; trenutno 12% ispod historijskog vrha.</li>
-                  <li>• <b>Javne obaveze po sporazumima nisu izmirene:</b> {km(g?.publicAgreements)} na {periodLabel}; neisplaćene neto plate {km(g?.netSalariesPayable)}.</li>
+                  <li>• <b>Zakup OPU-IP-850/2023 (Čl. 9 &amp; 6.5):</b> Rok plaćanja pomjeren na <b>10. u mjesecu</b>, direktna notarska izvršnost protiv IMH i Lamie Kacile lično, zabrana podzakupa za IDSS Buka 13; u 2026. proknjiženo 8 od 10 faktura (60.250 KM) uz pretplatu 22.469 KM.</li>
+                  <li>• <b>KUIP inspekcija (04.11.2026.) &amp; 4/4 bankovni kartoni:</b> Davor Mulalić razriješen u IMH (v.d. Anes Memić), identičan latentni rizik IDSS Čl. 30 (C1 njemački); sva 4 bankovna kartona daju neograničen potpis suprotno registarskom limitu od 2.000 KM.</li>
+                  <li>• <b>Dug servis ≈{formatBs(monthlyDebtService)} KM/mj.:</b> Kredit MF IMH (≈4.661 KM), leasing (1.027,91 EUR ≈ 2.010 KM), rata osnivaču (7.790,40 KM). Uz to: prekoračenja {km((fin.imh?.overdraft ?? 0) + (fin.idss?.overdraft ?? 0))} (IDSS overdraft istekao 12.06.2026. bez aneksa u VDR-u).</li>
+                  <li>• <b>Javne obaveze &amp; DD blokeri:</b> Sporazumi {km(g?.publicAgreements)} na {periodLabel}, neisplaćene neto plate {km(g?.netSalariesPayable)}, prazni VDR folderi G (Ugovori) i H (Sudski sporovi) te nedostajuće potvrde PU FBiH (4.6) i UIO (4.7).</li>
                 </ul>
               </div>
             </div>
@@ -675,19 +689,20 @@ export default function App() {
 
             {/* POGLAVLJE 3 */}
             <h2 id="sec-3-profil-model">3. PROFIL GRUPE I POSLOVNI MODEL</h2>
-            <h3 id="sub-3-1-pravni-okvir">3.1. Pravni i organizacijski okvir</h3>
+            <h3 id="sub-3-1-pravni-okvir">3.1. Pravni, ustavni i organizacijski okvir (Verifikovano iz VDR-a [V])</h3>
             <p>
-              IDSS (JIB 4202220420007, djelatnost 85.20 osnovno obrazovanje) i IMH (JIB 4201731140006, djelatnost
-              85.10 predškolsko obrazovanje) formalno su odvojena pravna lica, ali ekonomski i upravljački čine
-              jednu grupu. Dijele istog direktora (Davor Mulalić), licenciranu računovođu (Ilvana Raščić,
-              CR-6235/5) i isti poslovni kompleks na adresi Buka 11/13 u Sarajevu. Oba subjekta razvrstana su kao
-              mala pravna lica i primjenjuju MSFI za MSP.
+              <b>PU IDSS</b> (JIB 4202220420007, MBS 65-05-0026-16, djelatnost 85.20 osnovno obrazovanje, osnovana 10.02.2016. aktom OPU-IP 217/2016)
+              i <b>PPU IMH</b> (JIB 4201731140006, MBS 65-01-0165-12, djelatnost 85.10 predškolsko obrazovanje, osnovana 2011., prenesena na Buka 11 aktom OPU-IP 69/2018)
+              formalno su odvojena pravna lica u <b>100% vlasništvu istog osnivača — Lamie Kacile</b> (u IMH od 2015., u IDSS od 19.06.2019. Odlukom 044/2019-1,
+              uz <b>Član 24. supsidijarnu ličnu odgovornost osnivača za obaveze IDSS-a</b>). Dijele isti poslovni kompleks na adresi Buka 11/13,
+              licenciranu računovođu (Ilvana Raščić, CR-6235/5), 44 sistematizovane HR pozicije (43 jedinstvene osobe) i primjenjuju MSFI za MSP.
             </p>
             <p>
-              Prednost zajedničkog menadžmenta je brzina donošenja odluka i niska administrativna trenja. Mane su
-              koncentracija rizika na ključne osobe i mogućnost da se međufirmski tokovi tretiraju neformalno.
-              Uvođenje sistema transfernih cijena (TC) 2025. godine bio je korak u pravom smjeru. Sljedeći korak
-              je ista disciplina na likvidnosnim i povezanim transakcijama.
+              <b>Upravljačka tranzicija nakon KUIP inspekcije (04.11.2026.):</b> Do 04.11.2026. oba entiteta dijelila su istog direktora (Davor Mulalić,
+              uz registarsko ograničenje ovlaštenja do <b>2.000,00 KM</b> bez saglasnosti osnivača). Po nalogu KUIP KS (UP-1-14-12-34-15117/26-12/07, čl. 48 Zakona o predškolskom odgoju),
+              UO IMH je Odlukom 179-1/26 od <b>04.11.2026. razriješio Davora Mulalića dužnosti direktora IMH-a</b>, imenovao <b>Anesa Memića za v.d. direktora IMH</b> i 06.11.2026.
+              raspisao konkurs. Davor Mulalić ostaje direktor IDSS-a po Menadžerskom ugovoru (01.10.2024. – 01.10.2028.), ali <b>Član 30. Osnivačkog akta IDSS</b>
+              (zahtjev za zvanjem nastavnika/pedagoga, njemačkim C1 i mentorstvom) stvara identičan latentni inspekcijski rizik. Svi detalji korporativnog i ustavnog statusa obrađeni su u <b>Dodatku A (USTAVNI VDR)</b>.
             </p>
 
             <h3 id="sub-3-2-vertikala">3.2. Poslovni model i obrazovna vertikala</h3>
@@ -733,52 +748,36 @@ export default function App() {
               moraju biti pokriveni rastom upisa ili strogom kontrolom rashoda.
             </p>
 
-            <h3 id="sub-3-4-prostor">3.4. Prostor i zakup: Buka 11/13 (Ugovor br. 04-49-36-59/13 & Anex)</h3>
+            <h3 id="sub-3-4-prostor">3.4. Prostor i zakup: Buka 11/13 (Notarski ugovor OPU-IP-850/2023 [V])</h3>
             <p>
               Ustanova posluje u poslovnoj zgradi u ulici Buka 11 i 13, ukupne ugovorene površine <b>1.287,40 m²</b>,
-              dodijeljenoj od strane <b>Općine Centar Sarajevo</b> (zastupao Općinski načelnik Dževad Bećirević) na osnovu
-              Odluke Općinskog vijeća Centar broj 01-49-1594/13 od 29.07.2013. godine. Osnovni <i>Ugovor o zakupu poslovne zgrade</i>
-              broj <b>04-49-36-59/13</b> zaključen je dana <b>30.08.2013. godine</b> na period od 10 godina (01.09.2013. – 31.08.2023.),
-              uz namjensko ograničenje: <u>isključivo za obavljanje djelatnosti iz oblasti obrazovanja</u> (član II).
+              dodijeljenoj od strane <b>Općine Centar Sarajevo</b>. Nakon prvobitnog 10-godišnjeg ugovora broj{' '}
+              <b>04-49-36-59/13</b> (30.08.2013. – 31.08.2023., uz Aneks 04-49-13-12/14 o nužnim ulaganjima), u VDR repozitoriju
+              je <b>verifikovan novi notarski obrađeni ugovor o zakupu OPU-IP-850/2023 od 27.09.2023. godine</b> (Notar Nedžada Kapidžić,
+              zaključen uz Zaključak Općinske komisije br. 16-45-sl.-60/23 od 08.08.2023., kojim je potvrđen <b>0,00 KM duga</b> pri obnovi),
+              na novih 10 godina (<b>01.09.2023. – 31.08.2033.</b>), isključivo za djelatnost iz oblasti obrazovanja.
             </p>
             <p>
-              Ugovorena cijena zakupa iznosi <b>5,00 KM po m²</b>, što na ukupnu kvadraturu daje mjesečnu neto zakupninu od
-              <b> 6.437,00 KM</b>, odnosno sa pripadajućim PDV-om od 17% (1.094,29 KM) ukupno <b>7.531,29 KM mjesečno</b>, plativo do
-              15-tog u mjesecu unaprijed na žiro račun Općine Centar (član III). Zakupac samostalno snosi sve režije, tekuće održavanje,
-              naknade za građevinsko zemljište, grijanje, struju i dovođenje u stanje uslovnosti.
+              Ugovorena cijena zakupa ostala je nepromijenjena na <b>5,00 KM po m²</b>, što na ukupnu kvadraturu daje mjesečnu neto zakupninu od
+              <b> 6.437,00 KM</b>, odnosno sa 17% PDV-a (1.094,29 KM) ukupno <b>7.531,29 KM mjesečno</b>. Ključna promjena u odnosu na ugovor iz 2013.:
+              <b> rok dospijeća je pomjeren na 10. u mjesecu unaprijed</b> (ranije 15.) na račun Općine Centar kod{' '}
+              <b>UniCredit Bank 3386902296575219</b>. Zakupac samostalno snosi sve režije, tekuće održavanje, naknade za građevinsko zemljište i grijanje.
             </p>
-            <div className="p-4 rounded-xl border border-[var(--line)] bg-[var(--surface-alt)] my-3 text-xs">
-              <span className="eyebrow text-[var(--idss-blue)] dark:text-[var(--idss-cyan)] block mb-1">
-                ANEX UGOVORA (BR. 04-49-13-12/14 OD 13.03.2014.) — PRIZNATA NUŽNA ULAGANJA
-              </span>
-              <p className="m-0 leading-relaxed text-[var(--ink)]">
-                Na osnovu člana 27. Odluke i Zaključka općinske komisije (br. 04-49-2538/13), Općina Centar je priznala 60% vrijednosti
-                izvršenih nužnih opravki zgrade (od ukupno utvrđenih 97.993,10 KM), odnosno tačno <b>58.795,86 KM</b>:
-                <br />• <b>48.187,74 KM</b> kompenzirano je odmah sa dospjelim dugovanjima zakupca na dan 15.03.2014. godine.
-                <br />• <b>10.608,12 KM</b> kompenzirano je kroz 9 mjesečnih umanjenja zakupnine (za po 1.178,68 KM mjesečno), pa je zakupac u
-                periodu od 01.04.2014. do 31.12.2014. plaćao umanjenu neto zakupninu od <b>5.258,32 KM/mj.</b>
-                <br />• Od <b>01.01.2015. godine</b> ponovo se primjenjuje puni iznos od 6.437,00 KM + PDV 1.094,29 KM = <b>7.531,29 KM mjesečno</b>.
-              </p>
-            </div>
             <div className="p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50/20 dark:bg-emerald-950/20 my-3 text-xs">
               <span className="eyebrow text-emerald-600 dark:text-emerald-400 block mb-1 font-black">
-                PREMA PODACIMA UPRAVE [U]: UGOVOR O ZAKUPU PRODUŽEN DO 2033. GODINE POD ISTIM USLOVIMA
+                VERIFIKOVANO IZ VDR-a [V]: NOTARSKI UGOVOR OPU-IP-850/2023 VAŽI DO 31.08.2033.
               </span>
               <p className="m-0 leading-relaxed text-[var(--ink)] font-medium">
-                Izuzetno važna strateška činjenica za poslovanje i vrednovanje grupacije: Nakon isteka prvobitnog 10-godišnjeg perioda
-                (2013–2023), prema podacima uprave <b>27.09.2023. zaključen je novi ugovor o zakupu s Općinom Centar s važenjem do 2033. godine</b> (dokument još nije dostavljen na verifikaciju),
-                i to <u>pod potpuno istim uslovima</u>:
-                <br />• <b>Ista zaštićena cijena zakupa:</b> 5,00 KM po m² neto (ukupno <b>6.437,00 KM neto + 1.094,29 KM PDV = 7.531,29 KM bruto mjesečno</b>).
-                <br />• <b>Ista ugovorena površina:</b> 1.287,40 m² u ulici Buka 11 i 13, što obezbjeđuje dugoročni mir i krov nad glavom za IDSS i IMH sve do jeseni 2033. godine.
-                <br />• <b>Tržišna vrijednost ove pogodnosti:</b> Komercijalni zakup sličnog objekta u centru Sarajeva iznosi 15–25 KM/m² (od 230.000 do 380.000 KM godišnje), što znači da grupa kroz ovaj ugovor ostvaruje godišnju uštedu veću od 150.000 KM!
+                Primarni notarski akt potvrđuje dugoročnu lokacijsku prednost grupacije, ali uvodi strože instrumente osiguranja:
+                <br />• <b>Zaštićena cijena do 31.08.2033.:</b> 5,00 KM/m² neto (<b>7.531,29 KM/mj. bruto</b>) za <b>1.287,40 m²</b> — tržišna ušteda preko 150.000 KM godišnje (komercijalni zakup u Centru iznosi 15–25 KM/m²).
+                <br />• <b>Član 9 (IZVRŠNA ISPRAVA):</b> Ugovor je direktno izvršna notarska isprava bez vođenja parnice — u slučaju neplaćanja 2 dospjele zakupnine u roku od 15 dana od preporučene opomene, Općina može pokrenuti <b>direktnu prinudnu naplatu na cjelokupnoj imovini IMH-a I ličnoj pokretnoj/nepokretnoj imovini osnivača Lamie Kacile</b>!
+                <br />• <b>Član 6.5 i 11.3.e (Zabrana podzakupa / IDSS na Buka 13):</b> Izričita zabrana podzakupa i ustupanja prostora trećim licima (osnov za raskid). IDSS posluje na Buka 13 uz međufirmsku podjelu troškova (68.419,89 KM u 10 mj. 2026.). Olakšavajuća okolnost: Rješenje Ministarstva KS za IDSS (UP-11-01-38-2587/16 od 19.02.2016.) zvanično je dostavljeno Općini Centar, ali je <b>nužan pisani aneks saglasnosti Općine</b>.
               </p>
             </div>
             <p className="note">
-              <b>KRITIČNA FORENZIČKA KLAUZULA — ČLAN XIV (JEDNOSTRANI RASKID I DELOŽACIJA):</b> Prema članu XIV ugovora,
-              Općina Centar ima zakonsko i ugovorno pravo <u>jednostrano raskinuti ugovor sa otkaznim rokom od samo 15 dana</u> ukoliko
-              zakupac <b>ne plati dvije dospjele zakupnine</b> nakon prijema opomene! Takođe, član XI strogo zabranjuje podzakup ili bilo
-              kakvo učešće u poslovno-tehničkoj saradnji s trećim licima bez saglasnosti. Na 31.10.2026. u IMH-u je za 10 mjeseci proknjiženo 8 faktura Općine (60.250 KM), a kartica Općine pokazuje
-              pretplatu od 22.469 KM. Stanje treba usaglasiti izvodom otvorenih stavki s Općinom i u data room uvrstiti ugovor do 2033.
+              <b>OPERATIVNA OBAVEZA ZAKUPA:</b> Na 31.10.2026. u IMH-u je za 10 mjeseci proknjiženo 8 faktura Općine (60.250 KM),
+              dok kartica pokazuje pretplatu od 22.469 KM. Zbog <b>Člana 9 (direktna izvršnost)</b> i novog roka plaćanja <b>do 10. u mjesecu</b>,
+              hitno je pribaviti službeni Izvod otvorenih stavki (IOS) od Općine Centar, proknjižiti sve fakture i uvesti automatski trajni nalog najkasnije do 8. u mjesecu.
             </p>
 
             {/* POGLAVLJE 4 */}
@@ -946,7 +945,7 @@ export default function App() {
               <div className="p-3.5 rounded-xl border border-[var(--line)] bg-[var(--surface)]">
                 <b>Ugovor o pozajmici Lamia Kacila ➔ IMH (datum na ugovoru 14.07.2026., potpisan 07.11.2026.):</b>
                 <br />• <b>Zajmodavac:</b> KACILA LAMIA (osnivač; lični podaci izostavljeni)
-                <br />• <b>Zajmoprimac:</b> PPU INTERNATIONAL MONTESSORI HOUSE (ID: 4201731140006, Buka 11, zastupa direktor Davor Mulalić)
+                <br />• <b>Zajmoprimac:</b> PPU INTERNATIONAL MONTESSORI HOUSE (ID: 4201731140006, Buka 11; potpisao Davor Mulalić 07.11.2026. — <u>3 dana nakon razrješenja odlukom UO IMH 04.11.2026.</u>, što dodatno obavezuje na hitnu zamjenu potpisom ovlaštenog v.d. direktora Anesa Memića i prebijanje!)
                 <br />• <b>Iznos pozajmice:</b> 93.484,84 KM (beskamatna, 0% kamate).
                 <br />• <b>Predmet:</b> Predaja vozila PORSCHE 9YA CAYENNE (reg. oznaka i VIN izostavljeni) dobavljaču AUTO MT d.o.o. Mostar (Buna 154 A) kao učešće za novi Cayenne 2025.
                 <br />• <b>Povrat:</b> 12 mjesečnih rata po 7.790,40 KM (zadnja 7.790,44 KM) na lični račun zajmodavca kod SPARKASSE BANK D.D. BIH.
@@ -1014,46 +1013,42 @@ export default function App() {
 
             {/* DETALJNI PRAVNI I FINANSIJSKI PREGLED UGOVORA O ZAKUPU SA OPĆINOM CENTAR */}
             <div className="p-4 rounded-xl border border-[var(--line)] bg-[var(--surface-alt)] my-5">
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                 <span className="eyebrow text-emerald-600 dark:text-emerald-400 font-extrabold">
-                  UGOVOR O ZAKUPU · ZGRADA BUKA 11 I 13 (PRODUŽENJE DO 2033. PREMA UPRAVI [U])
+                  NOTARSKI UGOVOR O ZAKUPU OPU-IP-850/2023 [V] · BUKA 11 I 13 (DO 31.08.2033.)
                 </span>
                 <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                  VAŽNOST DO 2033. · ISTI USLOVI (5,00 KM/m² · 1.287,40 m²)
+                  VERIFIKOVANO [V] · 5,00 KM/m² · 1.287,40 m² · ROK 10. U MJESECU
                 </span>
               </div>
               <p className="text-xs text-[var(--muted)] mb-3">
-                Nakon prvobitnog 10-godišnjeg ugovora (br. 04-49-36-59/13), prema podacima uprave <b>zaključen je novi ugovor s Općinom Centar s rokom važenja do 2033. godine pod istim uslovima</b>; dokument treba dostaviti na verifikaciju:
+                Verifikovano iz VDR repozitorija (Notar Nedžada Kapidžić, 27.09.2023., uz Zaključak Općine br. 16-45-sl.-60/23 od 08.08.2023. koji potvrđuje <b>0,00 KM duga</b> na dan obnove):
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs mb-3">
                 <div className="p-3 rounded-lg border border-[var(--line)] bg-[var(--surface)]">
-                  <b>Ugovorne strane i ugovorni status do 2033.:</b>
+                  <b>Ugovorne strane i verifikovani status do 2033.:</b>
                   <br />• <b>Zakupodavac:</b> Općina Centar Sarajevo, Mis Irbina 1.
                   <br />• <b>Zakupac:</b> PPU THE INTERNATIONAL MONTESSORI HOUSE (Buka 11).
-                  <br />• <b>Predmet i površina:</b> Poslovna zgrada u ulici Buka 11 i 13, ukupne površine <b>1.287,40 m²</b>.
-                  <br />• <b>Namjena:</b> Isključivo iz oblasti obrazovanja za cjelokupan kampus IDSS i IMH.
-                  <br />• <b>Ugovorni rok:</b> do 2033. prema podacima uprave [U].
+                  <br />• <b>Predmet i površina:</b> Poslovna zgrada u ulici Buka 11 i 13, <b>1.287,40 m²</b>.
+                  <br />• <b>Namjena:</b> Isključivo djelatnost iz oblasti obrazovanja.
+                  <br />• <b>Ugovorni rok:</b> <b>01.09.2023. – 31.08.2033.</b> (notarski akt OPU-IP-850/2023 [V]).
                 </div>
                 <div className="p-3 rounded-lg border border-[var(--line)] bg-[var(--surface)]">
-                  <b>Identični finansijski uslovi zakupa do 2033.:</b>
-                  <br />• <b>Nepromijenjena cijena:</b> Fiksno <b>5,00 KM po m² neto</b> = <b>6.437,00 KM/mj.</b> + PDV 17% (1.094,29 KM) = <b>7.531,29 KM mjesečno</b>.
-                  <br />• <b>Tržišna ušteda:</b> Komercijalne cijene za 1.287 m² u Centru kreću se 15–25 KM/m², što donosi ustanovi preko 150.000 KM uštede godišnje.
-                  <br />• <b>Rok dospijeća:</b> Do 15-tog u mjesecu unaprijed na račun Općine Centar.
+                  <b>Verifikovani finansijski uslovi i rok plaćanja:</b>
+                  <br />• <b>Nepromijenjena cijena:</b> Fiksno <b>5,00 KM/m² neto</b> = <b>6.437,00 KM/mj.</b> + PDV 17% (1.094,29 KM) = <b>7.531,29 KM mjesečno</b>.
+                  <br />• <b>Tržišna ušteda:</b> Preko 150.000 KM godišnje (tržišno 15–25 KM/m² u Centru).
+                  <br />• <b>Rok dospijeća (IZMIJENJEN):</b> <b>Do 10. u mjesecu unaprijed</b> na UniCredit račun Općine <b>3386902296575219</b>.
                   <br />• <b>Režije:</b> Snosi zakupac (struja, voda, grijanje, odvoz smeća, održavanje).
                 </div>
               </div>
 
-              <div className="p-3 rounded-lg border border-amber-300 dark:border-amber-800 bg-amber-50/30 dark:bg-amber-950/20 text-xs">
-                <b className="text-amber-900 dark:text-amber-300">HISTORIJAT ANEKSA OD 13.03.2014. I PRAVNI RIZIK ČLANA XIV:</b>
-                <p className="mt-1 mb-2 text-[var(--ink)] leading-relaxed">
-                  Aneksom broj 04-49-13-12/14 Općina Centar je priznala 60% od 97.993,10 KM izvršenih nužnih ulaganja zakupca (ukupno <b>58.795,86 KM</b>).
-                  Od toga je <b>48.187,74 KM</b> kompenzirano sa dospjelim dugom na dan 15.03.2014., a preostalih <b>10.608,12 KM</b> kroz umanjenje
-                  zakupnine za 1.178,68 KM mjesečno (plaćano 5.258,32 KM neto) tokom 9 mjeseci do 31.12.2014. godine.
+              <div className="p-3 rounded-lg border border-red-300 dark:border-red-800 bg-red-50/30 dark:bg-red-950/20 text-xs space-y-2">
+                <b className="text-[var(--idss-red)] block">KRITIČNE NOTARSKE KLAUZULE OPU-IP-850/2023 (ČLAN 9 &amp; ČLAN 6.5 / 11.3.e):</b>
+                <p className="m-0 text-[var(--ink)] leading-relaxed">
+                  ⚠️ <b>Član 9 (Direktna izvršnost — IZVRŠNA ISPRAVA):</b> Ako zakupac ne plati <u>dvije dospjele zakupnine</u> u roku od 15 dana od prijema preporučene opomene, Općina Centar ima pravo na jednostrani raskid i <b>neposredno prinudno izvršenje bez parnice protiv imovine IMH-a i lične pokretne/nepokretne imovine Lamie Kacile</b>.
                 </p>
-                <p className="m-0 text-[var(--idss-red)] font-semibold">
-                  ⚠️ <b>Član XIV (Raskid ugovora):</b> Ako zakupac ne plati <u>dvije dospjele zakupnine</u> u roku od 15 dana od prijema opomene,
-                  Općina Centar ima pravo na jednostrani raskid ugovora. Na 31.10.2026. kartica Općine u IMH-u pokazuje pretplatu (22.469 KM) uz
-                  2 neproknjižene fakture; prioritet je usaglašavanje stanja s Općinom i uredno plaćanje 7.531,29 KM do 15. u mjesecu.
+                <p className="m-0 text-[var(--ink)] leading-relaxed">
+                  ⚠️ <b>Član 6.5 i 11.3.e (Zabrana podzakupa — IDSS Buka 13):</b> Zabrana ustupanja prostora trećim licima bez saglasnosti Općine predstavlja osnov za raskid. Iako je Rješenje Ministarstva KS za IDSS (19.02.2016.) dostavljeno Općini Centar, neophodan je <b>pisani aneks saglasnosti za korištenje Buka 13 od strane IDSS-a</b>. Na 31.10.2026. kartica IMH pokazuje 8 proknjiženih faktura i pretplatu 22.469 KM — usaglasiti IOS-om i plaćati do 10. u mjesecu!
                 </p>
               </div>
             </div>
@@ -1107,7 +1102,7 @@ export default function App() {
                   <li>• Jačanje vertikale i porodičnih popusta (podizanje sa 64% na 75-80%).</li>
                   <li>• Stabilan upis na nivou 90 do 95 učenika bez dodatnog zapošljavanja.</li>
                   <li>• Razvoj dodatnih programa (ljetni kampovi, STEM, jezici, boravak).</li>
-                  <li>• Formalizacija plana otplate duga za zakup s Općinom Centar.</li>
+                  <li>• IOS usaglašavanje notarskog zakupa OPU-IP-850/2023 i pisani aneks Općine Centar za su-korištenje IDSS-a na Buka 13.</li>
                   <li>• Prelazak grupe u pozitivan vlastiti kapital do kraja 2028.</li>
                   <li>• Digitalizacija administracije i automatska naplata školarina.</li>
                 </ul>
@@ -1116,12 +1111,11 @@ export default function App() {
               <div className="p-4 rounded-xl border border-[var(--idss-yellow)] bg-[var(--surface)]">
                 <span className="eyebrow text-[var(--idss-yellow)] block mb-1">PRIJETNJE</span>
                 <ul className="text-xs space-y-1 m-0 p-0 list-none">
-                  <li>• Promjena uslova zakupa ili gubitak lokacije Buka 11/13.</li>
-                  <li>• Poreski i inspekcijski rizici: ugovori o djelu IDSS (93.117 KM u 10 mj. 2026.), transferne cijene, privatna upotreba vozila.</li>
-                  <li>• Kašnjenje kantonalnih subvencija prema roditeljima (prolazna stavka koju IMH preusmjerava).</li>
-                  <li>• Povećanje Euribora na leasing ratu Cayennea.</li>
-                  <li>• Ovisnost o ključnim osobama (direktor, računovođa, osnivač kao garant).</li>
-                  <li>• Ponavljanje fluktuacije i odlaska stranih diplomatskih porodica.</li>
+                  <li>• Notarska izvršnost zakupa OPU-IP-850/2023 (Čl. 9 direktna pljenidba IMH i Lamie Kacile; Čl. 6.5 podzakup IDSS Buka 13).</li>
+                  <li>• KUIP inspekcijski domino-efekat: nakon razrješenja u IMH (04.11.2026.), IDSS Član 30 (C1 njemački) predstavlja identičnu ranjivost.</li>
+                  <li>• 4/4 neograničeni bankovni kartoni potpisa vs registarski limit 2.000 KM + IDSS Čl. 24 supsidijarna odgovornost osnivača.</li>
+                  <li>• Poreski i ugovorni rizici: UOD IDSS (93.117 KM), Sparkasse Change-of-Control (Tačka IX) i BiH zalog, MF Banka (8+ mjenica, Sud Banja Luka).</li>
+                  <li>• Ponavljanje fluktuacije i odlaska stranih diplomatskih porodica (pad 28% u 2025/26.).</li>
                 </ul>
               </div>
             </div>
@@ -1207,22 +1201,34 @@ export default function App() {
                     <td>Plan zadržavanja porodica; jačanje domaće baze kroz IMH vertikalu.</td>
                   </tr>
                   <tr>
-                    <td>Usaglašenost zakupa Buka 11/13</td>
-                    <td>Srednja</td>
-                    <td className="text-[var(--idss-red)] font-bold">Visok</td>
-                    <td>Izvod otvorenih stavki s Općinom; knjiženje svih faktura; ugovor do 2033. u data room.</td>
+                    <td>Zakup Buka 11/13 (OPU-IP-850/2023: Čl. 9 izvršnost &amp; Čl. 6.5 podzakup)</td>
+                    <td>Visoka</td>
+                    <td className="text-[var(--idss-red)] font-bold">Kritičan</td>
+                    <td>IOS s Općinom, trajni nalog do 10. u mjesecu (UniCredit), pisani aneks saglasnosti za IDSS na Buka 13.</td>
                   </tr>
                   <tr>
-                    <td>UOD preklasifikacija (93.117 KM, jan–okt 2026.)</td>
-                    <td>Srednja</td>
-                    <td>Srednji</td>
-                    <td>Pravni pregled ugovora; prevođenje u dopunski rad.</td>
+                    <td>KUIP inspekcija IMH (04.11.2026. razrješenje) &amp; IDSS Čl. 30 (C1 njemački)</td>
+                    <td>Visoka</td>
+                    <td className="text-[var(--idss-red)] font-bold">Kritičan</td>
+                    <td>Okončati konkurs IMH i upisati v.d. Anesa Memića u sudski registar; revidirati Pravila IDSS (Čl. 30) radi eliminacije identičnog rizika.</td>
                   </tr>
                   <tr>
-                    <td>Poreski (sporazumi {km(g?.publicAgreements)} neizmireni; doprinosi IMH ≈4 obračuna)</td>
+                    <td>Bankovni kartoni potpisa (4/4 Neograničeno) vs Registar (2.000 KM) &amp; IDSS Čl. 24</td>
+                    <td>Visoka</td>
+                    <td className="text-[var(--idss-red)] font-bold">Kritičan</td>
+                    <td>Odmah ažurirati kartone u MF i Sparkasse banci (limit 2.000 KM / supotpis osnivača, dodati Lamiu na IDSS MF, ažurirati IMH nakon 04.11.2026.).</td>
+                  </tr>
+                  <tr>
+                    <td>UOD preklasifikacija (93.117 KM, jan–okt 2026.) &amp; Menadžerski/HR akti</td>
+                    <td>Srednja</td>
+                    <td>Visok</td>
+                    <td>Pravni pregled UOD-a, ažurirati Pravilnik IMH iz 2015. (dodati poziciju Savjetnik 112/26) i uvažiti 12–18 mj. izlazni trošak menadžerskog ugovora IDSS.</td>
+                  </tr>
+                  <tr>
+                    <td>Poreski (sporazumi {km(g?.publicAgreements)} neizmireni; doprinosi IMH ≈4 obračuna; prazni VDR folderi G/H)</td>
                     <td>Visoka</td>
                     <td className="text-[var(--idss-red)] font-bold">Visok</td>
-                    <td>Potvrda Porezne uprave; plan izmirenja; redovno ažuriranje TC dokumentacije.</td>
+                    <td>Pribaviti uvjerenja PU FBiH (4.6) i UIO (4.7), popuniti VDR foldere G (Ugovori) i H (Sudski sporovi), ažurirati IDSS izvod iz 2023.</td>
                   </tr>
                   <tr>
                     <td>Integritet knjiga (bilans IDSS nije u ravnoteži; prelazni konti otvoreni)</td>
@@ -1253,8 +1259,8 @@ export default function App() {
             <h3 id="sub-11-1-neodlozivo">11.1. Neodloživo (0 do 30 dana)</h3>
             <ol className="text-xs space-y-2 pl-4">
               <li>
-                <b>1. Napravi jedan mjesečni cash-flow list:</b> plate, doprinosi, zakup (tekući plus dug), anuiteti MF,
-                leasing rata, rate pozajmice (od 01.11.2026.), ostali fiksni odlivi.
+                <b>1. Napravi jedan mjesečni cash-flow list:</b> plate, doprinosi, tekući zakup OPU-IP-850/2023 (7.531,29 KM do 10. u mjesecu), anuiteti MF,
+                leasing rata, rate pozajmice (ili prebijanje), ostali fiksni odlivi.
               </li>
               <li>
                 <b>2. Interni memo o toku 100.000 KM za arhivu:</b> nalozi, fakture, obrazloženje namjene kredita.
@@ -1263,10 +1269,13 @@ export default function App() {
                 <b>3. Prebij obavezu prema osnivaču (93.484,84 KM)</b> s potraživanjima od osnivača i zamijeni ugovor ugovorom s datumom potpisa (07.11.2026.).
               </li>
               <li>
-                <b>4. Usaglašavanje s Općinom:</b> 2 neproknjižene fakture i pretplata 22.469 KM; redovno plaćanje do 15. u mjesecu.
+                <b>4. Usaglašavanje zakupa OPU-IP-850/2023 s Općinom:</b> IOS, 2 neproknjižene fakture, trajni nalog <b>do 10. u mjesecu</b> (Čl. 9 direktna izvršnost) i zahtjev za pisanu saglasnost za IDSS na Buka 13 (Čl. 6.5).
               </li>
               <li>
-                <b>5. Neravnoteža bruto bilansa IDSS-a (812,54 KM):</b> računovođa mora pronaći i ispraviti razliku prije svakog vanjskog izvještaja.
+                <b>5. Bankovni kartoni potpisa (4/4) &amp; KUIP IMH (04.11.2026.):</b> Odmah uskladiti kartone u MF i Sparkasse banci s limitom 2.000 KM iz sudskog registra, dodati Lamiu Kacilu na IDSS MF karton, upisati v.d. Anesa Memića i okončati konkurs IMH.
+              </li>
+              <li>
+                <b>6. Neravnoteža bruto bilansa IDSS-a (812,54 KM) &amp; VDR rupe:</b> Računovođa ispravlja razliku prije eksternog izvještaja; pribaviti potvrde PU FBiH (4.6) i UIO (4.7) i dopuniti prazne VDR foldere G i H.
               </li>
             </ol>
 
@@ -1342,10 +1351,10 @@ export default function App() {
             </div>
 
             <p className="note">
-              <b>12.3. Grupa kao cjelina:</b> Ekonomska cjelina je jasnija od pravne. Zajednički prostor, direktor,
-              računovođa, TC tokovi i solidarni dugovi čine jednu grupu. Najveća slabost je što se likvidnosni pritisci
-              i povezane transakcije lako prelijevaju s jednog entiteta na drugi. <i>"Gledaj IDSS i IMH odvojeno zbog
-              pravne odgovornosti i bankarskih ugovora. Gledaj ih zajedno zbog cash-flowa, vertikale i rizika."</i>
+              <b>12.3. Grupa kao cjelina:</b> Ekonomska cjelina je jasnija od pravne. Zajednički prostor (Buka 11/13), isti 100% osnivač (Lamia Kacila),
+              računovođa, TC tokovi i unakrsna jemstva čine jednu grupu — uz formalno razdvojeno direktorovanje nakon KUIP rješenja i odluke UO IMH od 04.11.2026.
+              (<b>v.d. Anes Memić</b> u IMH, <b>Davor Mulalić</b> u IDSS). <i>"Gledaj IDSS i IMH odvojeno zbog pravne odgovornosti, bankovnih kartona i ugovora.
+              Gledaj ih zajedno zbog cash-flowa, vertikale i kumulativnog rizika."</i>
             </p>
 
             {/* POGLAVLJE 13 - NOVO: CASH-FLOW DISCIPLINA I OPERATIVNI RITAM */}
@@ -1353,7 +1362,7 @@ export default function App() {
             <p>
               Rezultat po knjigama od {km(g?.resultBooks)} stvara lažni osjećaj komfora. Normalizovani rezultat od
               {' '}{km(g?.resultNormalized)} i stvarna gotovina na računima od oko {km(g?.bankCash)} govore drugo. Fiksni odlivi
-              (≈14.460 KM duga, plate i zakup) dospijevaju svakog mjeseca bez obzira na ljetnu pauzu školarina.
+              (≈14.460 KM duga, plate i zakup OPU-IP-850/2023 do 10. u mjesecu) dospijevaju svakog mjeseca bez obzira na ljetnu pauzu školarina.
             </p>
 
             <div className="p-4 rounded-xl border border-[var(--line)] bg-[var(--surface)] my-3">
@@ -1366,15 +1375,15 @@ export default function App() {
                   </p>
                 </div>
                 <div className="p-2.5 rounded bg-[var(--surface-alt)] border border-[var(--line)]">
-                  <b>Svakog 10. u mjesecu:</b>
+                  <b>Svakog 8.–10. u mjesecu:</b>
                   <p className="text-[11px] text-[var(--muted)] m-0 mt-1">
-                    Rolling cash-flow forecast za tekući i naredna dva mjeseca (anticipiranje ljetne rupe).
+                    Plaćanje zakupa OPU-IP-850/2023 (rok 10. u mjesecu!) + rolling cash-flow forecast za naredna 2 mjeseca.
                   </p>
                 </div>
                 <div className="p-2.5 rounded bg-[var(--surface-alt)] border border-[var(--line)]">
                   <b>Svakog kvartala:</b>
                   <p className="text-[11px] text-[var(--muted)] m-0 mt-1">
-                    Pregled kapitala, upisa, TC usklađenosti i statusa otvorenih stavki (memo 100k, dug zakupa).
+                    Pregled kapitala, upisa, TC usklađenosti, IOS zakupa OPU-IP-850/2023 i ažurnosti VDR foldera (G/H, PU/UIO).
                   </p>
                 </div>
                 <div className="p-2.5 rounded bg-[var(--surface-alt)] border border-[var(--line)]">
@@ -1459,29 +1468,30 @@ export default function App() {
             <div className="p-4 rounded-xl border border-[var(--idss-red)] bg-red-50/10 dark:bg-red-950/10 my-4">
               <span className="eyebrow text-[var(--idss-red)] block mb-2">LISTA IZRIČITIH ZABRANA ZA MENADŽMENT</span>
               <ul className="text-xs space-y-2 m-0 p-0 list-none text-[var(--ink)]">
-                <li>✖ <b>Ne pokreći nove velike investicije</b> (prostor, nova vozila, preuranjena ekspanzija) dok cash-flow i dug za zakup nisu pod kontrolom.</li>
+                <li>✖ <b>Ne pokreći nove velike investicije</b> (prostor, nova vozila, preuranjena ekspanzija) dok cash-flow, IOS zakupa OPU-IP-850/2023 (Čl. 9/6.5) i bankovni kartoni potpisa nisu pod kontrolom.</li>
                 <li>✖ <b>Ne isplaćuj dobit</b> dok grupni kapital nije bar na nuli ili jasan put do pozitivnog nije dokazan (pravilo: bez dividendi prije pozitivnog kapitala).</li>
                 <li>✖ <b>Ne ponavljaj cirkularne tokove</b> poput stavke 100k kao rutinu. Ako treba likvidnost, traži čist instrument (garancija, kredit).</li>
                 <li>✖ <b>Ne gradi projekcije na iskazanom rezultatu</b> koji uključuje 100k; jedini referentni broj je operativni rezultat.</li>
-                <li>✖ <b>Ne povećavaj prekoračenja</b> ({km((fin.imh?.overdraft ?? 0) + (fin.idss?.overdraft ?? 0))} na {periodLabel}); refinansiraj ih dugoročnom linijom.</li>
-                <li>✖ <b>Ne isplaćuj rate osnivaču</b> dok osnivač duguje grupi 184.692 KM: prebij obaveze.</li>
-                <li>✖ <b>Ne knjiži kantonalne subvencije kao prihod</b>: to je prolazna stavka koju IMH prosljeđuje roditeljima.</li>
-                <li>✖ <b>Ne štedi na formalizaciji:</b> interni memo, ugovori, poreske potvrde štite poslovanje više nego usmena obećanja.</li>
+                <li>✖ <b>Ne povećavaj prekoračenja</b> ({km((fin.imh?.overdraft ?? 0) + (fin.idss?.overdraft ?? 0))} na {periodLabel}; IDSS overdraft istekao 12.06.2026. bez aneksa u VDR-u); refinansiraj ih dugoročnom linijom.</li>
+                <li>✖ <b>Ne isplaćuj rate osnivaču</b> dok osnivač duguje grupi 184.692 KM: prebij obaveze potpisom ovlaštenog v.d. direktora IMH.</li>
+                <li>✖ <b>Ne knjiži kantonalne subvencije kao prihod</b>: to je 100% prolazna stavka koju IMH prosljeđuje roditeljima po uplati Ministarstva KS.</li>
+                <li>✖ <b>Ne štedi na formalizaciji:</b> aneks Općine za IDSS Buka 13, izmjena IDSS Čl. 30, novi bankovni kartoni i potvrde PU/UIO štite i ustanove i ličnu imovinu osnivača.</li>
               </ul>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs my-4">
               <div className="p-3.5 rounded-xl border border-[var(--line)] bg-[var(--surface)]">
-                <b>Plan komunikacije s osnivačem:</b>
-                <br />Osnivač je solidarni dužnik za kredite IDSS-a, mjenični dužnik za leasing i strana u pozajmici.
-                Predlaže se kvartalni sažetak na 1 stranici: gotovina, operativni rezultat, status rata duga, status
-                zakupa, upis, 3 rizika i 3 akcije. Bez ukrasa, čiste brojke koje grade povjerenje.
+                <b>Plan komunikacije s osnivačem (Lamia Kacila — puna lična izloženost):</b>
+                <br />Verifikovano u VDR-u: osnivač je <b>supsidijarno lično odgovoran za obaveze IDSS-a (Član 24.)</b>, izložen <b>direktnoj notarskoj izvršnosti za zakup Buka 11/13 (OPU-IP-850/2023 Član 9.)</b>,
+                solidarni jemac za MF kredite (8+ mjenica, Sud u Banjoj Luci) i mjenični dužnik za Sparkasse Leasing. Predlaže se kvartalni sažetak na 1 stranici:
+                gotovina, operativni rezultat, status rata duga, IOS zakupa (rok 10.), KUIP/registar status, upis, 3 rizika i 3 akcije.
               </div>
               <div className="p-3.5 rounded-xl border border-[var(--line)] bg-[var(--surface)]">
-                <b>Scenario imaginarnog Due Diligence-a:</b>
-                <br />Šta vidi banka ili potencijalni investitor? Rast prihoda: pozitivno. Vertikala 64%: pozitivno.
-                Negativan kapital: negativno. Fakture od 100.000 KM bez dokaza o radovima: negativno. Bilans IDSS-a koji nije u
-                ravnoteži: negativno. Antedatiran ugovor o pozajmici: negativno dok se ne ispravi. Cilj je da sve stavke budu dokumentovane.
+                <b>Scenario stvarnog Legal &amp; Financial Due Diligence-a (VDR presjek):</b>
+                <br />Šta vidi banka ili kupac u 2-GOOGLE_DISK_VDR? Pozitivno: rast prihoda, vertikala 64%, notarski zakup OPU-IP-850/2023 do 2033.
+                Crvene zastavice (DD blokeri): prazni folderi G (Ugovori) i H (Sudski sporovi), nedostajuće potvrde PU FBiH (4.6) i UIO (4.7),
+                4/4 neograničena bankovna kartona vs limit 2.000 KM, KUIP razrješenje IMH (04.11.2026.) &amp; IDSS Čl. 30, IDSS Čl. 24 supsidijarna odgovornost,
+                Sparkasse Change-of-Control (Tačka IX), fakture 100k bez dokaza i IDSS bilans −812,54 KM.
               </div>
             </div>
 
@@ -1491,28 +1501,28 @@ export default function App() {
               <div className="p-3 rounded-xl border border-[var(--line)] bg-[var(--surface)]">
                 <b className="text-[var(--idss-blue)] dark:text-[var(--idss-cyan)]">DANI 1 DO 30:</b>
                 <ul className="mt-1 space-y-1 list-none p-0">
-                  <li>• <i>Sedmica 1:</i> Sastaviti cash-flow list sa svim fiksnim odlivima za narednih 12 mjeseci i projekcijom prihoda.</li>
-                  <li>• <i>Sedmica 2:</i> Pripremiti dokumentaciju za fakture od 100.000 KM (ugovor, radovi, izvodi) i potpisati izjavu o prebijanju s osnivačem.</li>
-                  <li>• <i>Sedmica 3:</i> Zatražiti od Općine Centar izvod otvorenih stavki i usaglasiti 2 neproknjižene fakture.</li>
-                  <li>• <i>Sedmica 4:</i> Zatražiti zvaničnu potvrdu Porezne uprave o stanju javnih obaveza i ažurirati starosnu strukturu potraživanja od roditelja.</li>
+                  <li>• <i>Sedmica 1:</i> Ažurirati sva 4 bankovna kartona potpisa (MF &amp; Sparkasse) u skladu s limitom 2.000 KM i odlukom UO IMH od 04.11.2026.; sastaviti jedinstveni 12-mjesečni cash-flow list.</li>
+                  <li>• <i>Sedmica 2:</i> Pripremiti dokumentaciju za fakture od 100.000 KM (ugovor, radovi, izvodi), potpisati izjavu o prebijanju s osnivačem (93.484,84 KM) i zatvoriti aneks za IDSS overdraft (istekao 12.06.2026.).</li>
+                  <li>• <i>Sedmica 3:</i> Zatražiti IOS od Općine Centar, podesiti trajni nalog za zakup <b>do 10. u mjesecu</b> (Čl. 9 OPU-IP-850/2023) i podnijeti zahtjev za pisanu saglasnost za IDSS na Buka 13 (Čl. 6.5).</li>
+                  <li>• <i>Sedmica 4:</i> Pribaviti potvrde PU FBiH (4.6) i UIO (4.7), popuniti VDR foldere G (Ugovori) i H (Sudski sporovi) te zatražiti ispravku štamparske greške u Rješenju Ministarstva KS od 14.10.2026.</li>
                 </ul>
               </div>
 
               <div className="p-3 rounded-xl border border-[var(--line)] bg-[var(--surface)]">
                 <b className="text-[var(--idss-blue)] dark:text-[var(--idss-cyan)]">DANI 31 DO 60:</b>
                 <ul className="mt-1 space-y-1 list-none p-0">
-                  <li>• Utemeljiti ritam: 5. u mjesecu zatvaranje, 10. u mjesecu forecast. Pratiti rate leasinga, kredita i pozajmice kao checklistu.</li>
-                  <li>• Dokumentovati fluktuaciju upisa (strane porodice naspram domaće baze) za internu arhivu i banku.</li>
-                  <li>• Uskladiti međufirmska salda s računovođom (analitičke kartice) kako bi se eliminisala neslaganja.</li>
+                  <li>• Okončati imenovanje direktora IMH i upis u sudski registar; izmijeniti Pravila IDSS (Čl. 30 — C1 njemački) i Pravilnik o organizaciji IMH (2015., dodati Savjetnik 112/26 i sjedište Buka 11).</li>
+                  <li>• Utemeljiti ritam: 5. u mjesecu zatvaranje, 10. u mjesecu forecast i zakup. Uskladiti međufirmska salda i otkloniti neravnotežu IDSS bilansa (−812,54 KM).</li>
+                  <li>• Dokumentovati fluktuaciju upisa (strane porodice naspram domaće baze) i kreirati Registar izdatih mjenica (4.3.d) za MF Banku i Sparkasse Leasing.</li>
                 </ul>
               </div>
 
               <div className="p-3 rounded-xl border border-[var(--line)] bg-[var(--surface)]">
                 <b className="text-[var(--idss-blue)] dark:text-[var(--idss-cyan)]">DANI 61 DO 90:</b>
                 <ul className="mt-1 space-y-1 list-none p-0">
-                  <li>• Ocijeniti da li je dogovor s Općinom Centar postignut i da li cash-flow ritam živi.</li>
-                  <li>• Pripremiti kvartalni sažetak na jednoj stranici za osnivača.</li>
-                  <li>• Postaviti ciljeve upisa za 2027/28. (cilj 90-95) i aktivnosti za jačanje vertikale (zajednički događaji, porodični popusti).</li>
+                  <li>• Verifikovati 100% spremnost VDR repozitorija (kategorije A–I) i pribaviti ažuriran sudski izvod IDSS za 2026. (VDR trenutno ima izvod iz 2023.).</li>
+                  <li>• Pripremiti kvartalni sažetak na jednoj stranici za osnivača (s obzirom na Čl. 24 supsidijarnu odgovornost, Čl. 9 izvršnost zakupa i mjenične obaveze).</li>
+                  <li>• Postaviti ciljeve upisa za 2027/28. (cilj 90–95 učenika IDSS) i aktivnosti za jačanje vertikale IMH → IDSS na 75–80%.</li>
                 </ul>
               </div>
             </div>
@@ -1590,16 +1600,34 @@ export default function App() {
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Rezultat 8 mj. 2026.</td>
-                    <td>175.864 KM</td>
-                    <td>115.145 KM (IDSS) + 60.720 KM (IMH) = 175.865 KM</td>
-                    <td>Razlika 1 KM usljed zaokruživanja; uskladiti u FIA obrascima.</td>
+                    <td>Rezultat 10 mj. 2026. (verifikovani bilansi 31.10.2026.)</td>
+                    <td>Iskazani +177.490 KM / Normalizovani +77.490 KM</td>
+                    <td>Raniji historijski presjek 31.08.2026. (8 mj.): 175.864 KM / 75.864 KM</td>
+                    <td>Mjerodavan je ažurirani presjek 31.10.2026. iz VDR-a; eliminisano 100.000 KM kredita MF Banke (konto 6217).</td>
                   </tr>
                   <tr>
-                    <td>Operativni rezultat 8 mj.</td>
-                    <td>75.864 KM</td>
-                    <td>15.145 KM (IDSS) + 60.720 KM (IMH) = 75.865 KM</td>
-                    <td>Razlika 1 KM; potvrditi tretman 100k prije završnog računa.</td>
+                    <td>Bankovni kartoni potpisa vs Sudski registar (VDR 1.13)</td>
+                    <td>4/4 kartona: Samostalno / Neograničeno (IDSS MF bez Lamie!)</td>
+                    <td>Sudski registri (IMH &amp; IDSS): limit 2.000,00 KM bez saglasnosti osnivača</td>
+                    <td>KRITIČNA NEUSKLAĐENOST: Odmah izdati nove kartone u MF i Sparkasse banci (limit 2.000 KM + upis v.d. Anesa Memića).</td>
+                  </tr>
+                  <tr>
+                    <td>Notarski zakup OPU-IP-850/2023 (VDR 3.4)</td>
+                    <td>IMH knjige: 8 faktura (60.250 KM), pretplata 22.469 KM</td>
+                    <td>Notarski ugovor: 7.531,29 KM/mj. do 31.08.2033., rok 10. u mjesecu, Čl. 9 &amp; 6.5</td>
+                    <td>Zaključak 08.08.2023. potvrdio 0 KM duga pri obnovi; pribaviti IOS, plaćati do 10. i tražiti pisani aneks za IDSS Buka 13.</td>
+                  </tr>
+                  <tr>
+                    <td>Direktor IMH nakon KUIP rješenja (04.11.2026.)</td>
+                    <td>Sudski registar IMH: još upisan Davor Mulalić</td>
+                    <td>Odluka UO IMH 179-1/26 (04.11.2026.): v.d. direktor Anes Memić</td>
+                    <td>Hitno upisati v.d. i potom izabranog direktora po konkursu u sudski registar; izmijeniti IDSS Član 30 (C1 njemački).</td>
+                  </tr>
+                  <tr>
+                    <td>IDSS Overdraft MF Banka (437-0154/2025)</td>
+                    <td>Konto 4240 na 31.10.2026.: 5.554,04 KM aktivan</td>
+                    <td>Ugovorni rok istekao 12.06.2026. (limit 15.000 KM)</td>
+                    <td>U VDR-u nedostaje aneks produženja nakon 12.06.2026. — pribaviti i uvrstiti u folder 4.1.</td>
                   </tr>
                   <tr>
                     <td>Vlastiti kapital (31.12.2025.)</td>
@@ -1647,6 +1675,9 @@ export default function App() {
               </table>
             </div>
 
+            {/* DODATAK A: USTAVNI, KORPORATIVNI I LEGAL DD VDR REPOZITORIJ (92 DOKUMENTA) */}
+            <VdrRepositorySection />
+
             {/* POSEBAN DODATAK: FORENZIKA KARTICA PARTNERA (IMH / IDSS) */}
             <div className="my-10 pt-8 border-t-2 border-[var(--line)]">
               <h2 id="sec-forenzika-partnera" className="text-xl md:text-2xl font-black text-[var(--idss-blue)] dark:text-[var(--idss-cyan)] mb-2">
@@ -1661,7 +1692,7 @@ export default function App() {
 
             <h2 className="endmark">KRAJ DOKUMENTA</h2>
             <p className="text-center text-xs text-[var(--muted)]">
-              Interni radni alat za upravljanje · Direktor Davor Mulalić · IDSS i IMH · 9. novembar 2026.
+              Interni radni alat za upravljanje · IDSS + IMH · Verifikovani bruto bilansi ({periodLabel}) + USTAVNI VDR (92 dokumenta)
               <br />
               Samo za internu upotrebu.
             </p>
@@ -1670,15 +1701,23 @@ export default function App() {
           {/* Footer */}
           <footer className="footer">
             <span>
-              IDSS + IMH · Sveobuhvatna forenzička i strateška analiza poslovanja 2022–2032. · Buka 11/13, Sarajevo
+              IDSS + IMH · Sveobuhvatna forenzička, ustavna i strateška analiza poslovanja 2022–2032. · Buka 11/13, Sarajevo
             </span>
             <span>
-              Interni radni sistem · Podaci: bruto bilansi na {periodLabel}
+              Interni radni sistem · Podaci: bruto bilansi ({periodLabel}) &amp; VDR (92 dok.)
             </span>
           </footer>
         </main>
       </div>
 
+      {/* Svjetski CEO & Strateški Specijalista — uvijek u donjem desnom uglu */}
+      <WorldCeoAdvisor
+        harmonizedCash={harmonizedCash}
+        harmonizedNetResult={harmonizedNetResult}
+        currentStudents={currentStudents}
+        resolvedRisksCount={resolvedRiskIds.length}
+        totalRisksCount={buildMatrixRisks(fin).length}
+      />
     </div>
   );
 }

@@ -77,20 +77,20 @@ export function buildMatrixRisks(fin: FinancialState): RiskMatrixItem[] {
       probLabel: 'Srednje-visoka',
       impactLabel: 'Kritičan (prikrivena isplata dohotka)',
       zone: 'CRITICAL',
-      forensicFinding: `Na ${period} potraživanja od zaposlenih, uprave i fizičkih lica iznose ${fmtKM(g?.receivablesFounder ?? 0)} i prema upravi ih cijela duguje osnivač obje ustanove. IMH istovremeno duguje osnivaču 93.484,84 KM (ranije vozilo osnivača dato kao učešće). Ugovor o tome potpisan je 07.11.2026., a nosi datum 14.07.2026.; prva uplata od oko 4.400 KM izvršena je 09.11.2026., a dalje se plaća sukcesivno.`,
-      statutoryBasis: 'Zakon o porezu na dohodak FBiH (nenovčane koristi), Zakon o doprinosima FBiH, Zakon o obligacionim odnosima (prebijanje).',
-      systemicImpact: 'Gotovinske uplate osnivaču dok osnivač duguje grupi dvostruko više smanjuju likvidnost bez ekonomskog razloga; nepokriven dio potraživanja porezni organ može tretirati kao prikriveni dohodak.',
+      forensicFinding: `Na ${period} potraživanja od zaposlenih, uprave i fizičkih lica iznose ${fmtKM(g?.receivablesFounder ?? 0)} i prema upravi ih cijela duguje osnivač obje ustanove. IMH istovremeno duguje osnivaču 93.484,84 KM (ranije vozilo Porsche 9YA Cayenne dato kao učešće za novi Cayenne). Ugovor nosi datum 14.07.2026., ali je potpisan 07.11.2026. — 3 dana NAKON što je UO IMH odlukom 179-1/26 (04.11.2026.) razriješio Davora Mulalića dužnosti direktora IMH! Prva uplata od oko 4.400 KM izvršena je 09.11.2026.`,
+      statutoryBasis: 'Zakon o porezu na dohodak FBiH (nenovčane koristi), Zakon o obligacionim odnosima (prebijanje), Odluka UO IMH 179-1/26 od 04.11.2026. (ovlaštenje za zastupanje).',
+      systemicImpact: 'Gotovinske uplate osnivaču dok osnivač duguje grupi dvostruko više smanjuju likvidnost bez ekonomskog razloga, a potpis razriješenog direktora stvara ništavost/osporenje ugovora u DD-u.',
       mitigationSteps: {
         urgent0to30: [
-          'Potpisati izjavu o prebijanju obaveze IMH-a prema osnivaču (93.484,84 KM) s potraživanjima od osnivača.',
-          'Zamijeniti ugovor o pozajmici ugovorom ili aneksom s datumom potpisa (07.11.2026.) koji potvrđuje obavezu nastalu 14.07.2026.',
+          'Potpisati izjavu o prebijanju obaveze IMH-a prema osnivaču (93.484,84 KM) s potraživanjima od osnivača uz potpis ovlaštenog v.d. direktora IMH Anesa Memića.',
+          'Zamijeniti antedatirani ugovor (14.07.2026. / potpisan 07.11.2026.) novim aktom s realnim datumom i ovlaštenim potpisnikom.',
         ],
         medium30to90: [
           'Za ostatak od oko 91.207 KM sačiniti pisano priznanje duga s otplatnim planom.',
           'Zabraniti plaćanje privatnih troškova osnivača s računa IMH-a i IDSS-a.',
         ],
         permanentPolicy: ['Registar transakcija s povezanim licima i godišnje usaglašavanje salda s revizorom.'],
-        responsiblePerson: 'Direktor i računovođa',
+        responsiblePerson: 'v.d. direktor IMH Anes Memić, osnivač i računovođa',
         targetDeadline: 'Prebijanje u roku od 15 dana',
       },
       harmonizationCondition: 'Izjava o prebijanju i priznanje duga za ostatak potraživanja.',
@@ -121,27 +121,32 @@ export function buildMatrixRisks(fin: FinancialState): RiskMatrixItem[] {
     },
     {
       id: 'RF-04',
-      title: 'Zakup Buka 11/13: neusaglašeno stanje s Općinom Centar',
-      shortTitle: 'Zakup Buka 11/13 (Općina Centar)',
+      title: 'Zakup Buka 11/13 (OPU-IP-850/2023): Član 9 izvršnost & zabrana podzakupa IDSS-u',
+      shortTitle: 'Zakup OPU-IP-850/2023 (Čl. 9 & IDSS Buka 13)',
       category: 'Imovinsko-Pravni Status',
-      severity: 'Visoko (HIGH)',
-      amountKM: rentGap,
-      probVal: 2.8,
+      severity: 'Kritično (CRITICAL)',
+      amountKM: Math.max(rentGap, 90375),
+      probVal: 3.1,
       impactVal: 5.0,
       probLabel: 'Srednja',
-      impactLabel: 'Katastrofalan (raskid ugovora)',
-      zone: 'HIGH',
-      forensicFinding: `Zakupnina iznosi 7.531,29 KM mjesečno. U IMH-u je do ${imh?.periodTo ?? period} trošak zakupa ${fmtKM(imh?.rent ?? 0)}, a za ${Math.round(months)} mjeseci očekuje se ${fmtKM(rentExpected)}; nedostaje ${fmtKM(rentGap)}. Kartica Općine na 31.10.2026. pokazivala je pretplatu od 22.469 KM. Produženje ugovora do 2033. potvrđeno je samo izjavom uprave [U]. Po članu XIV, neplaćanje dvije zakupnine nakon opomene daje Općini pravo na raskid.`,
-      statutoryBasis: 'Ugovor o zakupu br. 04-49-36-59/13 (čl. XIV), aneks 04-49-13-12/14.',
-      systemicImpact: 'Gubitak lokacije zaustavio bi rad obje ustanove.',
+      impactLabel: 'Katastrofalan (neposredno izvršenje i raskid)',
+      zone: 'CRITICAL',
+      forensicFinding: `Notarski ugovor OPU-IP-850/2023 od 27.09.2023. (verifikovano [V] u VDR-u) osigurava Buka 11/13 (1.287,40 m²) do 31.08.2033. po 7.531,29 KM/mj., ali uvodi tri ključna rizika: (1) Član 3 mijenja rok plaćanja na 10. u mjesecu (UniCredit 3386902296575219); (2) Član 9 je IZVRŠNA NOTARSKA ISPRAVA za neposredno prinudno izvršenje bez parnice protiv IMH-a i Lamie Kacile LIČNO pri neplaćanju 2 rate nakon 15 dana opomene; (3) Član 6.5 i 11.3.e strogo zabranjuju podzakup/korištenje trećeg pravnog lica, a IDSS posluje na Buka 13 bez pisanog aneksa Općine. Na ${imh?.periodTo ?? period} proknjiženo je 8 od 10 faktura (${fmtKM(imh?.rent ?? 0)}), uz knjigovodstvenu pretplatu 22.468,71 KM.`,
+      statutoryBasis: 'Notarski ugovor OPU-IP-850/2023 (čl. 3, 6.5, 9 i 11.3.e), Zaključak Komisije 16-45-sl.-60/23 (08.08.2023.), čl. 90 i 106 Zakona o notarima FBiH.',
+      systemicImpact: 'Aktivacija Člana 9 omogućava direktnu pljenidbu računa/imovine IMH-a i osnivačice bez suda, dok raskid po Članu 6.5 ugrožava sjedište obje ustanove.',
       mitigationSteps: {
-        urgent0to30: ['Zatražiti izvod otvorenih stavki od Općine Centar.', 'Proknjižiti sve fakture zakupa za 2026.'],
-        medium30to90: ['Uvrstiti ugovor do 2033. u data room.'],
-        permanentPolicy: ['Trajni nalog za zakupninu do 15. u mjesecu.'],
-        responsiblePerson: 'Direktor',
-        targetDeadline: '30 dana',
+        urgent0to30: [
+          'Zatražiti zvaničan izvod otvorenih stavki (IOS) od Općine Centar i proknjižiti nedostajuće fakture.',
+          'Postaviti trajni nalog za 7.531,29 KM najkasnije do 8. u mjesecu (rok je 10. u mjesecu!).',
+        ],
+        medium30to90: [
+          'Podnijeti zahtjev Općini Centar za pisani aneks / saglasnost za su-korištenje Buka 13 od strane PU IDSS (pozvati se na Rješenje Ministarstva KS od 19.02.2016. dostavljeno Općini).',
+        ],
+        permanentPolicy: ['Nulta tolerancija na kašnjenje zakupnine i obavezna mjesečna kontrola računa 4320-177.'],
+        responsiblePerson: 'Direktor i pravni savjetnik',
+        targetDeadline: 'IOS 15 dana · Aneks za IDSS 60 dana',
       },
-      harmonizationCondition: 'Usaglašen izvod otvorenih stavki s Općinom i dostavljen ugovor do 2033.',
+      harmonizationCondition: 'Usaglašen IOS s Općinom Centar i pisana saglasnost Općine za su-korištenje IDSS-a.',
     },
     {
       id: 'RF-05',
@@ -251,8 +256,8 @@ export function buildMatrixRisks(fin: FinancialState): RiskMatrixItem[] {
       probLabel: 'Visoka',
       impactLabel: 'Značajan (porez i nepriznati rashodi)',
       zone: 'HIGH',
-      forensicFinding: `IMH je 14.07.2026. zaključio leasing za vozilo koje osnivač koristi isključivo privatno. U knjigama je obaveza po leasingu ${fmtKM(imh?.leasing ?? 0)}; iznos odgovara zbiru rata s kamatom i učešća, iako je učešće (93.484,84 KM) dao osnivač. Amortizacija vozila nije knjižena. Rata iznosi 1.027,91 EUR (≈2.010 KM) mjesečno.`,
-      statutoryBasis: 'Zakon o porezu na dohodak FBiH (primici u naravi), Zakon o porezu na dobit FBiH (nepriznati rashodi).',
+      forensicFinding: `IMH je 14.07.2026. zaključio ugovor o leasingu br. 12546/26 (Porsche Cayenne 2025, 100.980,15 EUR neto = 197.500,01 KM) i Ugovor o zalogu upisan u Registar zaloga Ministarstva pravde BiH. Vozilo koristi osnivač privatno, uz 5-god. zavisne troškove osiguranja/registracije 46.371 KM (kasko 33.930 KM + reg. 7.358 KM + AO 5.083 KM). Tačka IX (alineja 8) sadrži Change-of-Control klauzulu trenutnog raskida pri promjeni vlasništva bez saglasnosti leasinga! U knjigama je obaveza ${fmtKM(imh?.leasing ?? 0)}, bez knjižene amortizacije. Rata iznosi 1.027,91 EUR (EKS 8,02% s PDV).`,
+      statutoryBasis: 'Ugovor Sparkasse Leasing 12546/26 (Tačka IX Change-of-Control), Ugovor o zalogu BiH (14.07.2026.), Zakon o porezu na dohodak i dobit FBiH.',
       systemicImpact: 'Korist u naravi podliježe porezu i doprinosima; troškovi vozila nisu priznat rashod; učešće može biti dvostruko iskazano.',
       mitigationSteps: {
         urgent0to30: ['Rekonstruisati knjiženje leasinga prema otplatnom planu Sparkasse Leasinga.'],
@@ -286,6 +291,64 @@ export function buildMatrixRisks(fin: FinancialState): RiskMatrixItem[] {
         targetDeadline: '15 dana',
       },
       harmonizationCondition: 'Bilans u ravnoteži i prelazni konti zatvoreni.',
+    },
+    {
+      id: 'RF-11',
+      title: 'KUIP inspekcija (IMH v.d. tranzicija 04.11.2026.) & latentni rizik Člana 30. u IDSS-u',
+      shortTitle: 'KUIP nalog & kvalifikacije direktora',
+      category: 'Imovinsko-Pravni Status',
+      severity: 'Kritično (CRITICAL)',
+      amountKM: 55000,
+      probVal: 4.8,
+      impactVal: 4.3,
+      probLabel: 'Vrlo visoka (aktivno rješenje)',
+      impactLabel: 'Kritičan (zabrana rada / kazne / otpremnina)',
+      zone: 'CRITICAL',
+      forensicFinding: 'KUIP KS je 30.09.2026. (UP-1-14-12-34-15117/26-12/07) naložio IMH-u uklanjanje nepravilnosti po čl. 48 Zakona o predškolskom odgoju u roku od 30 dana. UO IMH je 04.11.2026. razriješio Davora Mulalića, imenovao v.d. Anesa Memića i 06.11. raspisao konkurs. Istovremeno, Član 30. Osnivačkog akta IDSS-a (OPU-IP: 217/2016) propisuje za direktora IDSS-a nastavničku/pedagošku spremu + njemački C1, dok Menadžerski ugovor Davora Mulalića (01.10.2024.) nosi 12–18 mj. izlazne izloženosti (6 mj. otkaz + 6 mj. otpremnina + 12 mj. non-compete 50%).',
+      statutoryBasis: 'Čl. 48 st. 4 i 5 Zakona o predškolskom odgoju KS, KUIP UP-1-14-12-34-15117/26-12/07, Član 30. OPU-IP: 217/2016 (IDSS), Menadžerski ugovor 01.10.2024.',
+      systemicImpact: 'Kašnjenje upisa novog direktora IMH u sudski registar ili naknadna KUIP kontrola u IDSS-u može rezultirati prekršajnim sankcijama i vanrednim troškovima menadžerske tranzicije.',
+      mitigationSteps: {
+        urgent0to30: [
+          'Završiti konkurs za direktora IMH, podnijeti prijavu Općinskom sudu u Sarajevu i dostaviti dokaz KUIP KS u zakonskom roku.',
+          'Uvrstiti tekst KUIP rješenja UP-1-14-12-34-15117/26-12/07 u VDR folder 5.15.',
+        ],
+        medium30to90: [
+          'Pravna procjena usklađenosti imenovanja direktora IDSS-a sa Članom 30. OPU-IP: 217/2016 i Zakonom o osnovnom odgoju KS (opcija razdvajanja pedagoškog direktora i poslovnog prokuriste/menadžera).',
+        ],
+        permanentPolicy: ['Uskladiti IMH Pravilnik iz 2015. (sjedište Buka 11 + sistematizacija pozicije 2419.13) i ispraviti grešku Ministarstva („Sveta obitelj“) u Rješenju od 14.10.2026.'],
+        responsiblePerson: 'Upravni / Školski odbor i pravni savjetnik',
+        targetDeadline: 'IMH odmah (rok 30 dana) · IDSS 60 dana',
+      },
+      harmonizationCondition: 'Upisan zakonit direktor IMH u sudski registar, obaviješten KUIP KS i riješen statutni okvir IDSS-a.',
+    },
+    {
+      id: 'RF-12',
+      title: 'Rascjep kontrole potpisa (Registar 2.000 KM vs Banke Neograničeno) & Prazni VDR folderi (G, H, PU/UIO)',
+      shortTitle: 'Bankovni potpisi & VDR DD praznine',
+      category: 'Imovinsko-Pravni Status',
+      severity: 'Visoko (HIGH)',
+      amountKM: 100000,
+      probVal: 4.3,
+      impactVal: 3.9,
+      probLabel: 'Visoka (verifikovano u VDR-u)',
+      impactLabel: 'Visok (ultra vires rizik i blokada M&A)',
+      zone: 'HIGH',
+      forensicFinding: 'Oba sudska registra ograničavaju direktora na 2.000 KM bez saglasnosti Osnivača, ali sva 4 bankovna kartona (IMH & IDSS u Sparkasse i MF Banci) daju samostalno neograničeno raspolaganje (na IDSS MF Banci osnivač nije ni upisan!). Dodatno, Član 24. OPU-IP: 217/2016 propisuje supsidijarnu odgovornost osnivača za obaveze IDSS-a, a u VDR-u su potpuno prazni folderi G (Ugovori), H (Sporovi), te nedostaju PU FBiH (4.6), UIO (4.7) i Knjiga mjenica (4.3.d).',
+      statutoryBasis: 'Sudski izvodi 065-0-RegZ-26-008337 i 065-0-RegZ-23-008444, Član 24. i 22/43 OPU-IP: 217/2016, Operativna_LIsta17112026.pdf.',
+      systemicImpact: 'Neusklađeni bankovni kartoni nakon 04.11.2026. stvaraju pravnu nesigurnost naloga plaćanja, dok praznine u VDR-u blokiraju svaku ozbiljnu bankarsku ili investitorsku transakciju.',
+      mitigationSteps: {
+        urgent0to30: [
+          'Hitno ažurirati kartone potpisa IMH u Sparkasse i MF Banci (unos v.d. direktora) i dodati osnivača na IDSS MF Banka račun 5724560000042638.',
+          'Uvesti bankovni dvostruki potpis preko 2.000 KM ili uskladiti upis u sudskom registru.',
+        ],
+        medium30to90: [
+          'Popuniti VDR foldere G i H, pribaviti PU FBiH (4.6) i UIO BiH (4.7) uvjerenja, Knjigu mjenica (4.3.d), Pravilnike o radu (5.6) i svježi IDSS sudski izvod iz 2026.',
+        ],
+        permanentPolicy: ['Kvartalna provjera usklađenosti sudskog registra, bankovnih ovlaštenja i VDR arhive.'],
+        responsiblePerson: 'Osnivač, direktor i pravni savjetnik',
+        targetDeadline: 'Kartoni potpisa 7 dana · VDR kompletiranje 30 dana',
+      },
+      harmonizationCondition: 'Usklađeni svi bankovni kartoni i popunjene sve obavezne Legal DD kategorije A–I.',
     },
   ];
 }
@@ -332,7 +395,7 @@ export const RiskMatrixVisual: React.FC<RiskMatrixVisualProps> = ({
             </span>
           </div>
           <h3 className="text-xl md:text-2xl font-black text-[var(--ink)] m-0 mt-1">
-            Vizuelna matrica crvenih zastavica (RF-02 do RF-10)
+            Vizuelna matrica crvenih zastavica (RF-02 do RF-12)
           </h3>
           <p className="text-xs text-[var(--muted)] m-0 mt-1">
             Mapiranje preostalih rizika po <b>vjerovatnoći nastanka (X-osa)</b> i <b>uticaju na poslovanje (Y-osa)</b>. Kliknite na bilo koju tačku za otvaranje detaljnog plana mitigacije.

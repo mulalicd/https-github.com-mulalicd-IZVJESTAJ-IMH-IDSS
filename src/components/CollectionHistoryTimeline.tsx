@@ -22,7 +22,17 @@ import {
   Trash2,
   AlertTriangle
 } from 'lucide-react';
-import { PARTNER_DEBT_PORTFOLIO } from './CollectionStatusDashboard';
+interface PartnerDebtPortfolioItem {
+  id: string;
+  partnerName: string;
+  childName: string;
+  entity: 'IDSS' | 'IMH';
+  totalDebt: number;
+  daysOverdue: number;
+  dueDate?: string;
+  notes?: string;
+}
+const PARTNER_DEBT_PORTFOLIO: PartnerDebtPortfolioItem[] = [];
 
 export type ActionChannel = 'Email' | 'Telefon' | 'Preporučena pošta' | 'Sastanak uživo' | 'SMS / WhatsApp';
 export type ActionStatus = 'Dogovoreno' | 'Poslano' | 'Čeka se uplata' | 'Eskalirano' | 'Djelimično' | 'Zatvoreno';
@@ -288,7 +298,7 @@ export const DEFAULT_COLLECTION_PROFILES: Record<string, ParentCollectionProfile
         title: 'Službeno pojašnjenje pravila o kantonalnim subvencijama',
         channel: 'Email',
         status: 'Dogovoreno',
-        officer: 'Direktor Davor Mulalić',
+        officer: 'Uprava IMH (tadašnji direktor Davor Mulalić)',
         note: 'Direktor pismeno pojasnio: Roditelj je dužan plaćati puni iznos vrtiću po cjenovniku. IMH prosljeđuje subvenciju roditelju tek kada ministarstvo doznači novac. IMH ne zavisi od subvencija.',
         amountDiscussed: 1950,
       },
@@ -376,7 +386,7 @@ export const DEFAULT_COLLECTION_PROFILES: Record<string, ParentCollectionProfile
         title: 'Doznaka novembarske subvencije & obavijest o povratu',
         channel: 'Email',
         status: 'Dogovoreno',
-        officer: 'Direktor Davor Mulalić',
+        officer: 'Uprava IMH (v.d. direktor Anes Memić)',
         note: 'Konačna pretplata roditelja iznosi 600,00 KM. Poslana službena instrukcija sa opcijama automatske kompenzacije na narednoj fakturi ili povrata novca na tekući račun.',
         amountDiscussed: 600,
       },
@@ -425,7 +435,7 @@ function loadPersistedCustomActions(): Record<string, CollectionAction[]> {
           title: rec.title.slice(0, 200),
           channel,
           status,
-          officer: typeof rec.officer === 'string' ? rec.officer.slice(0, 120) : 'Direktor Davor Mulalić',
+          officer: typeof rec.officer === 'string' ? rec.officer.slice(0, 120) : 'Uprava ustanove',
           note: rec.note.slice(0, 1500),
           amountDiscussed: amount,
         });
@@ -555,7 +565,7 @@ export const CollectionHistoryTimeline: React.FC<CollectionHistoryTimelineProps>
   const [newActionTitle, setNewActionTitle] = useState<string>('');
   const [newActionChannel, setNewActionChannel] = useState<ActionChannel>('Telefon');
   const [newActionStatus, setNewActionStatus] = useState<ActionStatus>('Dogovoreno');
-  const [newActionOfficer, setNewActionOfficer] = useState<string>('Direktor Davor Mulalić');
+  const [newActionOfficer, setNewActionOfficer] = useState<string>('Uprava ustanove');
   const [newActionDate, setNewActionDate] = useState<string>(
     new Date().toLocaleDateString('bs-BA')
   );
@@ -647,7 +657,7 @@ export const CollectionHistoryTimeline: React.FC<CollectionHistoryTimelineProps>
       title: titleClean.slice(0, 200),
       channel: newActionChannel,
       status: newActionStatus,
-      officer: newActionOfficer.trim().slice(0, 120) || 'Direktor Davor Mulalić',
+      officer: newActionOfficer.trim().slice(0, 120) || 'Uprava ustanove',
       note: noteClean.slice(0, 1500),
       amountDiscussed: parsedAmount,
     };
@@ -1152,7 +1162,7 @@ export const CollectionHistoryTimeline: React.FC<CollectionHistoryTimelineProps>
                     type="text"
                     value={newActionOfficer}
                     onChange={(e) => setNewActionOfficer(e.target.value)}
-                    placeholder="Direktor Davor Mulalić"
+                    placeholder="Uprava ustanove / Odgovorno lice"
                     className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
